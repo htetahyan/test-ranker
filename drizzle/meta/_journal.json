@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1728412556900,
+      "tag": "0000_new_black_bolt",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1728413716985,
+      "tag": "0001_fat_dormammu",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1728440971038,
+      "tag": "0002_rainy_iceman",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1728441783457,
+      "tag": "0003_lying_firedrake",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1728625941929,
+      "tag": "0004_wandering_mariko_yashida",
+      "breakpoints": true
+    }
+  ]
+}
