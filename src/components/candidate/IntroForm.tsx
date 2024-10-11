@@ -5,9 +5,10 @@ import React from 'react'
 import { useFormik } from 'formik'
 import { Button, Checkbox, Input } from '@nextui-org/react'
 import { SelectAssessments } from '@/db/schema/schema'
-import { useCreateNewCandidateMutation } from '@/quries/candidateQuery'
+
 import { useRouter } from 'next/navigation'
 import { Router } from 'next/router'
+import { useCreateNewCandidateMutation } from '@/quries/CandidateQuery'
 
 const validationSchema = Yup.object().shape({
   fullName: Yup.string()

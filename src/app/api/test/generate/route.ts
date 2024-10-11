@@ -38,6 +38,7 @@ try {
   When you generating question you can refer company name  and decide the question level based on it .
    Make sure not to include any leading numbers or extra formatting especially do not generate like this [1:{},2:{}] ,this is only correct format [{},{}].
   Avoid adding comments //  or extra formatting return . I will use JSON.parse to parse the response, so make sure that the response is formatted correctly.
+  There should be four options.
  **Chart UI Requirements:**
 - Include a chart (either pie or bar chart) in **at least one out of every five questions**.
 -chart ui must be interactive a little bit. prefer more complicate ui.

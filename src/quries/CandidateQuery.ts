@@ -19,3 +19,4 @@ const CandidateQuery=baseApi.injectEndpoints({
     })
 })
 export const {useCreateNewCandidateMutation,useSignCandidateMutation} = CandidateQuery
+export default CandidateQuery
