@@ -20,7 +20,7 @@ export const baseApi = createApi({
                 method:'POST',
                 body
             }),
-            invalidatesTags:['TEST']
+           
         }),
         editMultipleChoiceQuestion: builder.mutation({
             query:(body)=>({
@@ -49,7 +49,7 @@ export const baseApi = createApi({
                 url: `/api/test/${id}`,
                 method: 'GET',
             }),
-            providesTags: ['TEST']
+          
         })    })
 })
 export const {useGetMultipleChoiceAndOptionsQuery,  useCreateNewAssessmentMutation ,useGenerateTestMutation, useEditMultipleChoiceQuestionMutation,useCreateNewQuestionMutation,useGetQuestionsFromAssessmentIdQuery } = baseApi

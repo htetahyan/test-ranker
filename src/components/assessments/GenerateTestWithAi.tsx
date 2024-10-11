@@ -37,7 +37,8 @@ const GenerateTestWithAi = ({assessment}:{assessment:SelectAssessments}) => {
         validationSchema,
         onSubmit:async (values) => {
 const res=await mutate(values).unwrap().finally(onClose)
-
+if(res.message==="success"){
+    router.refresh()}
         }
     });
     const [filteredJobs, setFilteredJobs] = useState<string[]>([]);
