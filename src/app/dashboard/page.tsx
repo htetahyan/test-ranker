@@ -9,7 +9,7 @@ import { FaPlus, FaEllipsisH } from 'react-icons/fa';
 
 const page = async () => {
   const user = await currentUser() as SelectUsers;
-  console.log(user);
+  
     const assessments = await db
     .select()
     .from(Assessments)

@@ -10,6 +10,7 @@ import {
   } from 'bcrypt-edge';
 import { cookies } from "next/headers";
 import { decodeJWTToken } from "./jwt.service";
+import { redirect } from "next/navigation";
 export const signInWithEmailAndPassword = async ({email,password}:{
     email:string,
     password:string
@@ -32,7 +33,7 @@ const hashPassword=(password:string)=>{
 }
 export const currentUser=async()=>{
     const token= cookies().get('ac')?.value
-    if(!token) return
+    if(!token) redirect('/account') 
     const payload = await decodeJWTToken(token) as any
     console.log(payload);
     

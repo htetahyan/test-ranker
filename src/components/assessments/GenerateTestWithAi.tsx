@@ -99,7 +99,7 @@ const GenerateTestWithAi = ({ id,text }: { id: number,text:string }) => {
 
     const handlePdfChange = async (pdfFile: File) => {
      
-        let extractedText = await  extractTextFromPDF(pdfFile,'clean');;
+        const extractedText = await  extractTextFromPDF(pdfFile,'clean');;
         formik.setFieldValue('pdf',extractedText)
    
     };

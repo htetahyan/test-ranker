@@ -16,9 +16,7 @@ const TestCard = ({ test }: { test: SelectTests }) => {
       {/* Test Type and Tags */}
       <div className="flex gap-2 mt-2">
         <span className="bg-pink-100 text-pink-700 px-2 py-1 rounded-full text-xs">{test.testType || 'Cognitive ability'}</span>
-        {test.isFree && (
-          <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">Free</span>
-        )}
+       
         <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">Popular</span>
       </div>
 
