@@ -1,5 +1,5 @@
 {
-  "id": "9e9d410a-d704-44dd-9d1e-e3896574920d",
+  "id": "85f5334f-ff5f-48ee-8041-88f8229e2b7c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -27,11 +27,30 @@
           "notNull": true,
           "default": "now()"
         },
+        "candidate_id": {
+          "name": "candidate_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
         "content": {
           "name": "content",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'text'"
+        },
+        "file_id": {
+          "name": "file_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
         },
         "updated_at": {
           "name": "updated_at",
@@ -55,6 +74,32 @@
           ],
           "onDelete": "no action",
           "onUpdate": "cascade"
+        },
+        "Answers_candidate_id_Candidates_id_fk": {
+          "name": "Answers_candidate_id_Candidates_id_fk",
+          "tableFrom": "Answers",
+          "tableTo": "Candidates",
+          "columnsFrom": [
+            "candidate_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "cascade"
+        },
+        "Answers_file_id_File    _id_fk": {
+          "name": "Answers_file_id_File    _id_fk",
+          "tableFrom": "Answers",
+          "tableTo": "File    ",
+          "columnsFrom": [
+            "file_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -78,9 +123,9 @@
         },
         "unique_id": {
           "name": "unique_id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",
@@ -130,7 +175,15 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "Assessments_unique_id_unique": {
+          "name": "Assessments_unique_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "unique_id"
+          ]
+        }
+      }
     },
     "public.CandidateInfo": {
       "name": "CandidateInfo",
@@ -138,7 +191,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "bigint",
+          "type": "serial",
           "primaryKey": true,
           "notNull": true
         },
@@ -168,15 +221,13 @@
         },
         "gender": {
           "name": "gender",
-          "type": "gender",
-          "typeSchema": "public",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "default": "'male'"
+          "notNull": true
         },
         "birth_date": {
           "name": "birth_date",
-          "type": "timestamp",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -195,19 +246,6 @@
         "first_language": {
           "name": "first_language",
           "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "level_of_assessment_language": {
-          "name": "level_of_assessment_language",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "status": {
-          "name": "status",
-          "type": "candidate_status",
-          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
         },
@@ -265,6 +303,27 @@
           "primaryKey": false,
           "notNull": true
         },
+        "current_step": {
+          "name": "current_step",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'intro'"
+        },
+        "is_signed": {
+          "name": "is_signed",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
         "assessment_id": {
           "name": "assessment_id",
           "type": "integer",
@@ -280,7 +339,7 @@
         },
         "generated_url": {
           "name": "generated_url",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -301,15 +360,156 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "Candidates_generated_url_unique": {
-          "name": "Candidates_generated_url_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "generated_url"
-          ]
+      "uniqueConstraints": {}
+    },
+    "public.File    ": {
+      "name": "File    ",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "size": {
+          "name": "size",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
-      }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.MultipleChoiceAnswers": {
+      "name": "MultipleChoiceAnswers",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "candidate_id": {
+          "name": "candidate_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "multiple_choices_question_id": {
+          "name": "multiple_choices_question_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "option_id": {
+          "name": "option_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "is_correct": {
+          "name": "is_correct",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "MultipleChoiceAnswers_candidate_id_Candidates_id_fk": {
+          "name": "MultipleChoiceAnswers_candidate_id_Candidates_id_fk",
+          "tableFrom": "MultipleChoiceAnswers",
+          "tableTo": "Candidates",
+          "columnsFrom": [
+            "candidate_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "MultipleChoiceAnswers_multiple_choices_question_id_MultipleChoicesQuestions_id_fk": {
+          "name": "MultipleChoiceAnswers_multiple_choices_question_id_MultipleChoicesQuestions_id_fk",
+          "tableFrom": "MultipleChoiceAnswers",
+          "tableTo": "MultipleChoicesQuestions",
+          "columnsFrom": [
+            "multiple_choices_question_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "MultipleChoiceAnswers_option_id_Options_id_fk": {
+          "name": "MultipleChoiceAnswers_option_id_Options_id_fk",
+          "tableFrom": "MultipleChoiceAnswers",
+          "tableTo": "Options",
+          "columnsFrom": [
+            "option_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     },
     "public.MultipleChoicesQuestions": {
       "name": "MultipleChoicesQuestions",
@@ -326,6 +526,37 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "label": {
+          "name": "label",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "data": {
+          "name": "data",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "background": {
+          "name": "background",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
         },
         "order": {
           "name": "order",
@@ -356,7 +587,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "MultipleChoicesQuestions_test_id_Tests_id_fk": {
+          "name": "MultipleChoicesQuestions_test_id_Tests_id_fk",
+          "tableFrom": "MultipleChoicesQuestions",
+          "tableTo": "Tests",
+          "columnsFrom": [
+            "test_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -429,7 +674,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "cascade"
         }
       },
@@ -504,6 +749,80 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "public.resume": {
+      "name": "resume",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "size": {
+          "name": "size",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "candidate_id": {
+          "name": "candidate_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "resume_candidate_id_Candidates_id_fk": {
+          "name": "resume_candidate_id_Candidates_id_fk",
+          "tableFrom": "resume",
+          "tableTo": "Candidates",
+          "columnsFrom": [
+            "candidate_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.Tests": {
       "name": "Tests",
       "schema": "",
@@ -545,26 +864,6 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
-        },
-        "test_level": {
-          "name": "test_level",
-          "type": "test_level",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "language": {
-          "name": "language",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "is_free": {
-          "name": "is_free",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
         },
         "description": {
           "name": "description",

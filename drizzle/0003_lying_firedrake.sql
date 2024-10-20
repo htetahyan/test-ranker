@@ -1,1 +1,0 @@
-ALTER TABLE "Candidates" ADD COLUMN "is_signed" boolean DEFAULT false NOT NULL;

@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 const Sign = ({ candidate ,uniqueId}: { candidate: any, uniqueId: string }) => {
     const [mutate,{isLoading,isError,isSuccess}]=useSignCandidateMutation()
     const router=useRouter()
+    router.prefetch(`/candidate/${uniqueId}/${candidate.generatedUrl}/tests`)
   // Validation schema for the signature form
   const validationSchema = Yup.object({
     signature: Yup.string()
@@ -34,7 +35,7 @@ const Sign = ({ candidate ,uniqueId}: { candidate: any, uniqueId: string }) => {
     console.log(res);
     
     if( res.message==="success"){
-        router.push(`/candidate/${uniqueId}/${candidate.generatedUrl}`)
+        router.push(`/candidate/${uniqueId}/${candidate.generatedUrl}/tests`)
     }
 
   }

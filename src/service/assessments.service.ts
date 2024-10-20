@@ -1,6 +1,6 @@
 import db from "@/db"
 import { Assessments, Candidates, MultipleChoicesQuestions, Options, Questions, SelectMultipleChoicesQuestions, SelectTests, Tests } from "@/db/schema/schema"
-import { eq, or } from "drizzle-orm"
+import { and, count, eq, or } from "drizzle-orm"
 import { prepareMultipleQuestions, prepareOptions, prepareTest } from "./prepare.service"
 import { unstable_cache } from "next/cache"
 import { option } from "framer-motion/client"
@@ -36,7 +36,7 @@ catch(err){
 }
    
 }
-export const createNewTest=async({title,description,assessmentId,questionsCount,testType,testLevel,duration}:any)=>{
+export const createNewTest=async({title,description,assessmentId,questionsCount,testType,duration}:any)=>{
 try{ 
     const id=await db.insert(Tests).values({
         title,
@@ -44,7 +44,6 @@ try{
         testType,
         
         duration:parseInt(duration as string),
-        language:"english",
         questionsCount:parseInt(questionsCount as string),
 
         assessmentsId:parseInt(assessmentId as string),
@@ -63,7 +62,15 @@ export const createQuestionAndOptions = async ({
     index
   }: {
     testId: number;
-    question: string;
+    question: {
+      title: string;
+    description: string;
+    type: string;
+  labels?: string[];
+  data?: string[];
+  backgroundColor?: string[];
+
+};
     answer: string;
     options: { [key: string]: string }; // Use object type for options
     correctOption: 1 | 2 | 3 | 4;
@@ -71,18 +78,25 @@ export const createQuestionAndOptions = async ({
      // Using numbers for options
   }) => {
     try {
+      
+      
       // Insert the question into the `MultipleChoicesQuestions` table
       const insertedQuestion = await db
         .insert(MultipleChoicesQuestions)
         .values({
-          question,
+          question: question.title,
+          description: question.description,
+          type: question.type,
+          background: question.backgroundColor,
+          label: question.labels,
+          data: question.data,
           order: index+1,
           
           testId,
         })
         .returning({ id: MultipleChoicesQuestions.id });
   
-      console.log(options, correctOption);
+      console.error(options, correctOption);
     
       const questionId = insertedQuestion[0].id; // Get the newly created question ID
     
@@ -91,8 +105,11 @@ export const createQuestionAndOptions = async ({
     
       // Loop through the options and insert them into the `Options` table
       for (let i = 0; i < optionsArray.length; i++) {
+        console.log('isCorrect', i + 1 === correctOption,i+1,correctOption);
+        
         await db.insert(Options).values({
           multipleChoicesQuestionId: questionId,
+          order: i + 1,
           option: optionsArray[i], // Insert option content
           content: optionsArray[i], // Link the option to the question
           isCorrect: i + 1 === correctOption, // Mark the correct option (i + 1 because index is 0-based)
@@ -188,6 +205,7 @@ if(!test){
         id: item.Options.id,
         option: item.Options.option,
         order: item.Options.order,
+
         isCorrect: item.Options.isCorrect,
         content: item.Options.content,
         createdAt: item.Options.createdAt,
@@ -197,6 +215,11 @@ if(!test){
       // If the question doesn't exist, create a new entry
       questionMap.set(questionId, {
        question:{ id: item.MultipleChoicesQuestions.id,
+        description: item.MultipleChoicesQuestions.description,
+        type: item.MultipleChoicesQuestions.type,
+        label: item.MultipleChoicesQuestions.label,
+        data: item.MultipleChoicesQuestions.data,
+        background: item.MultipleChoicesQuestions.background,
         question: item.MultipleChoicesQuestions.question,
         testId: item.MultipleChoicesQuestions.testId,
         order: item.MultipleChoicesQuestions.order,
@@ -263,15 +286,16 @@ const updateQuestionAndOptions = async (
 }
 }
 
-export const createNewQuestion = async ({question,type,assessmentId,description}:{question:string,type:string,assessmentId:number,description:string}) => {
+export const createNewQuestion = async ({question,type,assessmentId,description,duration}:{question:string,type:string,assessmentId:number,description:string,duration:number}) => {
   try{
-    
-    await db.insert(Questions).values({
+    const questionCount= await db.select({ count: count() }).from(Questions).where(eq(Questions.assessmentId,assessmentId));
+
+        await db.insert(Questions).values({
       question,
       assessmentId,
       duration:300,
       description,
-      type:'MultipleChoices',order:1
+      type,order: questionCount[0].count+1
 
     })
   }
@@ -296,9 +320,12 @@ export const editQuestionAndOptions = async ({question,id,options}:{
 
   await updateQuestionAndOptions({question,id,options})
 }
-export const getAssesssmentRelatedInfo = async ({assessmentId}:{assessmentId:number}) => {
-  const assessment = await db.select().from(Assessments).where(eq(Assessments.id,assessmentId))
-  const tests = await db.select().from(Tests).where(eq(Tests.assessmentsId,assessmentId))
-  const candidates = await db.select().from(Candidates).where(eq(Candidates.assessmentId,assessmentId))
+export const getAssesssmentRelatedInfo = async ({assessmentId,userId}:{assessmentId:number,userId:number}) => {
+  
+  const assessment = await db.select().from(Assessments).where(and(eq(Assessments.id,assessmentId),eq(Assessments.companyId,userId)))
+  const tests = await db.select().from(Tests).where(eq(Tests.assessmentsId,assessment[0].id))
+  const candidates = await db.select().from(Candidates).where(eq(Candidates.assessmentId,assessment[0].id))
+
+  
   return {assessment:assessment[0],tests:tests[0],candidates}
 }

@@ -1,5 +1,5 @@
 // schema.ts 
-import { relations } from "drizzle-orm";
+import { is, relations } from "drizzle-orm";
 import {
     pgTable,
     serial,
@@ -15,6 +15,7 @@ import {
     bigint,
     uuid,
 } from "drizzle-orm/pg-core";
+import { sizeInBytes } from "pdf-lib";
 
 // --------------------
 // 12. Enumerations
@@ -77,8 +78,6 @@ export const Tests= pgTable("Tests", {
     questionsCount: integer("questions_count").notNull(),
     generator: text("generator").notNull().default("ai").notNull(),
 testType: text("test_type").notNull(),
-language: text("language").notNull(),
-isFree: boolean("is_free").notNull().default(false).notNull(),
     description: text("description").notNull(),
     assessmentsId: integer("assessments_id").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -97,18 +96,16 @@ export const TestsRelations = relations(Tests, ({ one,many }) => ({
 
 
 export const CandidateInfo= pgTable("CandidateInfo", {
-    id: bigint("id",{mode:"number"}).primaryKey(),
+    id: serial("id").primaryKey(),
     highestEducation: text("highest_education").notNull(),
     studyField: text("study_field").notNull(),
     mostRelevantExperience: text("most_relevant_experience").notNull(),
     yearOfExperience: integer("year_of_experience").notNull(),
-    gender: Gender("gender").default("male").notNull(),
-    birthDate: timestamp("birth_date").notNull(),
+    gender: text('gender').notNull(),
+    birthDate: text("birth_date").notNull(),
     countryOfResidence: text("country_of_residence").notNull(),
     countryOfOrigin: text("country_of_origin").notNull(),
     firstLanguage: text("first_language").notNull(),
-    levelOfAssessmentLanguage: text("level_of_assessment_language"),
-    status: CandidateStatus("status").notNull(),
     assessmentId: integer("assessment_id").notNull(),
     candidateId: integer("candidate_id").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -130,6 +127,7 @@ export const Candidates= pgTable("Candidates", {
     fullName: text("full_name").notNull(),
     currentStep: text("current_step").notNull().default("intro"),
     isSigned: boolean("is_signed").notNull().default(false).notNull(),
+    status: text("status").notNull().default("pending"),
 
    
 assessmentId:integer("assessment_id").notNull(),
@@ -161,20 +159,26 @@ export const QuestionsRelations = relations(Questions, ({ one }) => ({
 export const MultipleChoicesQuestions= pgTable("MultipleChoicesQuestions", {
     id: serial("id").primaryKey(),
    question: text("question").notNull(),
+   description: text("description").notNull().default(""),
+   type: text("type").notNull(),
+   label: text("label").array(),
+   data: text("data").array(),
+   background: text("background").array(),
    order: integer("order").notNull().default(1),
-    
-    testId: bigint("test_id",{mode:"number"}).notNull()
-,
-    createdAt: timestamp("created_at").defaultNow().notNull(),
+    testId: bigint("test_id",{mode:"number"}).notNull().references(() => Tests.id, { onDelete: "cascade", onUpdate: "cascade" })
+,    createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 
 });
 export const MultipleChoicesQuestionsRelations = relations(MultipleChoicesQuestions, ({ one }) => ({
-    tests: one(Tests, {
+    Tests: one(Tests, {
         fields: [MultipleChoicesQuestions.testId],
+        relationName: "MultipleChoicesAndTests",
         references: [Tests.id],
-    })
+    }),
+
 }))
+
 export const CandidatesRelations = relations(Candidates, ({ one }) => ({
     Assessments: one(Assessments, {
         fields: [Candidates.assessmentId],
@@ -189,7 +193,7 @@ export const Options= pgTable("Options", {
     order: integer("order").notNull().default(1),
     isCorrect: boolean("is_correct").notNull().default(false).notNull(),
     content: text("content").notNull(),
-    multipleChoicesQuestionId: bigint("question_id",{mode:"number"}).notNull().references(() => MultipleChoicesQuestions.id, { onDelete: "no action", onUpdate: "cascade" }),
+    multipleChoicesQuestionId: bigint("question_id",{mode:"number"}).notNull().references(() => MultipleChoicesQuestions.id, { onDelete: "cascade", onUpdate: "cascade" }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 
@@ -198,13 +202,48 @@ export const Answers= pgTable("Answers", {
     id: serial("id").primaryKey(),
     questionId: bigint("question_id",{mode:"number"}).notNull().references(() => Questions.id, { onDelete: "no action", onUpdate: "cascade" }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
-    content: text("content").notNull(),
+    candidateId: bigint("candidate_id",{mode:"number"}).notNull().references(() => Candidates.id, { onDelete: "no action", onUpdate: "cascade" }),
+    content: text("content"),
+    type: text("type").default("text").notNull(),
+    fileId: bigint("file_id",{mode:"number"}).references(() => File.id, { onDelete: "cascade", onUpdate: "no action" }),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 
 });
+export const File= pgTable("File    ", {
+    id: serial("id").primaryKey(),
+    url: text("url").notNull(),
+    type: text("type").notNull(),
+    size: bigint("size",{mode:"number"}),
+    
+    name: text("name").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+})
+export const Resume= pgTable("resume", {
+    id: serial("id").primaryKey(),
+    url: text("url").notNull(),
+    type: text("type").notNull(),
+    size: bigint("size",{mode:"number"}).notNull(),
+    name: text("name").notNull(),
+    candidateId: bigint("candidate_id",{mode:"number"}).notNull().references(() => Candidates.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+})
+export const MultipleChoiceAnswers= pgTable("MultipleChoiceAnswers", {
+    id: serial("id").primaryKey(),
+    candidateId: bigint("candidate_id",{mode:"number"}).notNull().references(() => Candidates.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    multipleChoicesQuestionId: bigint("multiple_choices_question_id",{mode:"number"}).notNull().references(() => MultipleChoicesQuestions.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    optionId: bigint("option_id",{mode:"number"}).notNull().references(() => Options.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    isCorrect: boolean("is_correct").notNull().default(false).notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+})
 export type SelectAssessments=typeof Assessments.$inferSelect
 export type SelectTests=typeof Tests.$inferSelect
 export type SelectCandidates=typeof Candidates.$inferSelect
+export type SelectCandidatesInfo=typeof CandidateInfo.$inferSelect
+export type SelectFile=typeof File.$inferSelect
+export type SelectResume=typeof Resume.$inferSelect
 export type SelectQuestions=typeof Questions.$inferSelect
 export type SelectMultipleChoicesQuestions=typeof MultipleChoicesQuestions.$inferSelect
 export type SelectOptions=typeof Options.$inferSelect

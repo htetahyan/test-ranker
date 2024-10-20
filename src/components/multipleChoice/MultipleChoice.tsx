@@ -5,9 +5,9 @@ import React, { useState } from 'react'
 import { MdEdit, MdClose, MdCheck, MdPlusOne } from 'react-icons/md'
 import { useFormik } from 'formik'
 import { useEditMultipleChoiceQuestionMutation } from '@/quries/BaseQuery'
-import { FaPlus } from 'react-icons/fa'
-import AddATest from '../tests/AddATest'
+
 import MyQuillEditor from '../textEditor/Editor'
+import { Bar, Chart, Line, Pie, PolarArea } from 'react-chartjs-2'
 
 const MultipleChoice = ({ MultipleChoice }: { MultipleChoice: { question: SelectMultipleChoicesQuestions, options: SelectOptions[] } }) => {
   const orderedOptions = MultipleChoice?.options && [...MultipleChoice.options].sort((a, b) => {
@@ -63,9 +63,9 @@ const MultipleChoice = ({ MultipleChoice }: { MultipleChoice: { question: Select
   });
 
   return (
-    <div className="mt-4 w-full">
+    <div className="mt-4 w-full ">
       <form onSubmit={formik.handleSubmit}>
-        <div className="w-[40vw] bg-white shadow-lg rounded-lg p-6 mb-6 overflow-hidden">
+        <div className="w-full bg-white shadow-lg rounded-lg p-6 mb-6 overflow-hidden">
           <h1 className="text-gray-700 text-2xl font-bold mb-4">{MultipleChoice.question.order}</h1>
           <div className="flex gap-2">
             {isEditing.question ? (
@@ -76,14 +76,85 @@ const MultipleChoice = ({ MultipleChoice }: { MultipleChoice: { question: Select
               </>
             ) : (
               <>
-                <div dangerouslySetInnerHTML={{ __html: formik.values.question }} />
+               {MultipleChoice.question.type==='multiple-choice'  && (
+              <div> <h1 className="text-gray-700 text-2xl font-bold mb-4">{formik.values.question}</h1>
+                <p>{MultipleChoice.question.description}</p></div> 
+               )
+               }
+               {MultipleChoice.question.type==='essay'  && (
+                 <div> <h1 className="text-gray-700 text-2xl font-bold mb-4">{formik.values.question}</h1>
+                 <p>{MultipleChoice.question.description}</p></div>
+               )}
+            {MultipleChoice.question.type === 'pie' && (
+  <div className="w-full"> 
+    <h1 className="text-gray-700 text-2xl font-bold mb-4">{formik.values.question}</h1>
+    <p>{MultipleChoice.question.description}</p>
+    <div className="w-1/2">
+      <Pie
+        data={{
+          labels: MultipleChoice.question.label!,
+          datasets: [{ data: MultipleChoice.question.data, backgroundColor: MultipleChoice.question.background! }]
+        }}
+      />
+    </div>
+  </div>
+)}
+
+{MultipleChoice.question.type === 'bar' && (
+  <div className="w-full"> 
+    <h1 className="text-gray-700 text-2xl font-bold mb-4">{formik.values.question}</h1>
+    <p>{MultipleChoice.question.description}</p>
+    <div className="w-1/2">
+      <Bar
+        options={{ plugins: { legend: { display: false } } }}
+        data={{
+          labels: MultipleChoice.question.label!,
+          datasets: [{ data: MultipleChoice.question.data, backgroundColor: MultipleChoice.question.background! }]
+        }}
+      />
+    </div>
+  </div>
+)}
+
+{MultipleChoice.question.type === 'line' && (
+  <div className="w-full">
+    <h1 className="text-gray-700 text-2xl font-bold mb-4">{formik.values.question}</h1>
+    <p>{MultipleChoice.question.description}</p>
+    <div className="w-1/2">
+      <Line
+        options={{ plugins: { legend: { display: false } } }}
+        data={{
+          labels: MultipleChoice.question.label!,
+          datasets: [{ data: MultipleChoice.question.data, backgroundColor: MultipleChoice.question.background! }]
+        }}
+      />
+    </div>
+  </div>
+)}
+
+{MultipleChoice.question.type === 'polar' && (
+  <div className="w-full"> 
+    <h1 className="text-gray-700 text-2xl font-bold mb-4">{formik.values.question}</h1>
+    <p>{MultipleChoice.question.description}</p>
+    <div className="w-1/2">
+      <PolarArea
+        data={{
+          labels: MultipleChoice.question.label!,
+          datasets: [{ data: MultipleChoice.question.data, backgroundColor: MultipleChoice.question.background! }]
+        }}
+      />
+    </div>
+  </div>
+)}
+
               </>
             )}
+           
           </div>
 
           <div className="flex flex-col mt-4 gap-2 items-center">
             {orderedOptions.map((option, i) => (
-              <div key={i} className="flex gap-2 items-center">
+              <div key={i} className="flex gap-2 w-full items-center">
                 <p className="text-gray-500">{option.order}</p>
                 <Input
                   name={`options[${i}].option`}

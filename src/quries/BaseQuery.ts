@@ -44,6 +44,14 @@ export const baseApi = createApi({
             }),            providesTags: ['QUESTION']
 
         }),
+        deleteQuestionById:builder.mutation({
+            query:(id)=>({
+                url:`/api/questions/${id}`,
+                method:'DELETE',
+                
+            }),            invalidatesTags:['QUESTION']
+
+        }),
         getMultipleChoiceAndOptions:builder.query({
             query: ({id}) => ({
                 url: `/api/test/${id}`,
@@ -52,5 +60,5 @@ export const baseApi = createApi({
           
         })    })
 })
-export const {useGetMultipleChoiceAndOptionsQuery,  useCreateNewAssessmentMutation ,useGenerateTestMutation, useEditMultipleChoiceQuestionMutation,useCreateNewQuestionMutation,useGetQuestionsFromAssessmentIdQuery } = baseApi
+export const {useGetMultipleChoiceAndOptionsQuery,useDeleteQuestionByIdMutation,  useCreateNewAssessmentMutation ,useGenerateTestMutation, useEditMultipleChoiceQuestionMutation,useCreateNewQuestionMutation,useGetQuestionsFromAssessmentIdQuery } = baseApi
 export default baseApi

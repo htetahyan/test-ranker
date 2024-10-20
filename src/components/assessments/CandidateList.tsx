@@ -1,22 +1,27 @@
 'use client'
 import React from "react";
-import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, getKeyValue, Slider} from "@nextui-org/react";
+import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, getKeyValue, Slider, Select, SelectItem} from "@nextui-org/react";
+import { SelectCandidates } from "@/db/schema/schema";
+import Link from "next/link";
 
 
-export default function CandidateList() {
+export default function CandidateList({candidates}:{candidates: SelectCandidates[]}) {
   const [page, setPage] = React.useState(1);
   const rowsPerPage = 4;
 
-  const pages = Math.ceil(users.length / rowsPerPage);
+  const pages = Math.ceil(candidates.length / rowsPerPage);
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
 
-    return users.slice(start, end);
-  }, [page, users]);
+    return candidates.slice(start, end);
+  }, [page, candidates]);
 
-  return (
+  return (  <>
+  {candidates.length ===0 ? (<div className="h-[10vh] bg-slate-100 border-1 shadow-lg mt-5 mb-5 w-full flex items-center justify-center ">
+    <h1>No candidate yet</h1>
+  </div>):(
     <Table 
       aria-label="Example table with client side pagination"
       bottomContent={
@@ -37,47 +42,49 @@ export default function CandidateList() {
       }}
     >
       <TableHeader>
-        <TableColumn key="name">NAME</TableColumn>
-        <TableColumn key="role">INVITEDON</TableColumn>
-        <TableColumn key="status">STATUS</TableColumn>
+        <TableColumn key="fullName">NAME</TableColumn>
+        <TableColumn key="createdAt">DATE CREATED</TableColumn>
+        <TableColumn key="email">Email</TableColumn>
+
+        <TableColumn key="currentStep">CURRENt STEP</TableColumn>
         <TableColumn key="rating">RATING</TableColumn>
       </TableHeader>
       <TableBody items={items}>
         {(item) => (
-          <TableRow key={item.name}>
-            {(columnKey) => <TableCell>{columnKey==='rating'? <Slider step={1} defaultValue={getKeyValue(item, columnKey)}
-            showSteps={true}
-            marks={[
-                {value:1, label: '0'},
-                {value: 2, label: '1'},
-                {value: 3, label: '2'},
-                {value: 4, label: '3'},
-                {value: 5, label: '4'},
+        <TableRow key={item.fullName}>
+        {(columnKey) => (
+        
+            <TableCell>
+            { columnKey === 'currentStep' ? (
+             <Select selectedKeys={[getKeyValue(item, columnKey)]} value={getKeyValue(item, columnKey)} color={getKeyValue(item, columnKey)==='finished'?'success': getKeyValue(item, columnKey)==='intro'?'warning':'primary'}  defaultSelectedKeys={[getKeyValue(item, columnKey)]} >
+             <SelectItem key={'sign'} value="sign">sign</SelectItem>
+             <SelectItem key={'intro'} value="intro">intro</SelectItem>
+             <SelectItem key={'test'} value="Invited">test</SelectItem>
+             <SelectItem key={'questions'} value="questions">questions</SelectItem>
+             <SelectItem key={'info'} value="info">info</SelectItem>
+             <SelectItem color="success" key={'finished'} value="finished">
+              finished
+             </SelectItem>
 
-                {value: 6, label: '5'},
-            ]}
-            isDisabled={true}
-            size="lg"
-            maxValue={6} minValue={1} color="secondary" /> :getKeyValue(item, columnKey)}</TableCell>}
-          </TableRow>
+              </Select>
+            ) : columnKey === 'createdAt' ?(
+              new Date(getKeyValue(item, columnKey)).toLocaleString()
+            ):
+            
+            (  <Link href={`/assessments/${item.assessmentId}/candidates/${item.id}`}  className="underline">
+              {getKeyValue(item, columnKey)}</Link>
+            )}
+                      
+
+          </TableCell>
+         
+        )}
+        
+      </TableRow>
+      
         )}
       </TableBody>
-    </Table>
+    </Table>)}
+  </>
   );
 }
-export const users = [
-    {
-      key: "1",
-      name: "Tony Reichert",
-      invitedOn: "2023-06-01T00:00:00.000Z",
-      status: "Active",
-      rating:5
-    },
-    {
-      key: "2",
-      name: "Zoey Lang",
-      invitedOn: "2023-06-01T00:00:00.000Z",
-      status: "Paused",
-      rating:2
-    },
-]

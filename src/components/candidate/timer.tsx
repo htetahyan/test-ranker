@@ -26,7 +26,6 @@ export default function Timer({ duration, setIsTimeUp }: { duration: number; set
       size="md"
       maxValue={duration}
       value={value}
-      color="success"
       showValueLabel={true}
       label={`${duration} seconds`}
       className="max-w-md"
@@ -37,6 +36,14 @@ export default function Timer({ duration, setIsTimeUp }: { duration: number; set
         style: "unit",
         maximumFractionDigits: 0,
       }}
+      classNames={{
+        base: "max-w-md",
+        track: "drop-shadow-md border border-default",
+        indicator: "bg-gradient-to-r from-red-500 to-teal-500",
+        label: "tracking-wider font-medium text-default-600",
+        value: "text-foreground/60",
+      }}
     />
+    
   );
 }

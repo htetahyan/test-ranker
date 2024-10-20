@@ -7,7 +7,9 @@ import React from 'react'
 const page = async({params}:{params:{uniqueId:string}}) => {
   const {uniqueId}=params
   const assessment= await db.select().from(Assessments).where(eq(Assessments.uniqueId,uniqueId))
-  if(!assessment[0]) return <div>404</div>
+  console.log(assessment);
+  
+  if(!assessment) <div>Assessment not found</div>
 
     
   return (

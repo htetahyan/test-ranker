@@ -11,34 +11,33 @@ import * as Yup from 'yup';
 import { useCreateNewAssessmentMutation } from "@/quries/BaseQuery";
 import JobRoleInput from "./AutoCompleteInput";
 import AutocompleteInput from "./AutoCompleteInput";
+import { SelectAssessments } from "@/db/schema/schema";
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Name is required').min(3, 'Name is too short').trim("white spaces are not allowed").strict(true),
   jobRole: Yup.string().required('Job Role is required').min(3, 'Job Role is too short').trim("white spaces are not allowed").strict(true),
   jobLocation: Yup.string().required('Job Location is required'),
   workArrangement: Yup.string().required('Work Arrangement is required'),
-  language: Yup.string().required('Language is required'),
 });
 
-const AddTest = () => {
+const AddTest = ({assessments}: {assessments: SelectAssessments }) => {
   const router = useRouter();
   const [filteredJobs, setFilteredJobs] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
 const [mutate,{isLoading}]=useCreateNewAssessmentMutation()
   const formik = useFormik({
     initialValues: {
-      name: '',
-      language: 'english',
-      jobRole: '',
-      jobLocation: '',
-      workArrangement: '',
+      name: assessments?.name ?? '',
+      jobRole: assessments?.jobRole ?? '',
+      jobLocation: assessments?.jobLocation ?? '',
+      workArrangement: assessments?.workArrangement ?? '',
     },
     validationSchema,
     onSubmit: async(values) => {
    const res= await  mutate({name:values.name,jobRole:values.jobRole,jobLocation:values.jobLocation,workArrangement:values.workArrangement}).unwrap()
-    console.log(res);
+ 
     
-      router.push(`/assessments/${res}/edit`);
+      router.push(`/assessments/${res}/edit/tests`);
     },
   });
 
@@ -56,7 +55,9 @@ const [mutate,{isLoading}]=useCreateNewAssessmentMutation()
       setShowSuggestions(false);
     }
   };
-
+const exit=()=>{
+  router.back()
+}
   const handleJobSelect = (job: string) => {
     formik.setFieldValue('jobRole', job);
     setShowSuggestions(false);
@@ -76,16 +77,10 @@ const [mutate,{isLoading}]=useCreateNewAssessmentMutation()
               value={formik.values.name}
               onChange={formik.handleChange}
             />
-            <div className="flex items-center gap-2 mt-2">
-              <div className="flex items-center gap-2">
-                <MdEventNote /> 0 tests
-              </div>
-              <div className="flex items-center gap-2">
-                <IoMdClock /> 0 Mins
-              </div>
-            </div>
+          
+         
           </div>
-          <Button className="mt-2" color="primary" size="md">
+          <Button onClick={exit} className="mt-2" color="primary" size="md">
             exit
           </Button>
         </div>
@@ -141,12 +136,7 @@ export default AddTest;
 
 const fields = [
   { name: "jobRole", label: "Job Role", type: "text" },
-  {
-    name: "language",
-    label: "Language",
-    type: "dropDown",
-    options: [{ label: "English", value: "english", mode: "single" }],
-  },
+ 
   {
     name: "jobLocation",
     label: "Job Location",

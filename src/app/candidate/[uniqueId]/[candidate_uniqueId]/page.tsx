@@ -16,8 +16,10 @@ const page = async({ params }: { params: { uniqueId: string, candidate_uniqueId:
       redirect('/candidate/' + uniqueId + '/' + candidate_uniqueId + '/intro')
     case 'sign':
       redirect('/candidate/' + uniqueId + '/' + candidate_uniqueId + '/sign')
-    case 'test':
+    case 'tests':
       redirect('/candidate/' + uniqueId + '/' + candidate_uniqueId + '/test')
+    case 'finished':
+      return <> test Finished</>
   }
   return (
     <div>

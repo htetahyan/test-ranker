@@ -1,14 +1,24 @@
 import Sign from '@/components/candidate/Sign';
 import db from '@/db';
-import { Candidates } from '@/db/schema/schema';
+import { Candidates, SelectCandidates } from '@/db/schema/schema';
+import { getCandidateFromCandidateUniqueIdAndUniqueId, redirectByCandidateStep } from '@/service/candidate.service';
 import { Input } from '@nextui-org/react';
 import { eq } from 'drizzle-orm';
+import { redirect } from 'next/navigation';
+
 import React from 'react';
 
 
 const HonestyAgreementPage = async({params}:{params:{uniqueId:string,candidate_uniqueId:string}}) => {
-  const candidate = await db.select().from(Candidates).where(eq(Candidates.generatedUrl, params.candidate_uniqueId)).then((data) => data[0]);
+  const candidate = await getCandidateFromCandidateUniqueIdAndUniqueId(params.candidate_uniqueId, params.uniqueId);
+  console.log(candidate);
+  
   if(!candidate) <>wrong link</>
+const {redirect: routing, url} =  redirectByCandidateStep({ candidate, uniqueId: params.uniqueId, currentPage: 'sign' });
+console.log(routing,url);
+
+if (routing) redirect(url!);
+  
  
 
   return (
@@ -19,3 +29,4 @@ const HonestyAgreementPage = async({params}:{params:{uniqueId:string,candidate_u
 };
 
 export default HonestyAgreementPage;
+

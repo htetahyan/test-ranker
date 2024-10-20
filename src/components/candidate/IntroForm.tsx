@@ -31,13 +31,14 @@ const IntroForm = ({ assessment }: { assessment: SelectAssessments }) => {
     initialValues: {
       fullName: '',
       email: '',
-      check: false
+      
+      check: false,
     },
     onSubmit: async (values) => {
       // Handle form submission
       const res=await mutate({fullName:values.fullName,email:values.email,assessmentId:assessment?.id}).unwrap()
       if( res.message==="success"){
-        router.push(`/candidate/${assessment?.uniqueId}/${res.generatedUrl}`)
+        router.push(`/candidate/${assessment?.uniqueId}/${res.generatedUrl}/sign`)
     }
     },
     validationSchema: validationSchema
