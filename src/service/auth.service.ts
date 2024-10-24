@@ -32,7 +32,7 @@ const hashPassword=(password:string)=>{
     return hashSync(password, genSaltSync(10))
 }
 export const currentUser=async()=>{
-    const token= cookies().get('ac')?.value
+    const token=  (await cookies()).get('ac')?.value
     if(!token) redirect('/account') 
     const payload = await decodeJWTToken(token) as any
     console.log(payload);

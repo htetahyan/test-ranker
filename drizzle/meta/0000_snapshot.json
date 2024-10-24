@@ -1,5 +1,5 @@
 {
-  "id": "38b267e1-2278-45d9-950e-f4e27e9e2947",
+  "id": "63d06522-af0e-4f28-97c2-2c7d1b489b72",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -72,7 +72,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "cascade"
         },
         "Answers_candidate_id_Candidates_id_fk": {
@@ -85,7 +85,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "cascade"
         },
         "Answers_file_id_File    _id_fk": {
@@ -99,7 +99,7 @@
             "id"
           ],
           "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "cascade"
         }
       },
       "compositePrimaryKeys": {},

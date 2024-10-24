@@ -8,7 +8,7 @@ import Link from 'next/link';
 import React from 'react';
 
 const Page = async ({ params }: { params: { id: string; candidateId: string } }) => {
-  const { id, candidateId } = params;
+  const { id, candidateId } =await params;
 
   // Fetch candidate details
   const {candidate,assessment,candidateInfo,test,questions,resume,answers,files} = await prepareCandidatePage(parseInt(id), parseInt(candidateId));

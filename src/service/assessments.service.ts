@@ -64,7 +64,7 @@ export const createQuestionAndOptions = async ({
     question,
     options,
     correctOption,
-    index
+    order
   }: {
     testId: number;
     question: {
@@ -79,7 +79,7 @@ export const createQuestionAndOptions = async ({
     answer: string;
     options: { [key: string]: string }; // Use object type for options
     correctOption: 1 | 2 | 3 | 4;
-    index: number
+    order: number
      // Using numbers for options
   }) => {
     try {
@@ -95,7 +95,7 @@ export const createQuestionAndOptions = async ({
           background: question.backgroundColor,
           label: question.labels,
           data: question.data,
-          order: index+1,
+          order: order,
           
           testId,
         })

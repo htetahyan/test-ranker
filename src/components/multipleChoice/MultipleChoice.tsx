@@ -1,18 +1,19 @@
-'use client'
-import { SelectMultipleChoicesQuestions, SelectOptions } from '@/db/schema/schema'
-import { Button, Input, Checkbox } from '@nextui-org/react'
-import React, { useState } from 'react'
-import { MdEdit, MdClose, MdCheck, MdPlusOne } from 'react-icons/md'
-import { useFormik } from 'formik'
-import { useEditMultipleChoiceQuestionMutation } from '@/quries/BaseQuery'
+'use client';
 
-import MyQuillEditor from '../textEditor/Editor'
-import { Bar, Chart, Line, Pie, PolarArea } from 'react-chartjs-2'
+import { SelectMultipleChoicesQuestions, SelectOptions } from '@/db/schema/schema';
+import { Button, Input, Checkbox } from '@nextui-org/react';
+import React, { useState } from 'react';
+import { MdEdit, MdClose, MdCheck, MdPlusOne } from 'react-icons/md';
+import { useFormik } from 'formik';
+import { useEditMultipleChoiceQuestionMutation } from '@/quries/BaseQuery';
+import MyQuillEditor from '../textEditor/Editor';
+import { Bar, Pie, Line, PolarArea } from 'react-chartjs-2';
 
 const MultipleChoice = ({ MultipleChoice }: { MultipleChoice: { question: SelectMultipleChoicesQuestions, options: SelectOptions[] } }) => {
   const orderedOptions = MultipleChoice?.options && [...MultipleChoice.options].sort((a, b) => {
     return (a?.order ?? 0) - (b?.order ?? 0);
   });
+
   const [mutate, { isLoading }] = useEditMultipleChoiceQuestionMutation();
   const [isEditing, setIsEditing] = useState({
     question: false,
@@ -63,12 +64,13 @@ const MultipleChoice = ({ MultipleChoice }: { MultipleChoice: { question: Select
   });
 
   return (
-    <div className="mt-4 w-full ">
+    <div className="mt-4 w-full">
       <form onSubmit={formik.handleSubmit}>
         <div className="w-full bg-white shadow-lg rounded-lg p-6 mb-6 overflow-hidden">
-        <div className='flex items-center justify-between'> <h1 className="text-gray-700 text-2xl font-bold mb-4">{MultipleChoice.question.order}</h1>
-          <Button color='danger' isIconOnly endContent={<MdClose/>}></Button>
-          </div> 
+          <div className='flex items-center justify-between'>
+            <h1 className="text-gray-700 text-2xl font-bold mb-4">{MultipleChoice.question.order}</h1>
+            <Button color='danger' isIconOnly endContent={<MdClose />}></Button>
+          </div>
           <div className="flex gap-2">
             {isEditing.question ? (
               <>
@@ -78,80 +80,90 @@ const MultipleChoice = ({ MultipleChoice }: { MultipleChoice: { question: Select
               </>
             ) : (
               <>
-               {MultipleChoice.question.type==='multiple-choice'  && (
-              <div> <h1 className="text-gray-700 text-2xl font-bold mb-4">{formik.values.question}</h1>
-                <p>{MultipleChoice.question.description}</p></div> 
-               )
-               }
-               {MultipleChoice.question.type==='essay'  && (
-                 <div> <h1 className="text-gray-700 text-2xl font-bold mb-4">{formik.values.question}</h1>
-                 <p>{MultipleChoice.question.description}</p></div>
-               )}
-            {MultipleChoice.question.type === 'pie' && (
-  <div className="w-full"> 
-    <h1 className="text-gray-700 text-2xl font-bold mb-4">{formik.values.question}</h1>
-    <p>{MultipleChoice.question.description}</p>
-    <div className="w-1/2">
-      <Pie
-        data={{
-          labels: MultipleChoice.question.label!,
-          datasets: [{ data: MultipleChoice.question.data, backgroundColor: MultipleChoice.question.background! }]
-        }}
-      />
-    </div>
-  </div>
-)}
+                {MultipleChoice.question.type === 'multiple-choice' && (
+                  <div>
+                    <h1 className="text-gray-700 text-2xl font-bold mb-4">{formik.values.question}</h1>
+                    <p>{MultipleChoice.question.description}</p>
+                  </div>
+                )}
+                {MultipleChoice.question.type === 'essay' && (
+                  <div>
+                    <h1 className="text-gray-700 text-2xl font-bold mb-4">{formik.values.question}</h1>
+                    <p>{MultipleChoice.question.description}</p>
+                  </div>
+                )}
 
-{MultipleChoice.question.type === 'bar' && (
-  <div className="w-full"> 
-    <h1 className="text-gray-700 text-2xl font-bold mb-4">{formik.values.question}</h1>
-    <p>{MultipleChoice.question.description}</p>
-    <div className="w-1/2">
-      <Bar
-        options={{ plugins: { legend: { display: false } } }}
-        data={{
-          labels: MultipleChoice.question.label!,
-          datasets: [{ data: MultipleChoice.question.data, backgroundColor: MultipleChoice.question.background! }]
-        }}
-      />
-    </div>
-  </div>
-)}
+                {MultipleChoice.question.type === 'pie' && (
+                  <div className="w-full">
+                    <h1 className="text-gray-700 text-2xl font-bold mb-4">{formik.values.question}</h1>
+                    <p>{MultipleChoice.question.description}</p>
+                    <div className="w-1/2">
+                      <Pie
+                        data={{
+                          labels: [...(MultipleChoice.question.label || [])],
+                          datasets: [
+                            { data: [...(MultipleChoice.question.data || [])], backgroundColor: [...(MultipleChoice.question.background || [])] }
+                          ]
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
 
-{MultipleChoice.question.type === 'line' && (
-  <div className="w-full">
-    <h1 className="text-gray-700 text-2xl font-bold mb-4">{formik.values.question}</h1>
-    <p>{MultipleChoice.question.description}</p>
-    <div className="w-1/2">
-      <Line
-        options={{ plugins: { legend: { display: false } } }}
-        data={{
-          labels: MultipleChoice.question.label!,
-          datasets: [{ data: MultipleChoice.question.data, backgroundColor: MultipleChoice.question.background! }]
-        }}
-      />
-    </div>
-  </div>
-)}
+                {MultipleChoice.question.type === 'bar' && (
+                  <div className="w-full">
+                    <h1 className="text-gray-700 text-2xl font-bold mb-4">{formik.values.question}</h1>
+                    <p>{MultipleChoice.question.description}</p>
+                    <div className="w-1/2">
+                      <Bar
+                        options={{ plugins: { legend: { display: false } } }}
+                        data={{
+                          labels: [...(MultipleChoice.question.label || [])],
+                          datasets: [
+                            { data: [...(MultipleChoice.question.data || [])], backgroundColor: [...(MultipleChoice.question.background || [])] }
+                          ]
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
 
-{MultipleChoice.question.type === 'polar' && (
-  <div className="w-full"> 
-    <h1 className="text-gray-700 text-2xl font-bold mb-4">{formik.values.question}</h1>
-    <p>{MultipleChoice.question.description}</p>
-    <div className="w-1/2">
-      <PolarArea
-        data={{
-          labels: MultipleChoice.question.label!,
-          datasets: [{ data: MultipleChoice.question.data, backgroundColor: MultipleChoice.question.background! }]
-        }}
-      />
-    </div>
-  </div>
-)}
+                {MultipleChoice.question.type === 'line' && (
+                  <div className="w-full">
+                    <h1 className="text-gray-700 text-2xl font-bold mb-4">{formik.values.question}</h1>
+                    <p>{MultipleChoice.question.description}</p>
+                    <div className="w-1/2">
+                      <Line
+                        options={{ plugins: { legend: { display: false } } }}
+                        data={{
+                          labels: [...(MultipleChoice.question.label || [])],
+                          datasets: [
+                            { data: [...(MultipleChoice.question.data || [])], backgroundColor: [...(MultipleChoice.question.background || [])] }
+                          ]
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
 
+                {MultipleChoice.question.type === 'polar' && (
+                  <div className="w-full">
+                    <h1 className="text-gray-700 text-2xl font-bold mb-4">{formik.values.question}</h1>
+                    <p>{MultipleChoice.question.description}</p>
+                    <div className="w-1/2">
+                      <PolarArea
+                        data={{
+                          labels: [...(MultipleChoice.question.label || [])],
+                          datasets: [
+                            { data: [...(MultipleChoice.question.data || [])], backgroundColor: [...(MultipleChoice.question.background || [])] }
+                          ]
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
               </>
             )}
-           
           </div>
 
           <div className="flex flex-col mt-4 gap-2 items-center">

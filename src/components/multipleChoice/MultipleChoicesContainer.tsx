@@ -19,16 +19,16 @@ import * as Yup from 'yup'
 Chart.register(...registerables );
 const validationSchema = Yup.object().shape({
     prompt: Yup.string().required('Prompt is required'),
-    questionsCount: Yup.number().required('Questions Count is required').min(1, 'Questions Count is too short').strict(true),
+    questionsCount: Yup.number().required('Questions Count is required').min(2, 'Questions Count is too short').strict(true),
 })
 
 const MultipleChoicesContainer = ({ id }: { id: number }) => {
     const { data: array, isLoading, isSuccess } = useGetMultipleChoiceAndOptionsQuery({ id })
-    const [mutate]=useGenerateMoreTestMutation()
-    const sortMultipleChoiceByOrderNumberDesc = array?.data?.multipleChoiceQuestions 
+    const [mutate,{isLoading:isGenerating}]=useGenerateMoreTestMutation()
+    const sortMultipleChoiceByOrderNumberDesc =  array?.data?.multipleChoiceQuestions ?? [] 
     const {isOpen,onClose,onOpen,onOpenChange}=useDisclosure()
 const formik=useFormik({
-  initialValues:{prompt:'',questionsCount:1},
+  initialValues:{prompt:'',questionsCount:2},
   onSubmit:async(values)=>{
       mutate({id,questionsCount:values.questionsCount,prompt:values.prompt}).unwrap().finally(()=>onClose())
   },
@@ -46,8 +46,8 @@ const formik=useFormik({
       
 {/*           <div className="w-full mt-4 grid justify-end gap-10">  <AddATest id={id} /></div>
  */}           <div className='w-full mb-10 '> {sortMultipleChoiceByOrderNumberDesc?.length > 0 ? (
-                sortMultipleChoiceByOrderNumberDesc?.map((m: any) => (
-                    <MultipleChoice key={m.id} MultipleChoice={m} />
+                sortMultipleChoiceByOrderNumberDesc?.map((m: any,i:number) => (
+                    <MultipleChoice key={i} MultipleChoice={m} />
                 ))
             ) : (
                 <GenerateTestWithAi id={id} text={"generate test with ai"} />
@@ -69,13 +69,13 @@ const formik=useFormik({
                 
             <h1 className='text-2xl font-bold mb-4'>Custom prompt</h1>   
             <form onSubmit={formik.handleSubmit}>
-            <Input className={'h-64 mb-4'}  color='secondary' name='prompt' onChange={formik.handleChange} isInvalid={!!(formik.errors.prompt && formik.touched.prompt)} value={formik.values.prompt} errorMessage={formik.errors.prompt} placeholder='generate tests more focus on...'  />   
+            <Textarea className={' mb-4'}  color='secondary' name='prompt' onChange={formik.handleChange} isInvalid={!!(formik.errors.prompt && formik.touched.prompt)} value={formik.values.prompt} errorMessage={formik.errors.prompt} placeholder='generate tests more focus on...'  />   
             <Slider 
                                     label="Questions Count" 
                                     name='questionsCount'
                                     showSteps={true}
                                     color='secondary'
-                                    step={1} 
+                                    
                                     onChangeEnd={(value) => formik.setFieldValue('questionsCount', value)} 
                                     value={formik.values.questionsCount}
                                     maxValue={10} 
@@ -85,7 +85,7 @@ const formik=useFormik({
                                 />
                                 {formik.errors.questionsCount && formik.touched.questionsCount && <p className='text-red-500'>
                                     {formik.errors.questionsCount}</p>}  
-                                    <Button type='submit' color='secondary' variant='solid' className='bg-purple-600 text-white' >Generate</Button>
+                                    <Button isLoading={isGenerating} isDisabled={isGenerating} type='submit' color='secondary' variant='solid' className='bg-purple-600 text-white' >Generate</Button>
                                     </form>
                                      </ModalBody>
                   

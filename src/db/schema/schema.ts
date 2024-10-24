@@ -217,12 +217,12 @@ export const Options= pgTable("Options", {
 });
 export const Answers= pgTable("Answers", {
     id: serial("id").primaryKey(),
-    questionId: bigint("question_id",{mode:"number"}).notNull().references(() => Questions.id, { onDelete: "no action", onUpdate: "cascade" }),
+    questionId: bigint("question_id",{mode:"number"}).notNull().references(() => Questions.id, { onDelete: "cascade", onUpdate: "cascade" }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
-    candidateId: bigint("candidate_id",{mode:"number"}).notNull().references(() => Candidates.id, { onDelete: "no action", onUpdate: "cascade" }),
+    candidateId: bigint("candidate_id",{mode:"number"}).notNull().references(() => Candidates.id, { onDelete: "cascade", onUpdate: "cascade" }),
     content: text("content"),
     type: text("type").default("text").notNull(),
-    fileId: bigint("file_id",{mode:"number"}).references(() => File.id, { onDelete: "cascade", onUpdate: "no action" }),
+    fileId: bigint("file_id",{mode:"number"}).references(() => File.id, { onDelete: "cascade", onUpdate: "cascade" }),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 
 });

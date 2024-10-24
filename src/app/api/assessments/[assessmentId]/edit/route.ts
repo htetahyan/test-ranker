@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server"
 
 export const PUT=async(req:NextRequest,{params}:{params:{assessmentId:string}})=>{{
     try{
-        const id=parseInt(params.assessmentId)
+        const id=parseInt(await params.assessmentId)
         const body=await req.json()
         const {name,jobLocation,jobRole,workArrangement}=body
         if(!name || !jobRole || !jobLocation || !workArrangement){

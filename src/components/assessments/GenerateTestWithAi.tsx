@@ -38,7 +38,7 @@ const validationSchema = Yup.object().shape({
     title: Yup.string().required('Title is required').min(3, 'Title is too short').trim("White spaces are not allowed").strict(true),
     testType: Yup.string().required('Test Type is required').min(3, 'Test Type is too short').trim("White spaces are not allowed").strict(true),
     duration: Yup.string().required('Duration is required').min(3, 'Duration is too short').strict(true).trim("White spaces are not allowed"),
-    questionsCount: Yup.number().required('Questions Count is required').min(1, 'Questions Count is too short').strict(true),
+    questionsCount: Yup.number().required('Questions Count is required').min(2, 'Questions Count is too short').strict(true),
     generateBy: Yup.string().required('Generate By is required').min(3, 'Generate By is too short').trim("White spaces are not allowed").strict(true),
     description:Yup.string().when('generateBy',{
         is:(val:string)=> val==="job description",

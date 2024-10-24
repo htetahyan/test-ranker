@@ -15,9 +15,10 @@ import { IoMdArrowRoundBack } from 'react-icons/io';
 import { RiEyeCloseFill } from 'react-icons/ri';
 
 const page = async({params}:{params:{id:string}}) => {
+
     const user=await currentUser()
     if(!user)  redirect('/account')
-const data=await getAssesssmentRelatedInfo({assessmentId:Number(params.id),userId:user?.id!})
+const data=await getAssesssmentRelatedInfo({assessmentId:Number(await params.id),userId:user?.id!})
 
 
   return (

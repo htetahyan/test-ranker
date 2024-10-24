@@ -179,19 +179,19 @@ CREATE TABLE IF NOT EXISTS "versions" (
 );
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "Answers" ADD CONSTRAINT "Answers_question_id_Questions_id_fk" FOREIGN KEY ("question_id") REFERENCES "public"."Questions"("id") ON DELETE no action ON UPDATE cascade;
+ ALTER TABLE "Answers" ADD CONSTRAINT "Answers_question_id_Questions_id_fk" FOREIGN KEY ("question_id") REFERENCES "public"."Questions"("id") ON DELETE cascade ON UPDATE cascade;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "Answers" ADD CONSTRAINT "Answers_candidate_id_Candidates_id_fk" FOREIGN KEY ("candidate_id") REFERENCES "public"."Candidates"("id") ON DELETE no action ON UPDATE cascade;
+ ALTER TABLE "Answers" ADD CONSTRAINT "Answers_candidate_id_Candidates_id_fk" FOREIGN KEY ("candidate_id") REFERENCES "public"."Candidates"("id") ON DELETE cascade ON UPDATE cascade;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "Answers" ADD CONSTRAINT "Answers_file_id_File    _id_fk" FOREIGN KEY ("file_id") REFERENCES "public"."File    "("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "Answers" ADD CONSTRAINT "Answers_file_id_File    _id_fk" FOREIGN KEY ("file_id") REFERENCES "public"."File    "("id") ON DELETE cascade ON UPDATE cascade;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

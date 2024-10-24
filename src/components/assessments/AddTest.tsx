@@ -20,18 +20,20 @@ const validationSchema = Yup.object().shape({
 });
 
 const AddTest = ({assessments}: {assessments: SelectAssessments|null }) => {
+
+ 
   const router = useRouter();
   const [filteredJobs, setFilteredJobs] = useState<string[]>([]);
-  router.prefetch(`/assessments/${assessments?.id}/edit/tests`);
+ assessments && router.prefetch(`/assessments/${assessments?.id!}/edit/tests`);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
 const [mutate,{isLoading}]=useCreateNewAssessmentMutation()
 const [editMutate,{isLoading:editLoading}]=useEditAssessmentMutation()
   const formik = useFormik({
     initialValues: {
-      name: assessments?.name ?? '',
-      jobRole: assessments?.jobRole ?? '',
-      jobLocation: assessments?.jobLocation ?? '',
-      workArrangement: assessments?.workArrangement ?? '',
+      name: assessments!==null ? assessments?.name : '',
+      jobRole:assessments!==null ? assessments?.jobRole : '',
+      jobLocation:assessments!==null ? assessments?.jobLocation : '',
+      workArrangement:assessments!==null ? assessments?.workArrangement : '',
     },
 
     validationSchema,
@@ -114,8 +116,7 @@ const exit=()=>{
                 selectionMode={field.mode ?? "single"}
                 label={`Select ${field.label}`}
                 defaultSelectedKeys={[formik.values[field.name as keyof typeof formik.values]]} // Should be an array for "multiple"
-                value={formik.values[field.name as keyof typeof formik.values]}
-                onSelectionChange={(keys) => formik.setFieldValue(field.name, Array.from(keys))}
+                onSelectionChange={(keys) => formik.setFieldValue(field.name, Array.from(keys).join(''))} // Convert to string for single selection
                 name={field.name}
               >
                 {(field.options || []).map((option) => (

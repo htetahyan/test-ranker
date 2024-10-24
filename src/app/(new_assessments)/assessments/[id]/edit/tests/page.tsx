@@ -16,17 +16,19 @@ import db from '@/db';
 
 
 const page = async ({ params }: { params: { id: string } }) => {
-  if (!params.id) {
+  const { id } = await params
+
+  if (!id) {
     throw new Error("Please provide an id");
   }
 
-  const data = await getTestsFromAssessmentId({ assessmentId: parseInt(params.id) }) as { tests: SelectTests, assessment: SelectAssessments[] };
+  const data = await getTestsFromAssessmentId({ assessmentId: parseInt(id) }) as { tests: SelectTests, assessment: SelectAssessments[] };
 
   
   if (!data) return <div>404</div>;
   console.log(data,'[[[');
   
-const multipleChoiceQuestions=  await db.select().from(MultipleChoicesQuestions).where(eq(MultipleChoicesQuestions.testId, data?.tests?.id)).orderBy(asc(MultipleChoicesQuestions.order)) 
+const multipleChoiceQuestions= data?.tests?.id ?  await db.select().from(MultipleChoicesQuestions).where(eq(MultipleChoicesQuestions.testId, data?.tests?.id)).orderBy(asc(MultipleChoicesQuestions.order)):[] 
 console.log(multipleChoiceQuestions,'multipleChoiceQuestions');
 
   return (
@@ -47,7 +49,7 @@ console.log(multipleChoiceQuestions,'multipleChoiceQuestions');
       </div>
       <CircularSteps currentStep={2} />
     
-      <MultipleChoicesContainer  id={parseInt(params!.id)}  />
+      <MultipleChoicesContainer  id={parseInt(id)}  />
       
     </div>
   );

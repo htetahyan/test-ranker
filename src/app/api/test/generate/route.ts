@@ -92,8 +92,9 @@ const generate=async({prompt,title,description,assessmentId,duration,questionsCo
   
   
   const testId=await createNewTest({title,description,assessmentId,duration,questionsCount,testType} as any)
+  const multipleChoiceQuestionsCount=await db.select({ count: count() }).from(MultipleChoicesQuestions).where(eq(MultipleChoicesQuestions.testId,testId));
   
-    await array.map((question:any,index:number)=>{return createQuestionAndOptions({testId,question:question.question,answer:question.answer,options:question.options,correctOption:question.solution,index})})
+    await array.map((question:any,index:number)=>{return createQuestionAndOptions({testId,question:question.question,answer:question.answer,options:question.options,correctOption:question.solution,order:multipleChoiceQuestionsCount[0].count===0?multipleChoiceQuestionsCount[0].count+index+1:multipleChoiceQuestionsCount[0].count+index})})
   
     
     return NextResponse.json({message:'success',},{status:201})
@@ -113,7 +114,7 @@ const extractTextsFromHtml = (html: string) => {
 
   return extractText(dom);
 };
-const generatePrompt = (content: string, questionsCount: number) => ` Please create ${questionsCount} detailed and complex multiple-choice questions for the following Job description:
+const generatePrompt = (content: string, questionsCount: number) => ` Please create exactly ${questionsCount}  multiple-choice questions for the following Job description:
       [${content}].
     
       Each question should be structured as follows:  
@@ -148,7 +149,7 @@ const generatePrompt = (content: string, questionsCount: number) => ` Please cre
         },
         "solution": 4
       },
-      // Add more complex questions here
+      // Add more complex questions not more than ${questionsCount}
       ]
         *above is the example response for essay type question and chart type question. You must response in above format without extra things like command and any other things.
     

@@ -20,7 +20,7 @@ export const baseApi = createApi({
                 url:`/api/test/generate`,
                 method:'POST',
                 body
-            }),
+            }), invalidatesTags:['TEST']
            
         }),
         editMultipleChoiceQuestion: builder.mutation({

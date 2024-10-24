@@ -1,8 +1,8 @@
 import db from "@/db"
-import { Tests } from "@/db/schema/schema"
+import { MultipleChoicesQuestions, Tests } from "@/db/schema/schema"
 import { createQuestionAndOptions } from "@/service/assessments.service"
 import { main } from "@/service/openai.service"
-import { eq } from "drizzle-orm"
+import { count, eq } from "drizzle-orm"
 import { NextRequest, NextResponse } from "next/server"
 
 export const POST=async(req:NextRequest,{params}:{params:{id:string}})=>{{
@@ -10,13 +10,16 @@ export const POST=async(req:NextRequest,{params}:{params:{id:string}})=>{{
         const body=await req.json()
         const id=parseInt(params.id)
         const {prompt,questionsCount}=body
+        console.log(prompt,questionsCount,id);
+        
         if(!id){
             throw new Error("Please provide id")
         }
-        const test=await db.select().from(Tests).where(eq(Tests.id,id))
+        const test=await db.select().from(Tests).where(eq(Tests.assessmentsId,id))
         const newPrompt=generatePrompt(prompt,test[0]?.description,questionsCount)
         const array= await main(newPrompt)
-        await array.map((question:any,index:number)=>{return createQuestionAndOptions({testId:id,question:question.question,answer:question.answer,options:question.options,correctOption:question.solution,index})})
+        const multipleChoiceQuestionsCount=await db.select({ count: count() }).from(MultipleChoicesQuestions).where(eq(MultipleChoicesQuestions.testId,test[0]?.id));
+        await array.map((question:any,index:number)=>{return createQuestionAndOptions({testId:test[0]?.id,question:question.question,answer:question.answer,options:question.options,correctOption:question.solution,order:multipleChoiceQuestionsCount[0].count+index})})
 
         return NextResponse.json({message:"success"},{status:201})
     }catch(err:any){
@@ -25,7 +28,7 @@ export const POST=async(req:NextRequest,{params}:{params:{id:string}})=>{{
         return NextResponse.json({message:err.message},{status:500})
     }
 }}
-const generatePrompt = (prompt:string,content: string, questionsCount: number) => ` Please create ${questionsCount} detailed and complex multiple-choice questions for the following Job description:
+const generatePrompt = (prompt:string,content: string, questionsCount: number) => ` Please create exactly ${questionsCount} multiple-choice questions for the following Job description:
 according to this prompt ${prompt} and the following content:
       [${content}].
     
@@ -61,7 +64,7 @@ according to this prompt ${prompt} and the following content:
         },
         "solution": 4
       },
-      // Add more complex questions here
+      // Add more complex questions here exactly ${questionsCount}
       ]
         *above is the example response for essay type question and chart type question. You must response in above format without extra things like command and any other things.
     

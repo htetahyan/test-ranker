@@ -68,8 +68,8 @@ const page = async () => {
             <tbody>
               { assessments.length===0 ? <tr><td colSpan={6} className="py-4 px-4 text-center">No Assessments Created Yet</td></tr> :assessments.map((assessment) => (
                 <tr key={assessment.id} className="border-b">
-                  <Link href={`/assessments/${assessment.id}`}><td className="py-4 px-4 underline">{assessment.name}</td>
-                  </Link>
+               <td className="py-4 px-4 underline">   <Link href={`/assessments/${assessment.id}`}>{assessment.name}     </Link></td>
+             
                   <td className="py-4 px-4">{assessment.jobRole}</td>
                   <td className="py-4 px-4">{assessment.jobLocation}</td>
                   <td className="py-4 px-4">{assessment.workArrangement}</td>

@@ -7,7 +7,7 @@ const page = () => {
 
   return (
     <div>
-       <AddTest assessments={null} />
+       <AddTest assessments={null}  />
       
     </div>
   )
