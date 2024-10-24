@@ -4,8 +4,9 @@ import db from '@/db'
 import { Assessments } from '@/db/schema/schema'
 import { eq } from 'drizzle-orm'
 
-const page = async({params}:{params:{id:string}}) => {
-  const assessment = await db.select().from(Assessments).where(eq(Assessments.id, parseInt(await params.id)))
+const page = async (props:{params: Promise<{id:string}>}) => {
+  const params = await props.params;
+  const assessment = await db.select().from(Assessments).where(eq(Assessments.id, parseInt(params.id)))
   return (
     <div>
        <AddTest assessments={assessment[0]!}/>

@@ -15,8 +15,8 @@ import { asc, eq } from 'drizzle-orm';
 import db from '@/db';
 
 
-const page = async ({ params }: { params: { id: string } }) => {
-  const { id } = await params
+const page = async (props: { params: Promise< { id: string }> }) => {
+  const { id } = await props.params;
 
   if (!id) {
     throw new Error("Please provide an id");

@@ -81,5 +81,5 @@ const payload = await decodeJWTToken(token)
             typ: "JWT",
         })
         .setExpirationTime(ACCESS_TOKEN_LIFE).sign(generateUnit8Array(process.env.JWT_SECRET!));
- cookies().set('access_token',newToken,cookieOptions(60*60*24))
+ (await cookies()).set('access_token',newToken,cookieOptions(60*60*24))
 }

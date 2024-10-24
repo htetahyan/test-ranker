@@ -5,29 +5,32 @@ import { main } from "@/service/openai.service"
 import { count, eq } from "drizzle-orm"
 import { NextRequest, NextResponse } from "next/server"
 
-export const POST=async(req:NextRequest,{params}:{params:{id:string}})=>{{
-    try{
-        const body=await req.json()
-        const id=parseInt(params.id)
-        const {prompt,questionsCount}=body
-        console.log(prompt,questionsCount,id);
-        
-        if(!id){
-            throw new Error("Please provide id")
-        }
-        const test=await db.select().from(Tests).where(eq(Tests.assessmentsId,id))
-        const newPrompt=generatePrompt(prompt,test[0]?.description,questionsCount)
-        const array= await main(newPrompt)
-        const multipleChoiceQuestionsCount=await db.select({ count: count() }).from(MultipleChoicesQuestions).where(eq(MultipleChoicesQuestions.testId,test[0]?.id));
-        await array.map((question:any,index:number)=>{return createQuestionAndOptions({testId:test[0]?.id,question:question.question,answer:question.answer,options:question.options,correctOption:question.solution,order:multipleChoiceQuestionsCount[0].count+index})})
+export const POST=async (req:NextRequest, props:{params: Promise<{id:string}>}) => {
+  const params = await props.params;
+  {
+      try{
+          const body=await req.json()
+          const id=parseInt(params.id)
+          const {prompt,questionsCount}=body
+          console.log(prompt,questionsCount,id);
+          
+          if(!id){
+              throw new Error("Please provide id")
+          }
+          const test=await db.select().from(Tests).where(eq(Tests.assessmentsId,id))
+          const newPrompt=generatePrompt(prompt,test[0]?.description,questionsCount)
+          const array= await main(newPrompt)
+          const multipleChoiceQuestionsCount=await db.select({ count: count() }).from(MultipleChoicesQuestions).where(eq(MultipleChoicesQuestions.testId,test[0]?.id));
+          await array.map((question:any,index:number)=>{return createQuestionAndOptions({testId:test[0]?.id,question:question.question,answer:question.answer,options:question.options,correctOption:question.solution,order:multipleChoiceQuestionsCount[0].count+index})})
 
-        return NextResponse.json({message:"success"},{status:201})
-    }catch(err:any){
-      console.log(err);
-      
-        return NextResponse.json({message:err.message},{status:500})
-    }
-}}
+          return NextResponse.json({message:"success"},{status:201})
+      }catch(err:any){
+        console.log(err);
+        
+          return NextResponse.json({message:err.message},{status:500})
+      }
+  }
+}
 const generatePrompt = (prompt:string,content: string, questionsCount: number) => ` Please create exactly ${questionsCount} multiple-choice questions for the following Job description:
 according to this prompt ${prompt} and the following content:
       [${content}].

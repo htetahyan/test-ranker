@@ -1,11 +1,10 @@
 'use client';
 import React from 'react';
-import ReactQuill, { Quill } from 'react-quill';
-import 'react-quill/dist/quill.snow.css'; // Import styles
+import ReactQuill, { Quill } from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 //@ts-ignore
 import ImageResize from 'quill-image-resize-module-react';
-import 'quill/dist/quill.core.css';
-import 'quill/dist/quill.snow.css';
+
 
 // Register the image resize module
 Quill.register('modules/imageResize', ImageResize);

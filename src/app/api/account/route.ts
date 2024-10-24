@@ -34,9 +34,9 @@ if(type==='signup'){
 }
 console.log(user);
 
- const token=await generateAccessToken(user)
+ const token=await generateAccessToken(user);
  
-        cookies().set('ac',token,cookieOptions(60*60*24))
+        (await cookies()).set('ac',token,cookieOptions(60*60*24))
 
         return NextResponse.json({message:"Account Success",redirect:true},{status:200})
         

@@ -14,16 +14,17 @@ import "chart.js/auto";
 import Chart from "chart.js/auto";
 Chart.register(...registerables,CategoryScale );
 
-const page = async({params}:{params:{uniqueId:string,candidate_uniqueId:string}}) => {
-  
-const assessment = await db.select().from(Assessments).where(eq(Assessments.uniqueId, params.uniqueId))
-const test=await db.select().from(Tests).where(eq(Tests.assessmentsId, assessment[0].id))
+const page = async (props:{params: Promise<{uniqueId:string,candidate_uniqueId:string}>}) => {
+  const params = await props.params;
 
-const candidate = await getCandidateFromCandidateUniqueIdAndUniqueId(params.candidate_uniqueId, params.uniqueId)
-    const response=await getAllMultipleChoiceAndOptions({id:test[0].id})
-    console.log(response);
-    
-    const {redirect: routing, url} =  redirectByCandidateStep({ candidate, uniqueId: params.uniqueId, currentPage: 'test' });
+  const assessment = await db.select().from(Assessments).where(eq(Assessments.uniqueId, params.uniqueId))
+  const test=await db.select().from(Tests).where(eq(Tests.assessmentsId, assessment[0].id))
+
+  const candidate = await getCandidateFromCandidateUniqueIdAndUniqueId(params.candidate_uniqueId, params.uniqueId)
+  const response=await getAllMultipleChoiceAndOptions({id:test[0].id})
+  console.log(response);
+
+  const {redirect: routing, url} =  redirectByCandidateStep({ candidate, uniqueId: params.uniqueId, currentPage: 'test' });
   /*   if (routing) redirect(url!); */
 
   return (

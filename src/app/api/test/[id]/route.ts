@@ -2,7 +2,8 @@ import { getAllMultipleChoiceAndOptions, getTestAndQuestions } from "@/service/a
 import { data } from "framer-motion/client";
 import { NextRequest, NextResponse } from "next/server";
 
-export const GET=async(req:NextRequest,{params}:{params:{id:string}})=>{
+export const GET=async (req:NextRequest, props:{params: Promise<{id:string}>}) => {
+    const params = await props.params;
     try {
         const id= parseInt(params.id)
         
@@ -11,5 +12,4 @@ return NextResponse.json({data:multipleChoiceQuestionsAndOptions,message:"succes
     } catch (error:any) {
         return NextResponse.json({message:error.message},{status:500})
     }
-
 }

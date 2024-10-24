@@ -3,7 +3,7 @@ import { main } from '@/service/openai.service'
 import { redirect } from 'next/navigation'
 import React from 'react'
 
-const page = async({params}:{params:{id:string}}) => {
+const page = async(props:{params:Promise<{id:string}>}) => {
  redirect('/dashboard')
   return (
     <div>

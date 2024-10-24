@@ -4,7 +4,8 @@ import { getQuestionsFromAssessmentId } from "@/service/assessments.service";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
-export const GET=async(req:NextRequest,{params}:{params:{id:string}})=>{
+export const GET=async (req:NextRequest, props:{params: Promise<{id:string}>}) => {
+    const params = await props.params;
     try {
         const assessments=await getQuestionsFromAssessmentId({assessmentId:Number(params.id)})
         return NextResponse.json({assessments},{status:200})
@@ -13,7 +14,8 @@ export const GET=async(req:NextRequest,{params}:{params:{id:string}})=>{
         return NextResponse.json({message:error.message},{status:500})
     }
 }
-export const DELETE=async(req:NextRequest,{params}:{params:{id:string}})=>{
+export const DELETE=async (req:NextRequest, props:{params: Promise<{id:string}>}) => {
+    const params = await props.params;
     try {
         const assessments=await db.delete(Questions).where(eq(Questions.id,parseInt(params.id)))
 
