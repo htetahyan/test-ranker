@@ -66,7 +66,9 @@ const MultipleChoice = ({ MultipleChoice }: { MultipleChoice: { question: Select
     <div className="mt-4 w-full ">
       <form onSubmit={formik.handleSubmit}>
         <div className="w-full bg-white shadow-lg rounded-lg p-6 mb-6 overflow-hidden">
-          <h1 className="text-gray-700 text-2xl font-bold mb-4">{MultipleChoice.question.order}</h1>
+        <div className='flex items-center justify-between'> <h1 className="text-gray-700 text-2xl font-bold mb-4">{MultipleChoice.question.order}</h1>
+          <Button color='danger' isIconOnly endContent={<MdClose/>}></Button>
+          </div> 
           <div className="flex gap-2">
             {isEditing.question ? (
               <>

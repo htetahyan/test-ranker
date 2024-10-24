@@ -23,6 +23,7 @@ export const getTestsFromAssessmentId=async({assessmentId}:{assessmentId:number}
 try{
     console.log(assessmentId,'assessmentId');
     
+    
     const arrays= await db.select().from(Tests).where(eq(Tests.assessmentsId,assessmentId))
     const assessment=await db.select().from(Assessments).where(eq(Assessments.id,assessmentId))
     
@@ -31,7 +32,9 @@ try{
         assessment}
 
 }
-catch(err){
+catch(err:any){
+  console.log(err.message,'error');
+  
    return []
 }
    
@@ -42,6 +45,8 @@ try{
         title,
         description,
         testType,
+        generator:"ai",
+      
         
         duration:parseInt(duration as string),
         questionsCount:parseInt(questionsCount as string),
@@ -116,6 +121,8 @@ export const createQuestionAndOptions = async ({
         });
       }
     } catch (err: any) {
+      console.log(err.message);
+      
       throw new Error(err.message);
     }
   };
@@ -204,6 +211,7 @@ if(!test){
       questionData.options.push({
         id: item.Options.id,
         option: item.Options.option,
+        
         order: item.Options.order,
 
         isCorrect: item.Options.isCorrect,

@@ -1,5 +1,5 @@
 {
-  "id": "85f5334f-ff5f-48ee-8041-88f8229e2b7c",
+  "id": "38b267e1-2278-45d9-950e-f4e27e9e2947",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -157,6 +157,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "versions_id": {
+          "name": "versions_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 1
         },
         "work_arrangement": {
           "name": "work_arrangement",
@@ -959,6 +966,42 @@
           ]
         }
       }
+    },
+    "public.versions": {
+      "name": "versions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     }
   },
   "enums": {

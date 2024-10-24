@@ -1,8 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { RiOrderPlayFill } from "react-icons/ri";
 
 export const baseApi = createApi({
-    baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3000" }),
-    tagTypes: ["QUESTION", "TEST"],
+    baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_BASE_URL }),
+    tagTypes: ["QUESTION", "TEST", "CANDIDATE"],
     reducerPath: 'baseApi',
 
 
@@ -57,8 +58,41 @@ export const baseApi = createApi({
                 url: `/api/test/${id}`,
                 method: 'GET',
             }),
+            providesTags:(result,error,arg)=>error?['TEST']:[...result?.data?.multipleChoiceQuestions.map(({question,options}:any)=>({type:'TEST',id:question.id})),{type:'TEST',id:'LIST'}],
+            
           
-        })    })
+        })   ,
+        orderTests:builder.mutation({
+            query:(body)=>({
+                url:`/api/multiple-choice/order`,
+                method:'POST',
+                body:JSON.stringify({list:body})
+            }),
+            invalidatesTags:(result,error,arg)=> arg.map(({id}:any)=>({type:'TEST',id}))
+        })
+    ,deleteMutipleChoiceQuestion:builder.mutation({
+        query:(id)=>({
+            url:`/api/multiple-choice/delete`,
+            method:'DELETE',
+            body:JSON.stringify({id})
+            
+        }),            invalidatesTags:['TEST']
+    }), generateMoreTest: builder.mutation({
+        query:({id,questionsCount,prompt}:{id:number,questionsCount:number,prompt:string})=>({
+            url:`/api/test/${id}/generate`,
+            method:'POST',
+            body:JSON.stringify({questionsCount,prompt})
+        }),invalidatesTags:['TEST']
+    }),
+    editAssessment:builder.mutation({
+        query:({name,assessmentId,jobLocation,jobRole,workArrangement}:{name:string,assessmentId:number,jobLocation:string,jobRole:string,workArrangement:string})=>({
+            url:`/api/assessments/${assessmentId}/edit`,
+            method:'PUT',
+            body:JSON.stringify({name,jobLocation,jobRole,workArrangement})
+        })
+    }),
+
+    })
 })
-export const {useGetMultipleChoiceAndOptionsQuery,useDeleteQuestionByIdMutation,  useCreateNewAssessmentMutation ,useGenerateTestMutation, useEditMultipleChoiceQuestionMutation,useCreateNewQuestionMutation,useGetQuestionsFromAssessmentIdQuery } = baseApi
+export const {useEditAssessmentMutation,useGenerateMoreTestMutation,useDeleteMutipleChoiceQuestionMutation,useGetMultipleChoiceAndOptionsQuery,useDeleteQuestionByIdMutation,useOrderTestsMutation,  useCreateNewAssessmentMutation ,useGenerateTestMutation, useEditMultipleChoiceQuestionMutation,useCreateNewQuestionMutation,useGetQuestionsFromAssessmentIdQuery } = baseApi
 export default baseApi

@@ -28,7 +28,6 @@ const Page = async ({ params }: { params: { id: string; candidateId: string } })
   const correctedAnswers = multipleChoiceAnswers?.filter((answer: any) => answer.isCorrect);
   // Calculate score and percentage
   const c= await db.select({count:count()}).from(MultipleChoiceAnswers).where(eq(MultipleChoiceAnswers.candidateId, candidate?.id!))
-  console.log(c[0].count,'sss');
   
   const totalQuestions = c?.[0].count || 0;
   const correctAnswers = correctedAnswers?.length || 0;

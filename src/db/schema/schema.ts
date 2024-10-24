@@ -55,6 +55,7 @@ export const Assessments = pgTable("Assessments", {
     jobRole: text("job_role").notNull(),
     companyId: integer("company_id").notNull(),
     link: text("link"),
+    versionsId: integer("versions_id").default(1),
 
     workArrangement: text("work_arrangement").notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -66,17 +67,27 @@ export const AssessmentsRelations = relations(Assessments, ({ one, many }) => ({
         fields: [Assessments.companyId],
         references: [Users.id],
     }),
-    questions: many(Questions),
-    Candidates: many(Candidates),
-    CandidatesInfo: many(CandidateInfo),
+    versions: one(versions, {
+        fields: [Assessments.versionsId],
+        references: [versions.id],
+    }),
 }));
-
+export const versions = pgTable("versions", {
+    id: serial("id").primaryKey(),
+    name: text("name").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+export const versionsRelations = relations(versions, ({ many }) => ({
+    Assessments: many(Assessments),
+}))
 export const Tests= pgTable("Tests", {
     id: serial("id").primaryKey(),
     title: text("title").notNull(),
     duration: bigint("duration",{mode:"number"}).default(600).notNull(),
     questionsCount: integer("questions_count").notNull(),
     generator: text("generator").notNull().default("ai").notNull(),
+    
 testType: text("test_type").notNull(),
     description: text("description").notNull(),
     assessmentsId: integer("assessments_id").notNull(),
@@ -90,6 +101,11 @@ export const TestsRelations = relations(Tests, ({ one,many }) => ({
         references: [Assessments.id],
     }),
    MultipleChoicesQuestions: many(MultipleChoicesQuestions),
+  
+ 
+  
+
+   
 
   }));
 
@@ -160,6 +176,7 @@ export const MultipleChoicesQuestions= pgTable("MultipleChoicesQuestions", {
     id: serial("id").primaryKey(),
    question: text("question").notNull(),
    description: text("description").notNull().default(""),
+
    type: text("type").notNull(),
    label: text("label").array(),
    data: text("data").array(),

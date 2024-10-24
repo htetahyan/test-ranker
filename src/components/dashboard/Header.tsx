@@ -31,8 +31,8 @@ export default function Header({ user }: { user: SelectUsers }) {
       </NavbarContent>
 
       <NavbarContent as="div" justify="end">
-        <Dropdown placement="bottom-end">
-          <DropdownTrigger>
+     
+  <Link href="/dashboard/my-settings">  
             <Avatar
               isBordered
               as="button"
@@ -42,20 +42,8 @@ export default function Header({ user }: { user: SelectUsers }) {
               fallback={user.name?.charAt(0)}
               size="sm"
              // You can replace this with user profile image URL if available
-            />
-          </DropdownTrigger>
-          <DropdownMenu aria-label="Profile Actions" variant="flat">
-            <DropdownItem key="profile" className="h-14 gap-2">
-              <p className="font-semibold">Signed in as</p>
-              <p className="font-semibold">{user.email}</p>
-            </DropdownItem>
-            <DropdownItem key="settings">My Settings</DropdownItem>
-            
-            <DropdownItem key="logout" color="danger">
-              Log Out
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
+            /></Link>
+       
       </NavbarContent>
     </Navbar>
   );

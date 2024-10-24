@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS "Assessments" (
 	"job_role" text NOT NULL,
 	"company_id" integer NOT NULL,
 	"link" text,
+	"versions_id" integer DEFAULT 1,
 	"work_arrangement" text NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "Assessments_unique_id_unique" UNIQUE("unique_id")
@@ -168,6 +169,13 @@ CREATE TABLE IF NOT EXISTS "Users" (
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "Users_email_unique" UNIQUE("email")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "versions" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"name" text NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 DO $$ BEGIN

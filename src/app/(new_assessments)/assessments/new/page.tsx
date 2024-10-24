@@ -1,12 +1,13 @@
-import AddTest from '@/components/assessments/AddTest'
-import { SelectAssessments } from '@/db/schema/schema'
+'use client'
+import dynamic from 'next/dynamic'
 import React from 'react'
+const AddTest=dynamic(()=>import('@/components/assessments/AddTest'),{ssr:false})
 
 const page = () => {
-const assessment:any=null
+
   return (
     <div>
-       <AddTest assessments={assessment} />
+       <AddTest assessments={null} />
       
     </div>
   )

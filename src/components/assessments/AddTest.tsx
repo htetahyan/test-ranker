@@ -1,5 +1,4 @@
 'use client';
-
 import { jobsArray } from "@/utils/jobs";
 import { Button, Input, Select, SelectItem } from "@nextui-org/react";
 import { useState } from "react";
@@ -8,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { IoMdClock } from "react-icons/io";
 import { MdEventNote } from "react-icons/md";
 import * as Yup from 'yup';
-import { useCreateNewAssessmentMutation } from "@/quries/BaseQuery";
+import { useCreateNewAssessmentMutation, useEditAssessmentMutation } from "@/quries/BaseQuery";
 import JobRoleInput from "./AutoCompleteInput";
 import AutocompleteInput from "./AutoCompleteInput";
 import { SelectAssessments } from "@/db/schema/schema";
@@ -20,11 +19,13 @@ const validationSchema = Yup.object().shape({
   workArrangement: Yup.string().required('Work Arrangement is required'),
 });
 
-const AddTest = ({assessments}: {assessments: SelectAssessments }) => {
+const AddTest = ({assessments}: {assessments: SelectAssessments|null }) => {
   const router = useRouter();
   const [filteredJobs, setFilteredJobs] = useState<string[]>([]);
+  router.prefetch(`/assessments/${assessments?.id}/edit/tests`);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
 const [mutate,{isLoading}]=useCreateNewAssessmentMutation()
+const [editMutate,{isLoading:editLoading}]=useEditAssessmentMutation()
   const formik = useFormik({
     initialValues: {
       name: assessments?.name ?? '',
@@ -32,12 +33,16 @@ const [mutate,{isLoading}]=useCreateNewAssessmentMutation()
       jobLocation: assessments?.jobLocation ?? '',
       workArrangement: assessments?.workArrangement ?? '',
     },
+
     validationSchema,
     onSubmit: async(values) => {
-   const res= await  mutate({name:values.name,jobRole:values.jobRole,jobLocation:values.jobLocation,workArrangement:values.workArrangement}).unwrap()
- 
-    
-      router.push(`/assessments/${res}/edit/tests`);
+  if(assessments!==null){ 
+  const res= await editMutate({assessmentId:assessments.id,name:values.name,jobRole:values.jobRole,jobLocation:values.jobLocation,workArrangement:values.workArrangement}).unwrap()
+    if(res.message==="success"){
+      router.push(`/assessments/${assessments.id}/edit/tests`)}
+  }else {
+    const res= await  mutate({name:values.name,jobRole:values.jobRole,jobLocation:values.jobLocation,workArrangement:values.workArrangement}).unwrap()
+      router.push(`/assessments/${res}/edit/tests`);}
     },
   });
 
@@ -104,20 +109,22 @@ const exit=()=>{
                 />
               ) : (
                 <Select
-                  isInvalid={!!(formik.errors[field.name as keyof typeof formik.errors] && formik.touched[field.name as keyof typeof formik.touched])}
-                  errorMessage={formik.errors[field.name as keyof typeof formik.errors]}
-                  selectionMode={field?.mode ?? "single"}
-                  label={`Select ${field.label}`}
-                  value={formik.values[field.name as keyof typeof formik.values]}
-                  onChange={formik.handleChange}
-                  name={field.name}
-                >
-                  {(field.options || []).map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </Select>
+                isInvalid={!!(formik.errors[field.name as keyof typeof formik.errors] && formik.touched[field.name as keyof typeof formik.touched])}
+                errorMessage={formik.errors[field.name as keyof typeof formik.errors]}
+                selectionMode={field.mode ?? "single"}
+                label={`Select ${field.label}`}
+                defaultSelectedKeys={[formik.values[field.name as keyof typeof formik.values]]} // Should be an array for "multiple"
+                value={formik.values[field.name as keyof typeof formik.values]}
+                onSelectionChange={(keys) => formik.setFieldValue(field.name, Array.from(keys))}
+                name={field.name}
+              >
+                {(field.options || []).map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </Select>
+              
               )}
             </div>
           ))}

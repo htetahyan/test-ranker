@@ -29,12 +29,12 @@ try {
     case "job description":
       const prompt = generatePrompt(description,questionsCount);
     
-    return generate({prompt,title,description,assessmentId,duration,questionsCount,testType})
+    return generate({prompt,title,description:description,assessmentId,duration,questionsCount,testType})
 
     break;
   case "pdf":
     const pdfPrompt = generatePrompt(pdf,questionsCount)
-  return generate({prompt:pdfPrompt,title,description,assessmentId,duration,questionsCount,testType})
+  return generate({prompt:pdfPrompt,title,description:pdf,assessmentId,duration,questionsCount,testType})
 break;
 case"link":
  const response=await fetch(link)
@@ -45,7 +45,7 @@ console.log(text);
 
  
  const linkPrompt = generatePrompt(text,questionsCount)
-return generate({prompt:linkPrompt,title,description,assessmentId,duration,questionsCount,testType})
+return generate({prompt:linkPrompt,title,description:text,assessmentId,duration,questionsCount,testType})
   }
 
   
@@ -89,7 +89,7 @@ const generate=async({prompt,title,description,assessmentId,duration,questionsCo
   description:string,assessmentId:string,duration:string,questionsCount:string,testType:string
 })=>{
   const array=await main(prompt) as any
-  console.log('array',array);
+  
   
   const testId=await createNewTest({title,description,assessmentId,duration,questionsCount,testType} as any)
   

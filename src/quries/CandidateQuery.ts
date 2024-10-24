@@ -7,7 +7,7 @@ const CandidateQuery=baseApi.injectEndpoints({
                 url: '/api/candidate/new',
                 method: 'POST',
                 body:JSON.stringify(body)
-            })
+            }),
         }),
         signCandidate: builder.mutation({
 

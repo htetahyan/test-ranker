@@ -1,0 +1,17 @@
+.draggableItem {
+    padding: 10px;
+    width: fit;
+    height: 100px;
+    margin: 5px;
+   background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: move; /* Change cursor to indicate drag action */
+    user-select: none; /* Prevent text selection during drag */
+  }
+  
+  .sortableDrag {
+    opacity: 0.5; /* Optional: give feedback during drag */
+  }
+  
