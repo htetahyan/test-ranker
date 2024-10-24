@@ -55,7 +55,7 @@ const [mutate,{isLoading}]=useAccountMutation()
   };
 
   return (
-    <div className="flex flex-col w-full h-screen items-center justify-center">
+    <div className="flex flex-col w-full h-screen items-center bg-white justify-center">
       <Card className="max-w-full w-[500px] h-fit">
         <CardBody className="overflow-hidden">
           <Tabs
