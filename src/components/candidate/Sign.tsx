@@ -35,7 +35,7 @@ const Sign = ({ candidate ,uniqueId}: { candidate: any, uniqueId: string }) => {
     console.log(res);
     
     if( res.message==="success"){
-        router.push(`/candidate/${uniqueId}/${candidate.generatedUrl}/tests`)
+        router.push(`/candidate/${uniqueId}/${candidate.generatedUrl}/tests/1`)
     }
 
   }

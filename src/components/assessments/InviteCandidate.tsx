@@ -4,14 +4,15 @@ import React from 'react'
 import { RiSendPlaneFill } from 'react-icons/ri'
 import { TbDotsVertical } from "react-icons/tb";
 import {Tabs, Tab, Card, CardBody} from "@nextui-org/react";
-import { SelectAssessments } from '@/db/schema/schema';
+import { SelectAssessments, SelectVersions } from '@/db/schema/schema';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useCreateNewCandidateMutation } from '@/quries/CandidateQuery';
 import { VersionModal } from './version/VersionModal';
-const InviteCandidate = ({assessment}:{assessment:SelectAssessments}) => {
+const InviteCandidate = ({versionId,assessment,version}:{versionId:number,assessment:SelectAssessments,version:SelectVersions[]}) => {
     const {onOpen,isOpen,onOpenChange}=useDisclosure()
-  return (
+const myVersion=version.find((v)=>v.id===versionId)
+    return (
     <div className='flex  w-full items-center h-[10vh] justify-end px-4'>
       <Button onClick={onOpen} color='secondary'  endContent={<RiSendPlaneFill/>} variant='solid'   className='mr-6'>
       Invite</Button>
@@ -20,20 +21,22 @@ const InviteCandidate = ({assessment}:{assessment:SelectAssessments}) => {
     {(onClose)=>(
         <>
         <ModalBody>
-           <InviteTabs assessment={assessment}/>
+           <InviteTabs versionId={versionId} assessment={assessment} version={myVersion}/>
             </ModalBody>
         </>
     )}
 </ModalContent>
       </Modal>
-      <VersionModal/>
+      <VersionModal versionId={versionId} version={version}/>
     </div>
   )
 }
 
 export default InviteCandidate
 
-export function InviteTabs({assessment}:{assessment:SelectAssessments}) {
+export function InviteTabs({versionId,version,assessment}:{versionId:number,version:any,assessment:SelectAssessments}) {
+ const uniqueId=version.uniqueId
+    console.log(version,uniqueId,'')
   return (
     <div className="flex w-full h-[40vh] flex-col">
       <Tabs aria-label="Options">
@@ -41,7 +44,7 @@ export function InviteTabs({assessment}:{assessment:SelectAssessments}) {
           <Card>
             <CardBody className='flex flex-col gap-4'>
               <h1>Public Url</h1>
-              <p className='text-blue-500'>{process.env.NEXT_PUBLIC_URL+'/candidate/'+assessment?.uniqueId+'/intro'}</p>
+              <p className='text-blue-500'>{process.env.NEXT_PUBLIC_URL+'/candidate/'+uniqueId+'/intro'}</p>
               <Button  variant='solid' className=' text-white w-fit'>Copy</Button>
             </CardBody>
           </Card>  
@@ -50,7 +53,7 @@ export function InviteTabs({assessment}:{assessment:SelectAssessments}) {
           <Card>
             <CardBody>
 
-<GenerateInviteUrl assessment={assessment}/>            </CardBody>
+<GenerateInviteUrl versionId={versionId}/>            </CardBody>
           </Card>  
         </Tab>
         <Tab key="videos" title="batch invite">
@@ -68,18 +71,18 @@ const validationSchema = Yup.object().shape({
   fullName: Yup.string().required('Name is required').min(3, 'Name is too short').trim("white spaces are not allowed").strict(true),
   email: Yup.string().email('Invalid email').required('Email is required').trim("white spaces are not allowed").strict(true),
 })
-export const GenerateInviteUrl = ({assessment}:{assessment:SelectAssessments}) => {
+export const GenerateInviteUrl = ({versionId}:{versionId:number}) => {
   const [mutate]=useCreateNewCandidateMutation()
   const [candidates,setCandidates]=React.useState<{fullName:string,email:string,generatedUrl:string}[]>([])
   const formik=useFormik({
     initialValues:{
-fullName:'',      email:'',assessmentId:assessment?.id
+fullName:'',      email:'',versionId:versionId
     },
     validationSchema,
     onSubmit:async()=>{
      const res= await mutate(formik.values).unwrap()
      if(res.message==="success"){
-       setCandidates([...candidates,{fullName:formik.values.fullName,email:formik.values.email,generatedUrl:process.env.NEXT_PUBLIC_URL+'/candidate/'+assessment?.uniqueId+'/'+res.generatedUrl}])
+       setCandidates([...candidates,{fullName:formik.values.fullName,email:formik.values.email,generatedUrl:process.env.NEXT_PUBLIC_URL+'/candidate/'+assessment?.id+'/'+res.generatedUrl}])
      }
     }
   })
@@ -111,53 +114,6 @@ name='email' label='Email' onChange={formik.handleChange} value={formik.values.e
     </div>
   )
 }
-const rows = [
-  {
-    key: "1",
-    name: "Tony Reichert",
-    role: "CEO",
-    status: "Active",
-  },
-  {
-    key: "2",
-    name: "Zoey Lang",
-    role: "Technical Lead",
-    status: "Paused",
-  },
-  {
-    key: "3",
-    name: "Jane Fisher",
-    role: "Senior Developer",
-    status: "Active",
-  },
-  {
-    key: "4",
-    name: "William Howard",
-    role: "Community Manager",
-    status: "Vacation",
-  },
-  {
-    key: "5",
-    name: "William Howard",
-    role: "Community Manager",
-    status: "Vacation",
-  }, {
-    key: "6",
-    name: "William Howard",
-    role: "Community Manager",
-    status: "Vacation",
-  }, {
-    key: "7",
-    name: "William Howard",
-    role: "Community Manager",
-    status: "Vacation",
-  }, {
-    key: "8",
-    name: "William Howard",
-    role: "Community Manager",
-    status: "Vacation",
-  },
-];
 
 const columns = [
   {

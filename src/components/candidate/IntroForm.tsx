@@ -4,7 +4,7 @@ import * as Yup from 'yup'
 import React from 'react'
 import { useFormik } from 'formik'
 import { Button, Checkbox, Input } from '@nextui-org/react'
-import { SelectAssessments } from '@/db/schema/schema'
+import { SelectAssessments, SelectVersions } from '@/db/schema/schema'
 
 import { useRouter } from 'next/navigation'
 import { Router } from 'next/router'
@@ -24,7 +24,7 @@ const validationSchema = Yup.object().shape({
   check: Yup.boolean().oneOf([true], 'You must accept that the information is correct')
 })
 
-const IntroForm = ({ assessment }: { assessment: SelectAssessments }) => {
+const IntroForm = ({ assessment ,version}: { assessment: SelectAssessments,version:SelectVersions }) => {
   const router = useRouter()
   const [mutate,{isLoading}]=useCreateNewCandidateMutation()
   const formik = useFormik({
@@ -36,9 +36,9 @@ const IntroForm = ({ assessment }: { assessment: SelectAssessments }) => {
     },
     onSubmit: async (values) => {
       // Handle form submission
-      const res=await mutate({fullName:values.fullName,email:values.email,assessmentId:assessment?.id}).unwrap()
+      const res=await mutate({fullName:values.fullName,email:values.email,assessmentId:assessment?.id,versionId:version?.id}).unwrap()
       if( res.message==="success"){
-        router.push(`/candidate/${assessment?.uniqueId}/${res.generatedUrl}/sign`)
+        router.push(`/candidate/${version?.uniqueId}/${res.generatedUrl}/sign`)
     }
     },
     validationSchema: validationSchema

@@ -21,7 +21,7 @@ if(alreadyAnswered.length>0) return NextResponse.json({message:"this question ha
 
     await db.insert(Answers).values({
         candidateId:candidate[0].id,
-        type:'question',
+        type:file? 'file':'essay',
         content:answer,
         questionId,
     

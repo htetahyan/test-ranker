@@ -1,13 +1,13 @@
 import db from "@/db";
 import { Questions } from "@/db/schema/schema";
-import { getQuestionsFromAssessmentId } from "@/service/assessments.service";
+import { getQuestionsFromVersionId} from "@/service/assessments.service";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET=async (req:NextRequest, props:{params: Promise<{id:string}>}) => {
     const params = await props.params;
     try {
-        const assessments=await getQuestionsFromAssessmentId({assessmentId:Number(params.id)})
+        const assessments=await getQuestionsFromVersionId({versionId:Number(params.id)})
         return NextResponse.json({assessments},{status:200})
         
     } catch (error:any) {

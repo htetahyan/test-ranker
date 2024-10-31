@@ -1,12 +1,12 @@
 // components/test.tsx
-'use client'; // Ensure this is a client component
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import QuizPage from '../assessments/QuizPage';
 
-const Test = ({ response ,candidate_uniqueId,uniqueId}: { response: any ,candidate_uniqueId:string,uniqueId:string}) => {
+const Test = ({ response, candidate_uniqueId, uniqueId, order }: { order: number, response: any, candidate_uniqueId: string, uniqueId: string }) => {
   const [countdown, setCountdown] = useState(10);
-  const [showQuiz, setShowQuiz] = useState(false);
+  const [showTest, setShowTest] = useState(false);
 
   useEffect(() => {
     if (countdown > 0) {
@@ -14,24 +14,25 @@ const Test = ({ response ,candidate_uniqueId,uniqueId}: { response: any ,candida
         setCountdown(prev => prev - 1);
       }, 1000);
 
-      return () => clearInterval(timer); // Clear interval on cleanup
+      return () => clearInterval(timer);
     } else {
-      setShowQuiz(true); // Show quiz when countdown reaches 0
+      setShowTest(true);
     }
   }, [countdown]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-400 to-purple-600 text-white">
-      {showQuiz ? (
-        <QuizPage questions={response}  uniqueId={uniqueId}  candidate_uniqueId={candidate_uniqueId} />
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-800 to-gray-900 text-white">
+      {showTest ? (
+        <QuizPage questions={response} order={order} uniqueId={uniqueId} candidate_uniqueId={candidate_uniqueId} />
       ) : (
-        <div className="flex flex-col items-center bg-white text-black p-8 rounded-lg shadow-lg">
-          <h1 className="text-3xl font-bold mb-4">Get Ready!</h1>
-          <p className="text-xl mb-2">Starting Quiz in:</p>
-          <div className="text-6xl font-extrabold mb-4">{countdown}</div>
-          <p className="text-lg">Stay focused and good luck!</p>
-          <div className="flex space-x-4 mt-4">
-            <span className="inline-block px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition duration-200">
+        <div className="flex flex-col items-center bg-gray-100 text-gray-900 p-10 rounded-lg shadow-lg max-w-lg">
+          <h1 className="text-xl font-medium text-gray-600">Test Number {order}</h1>
+          <h1 className="text-4xl font-bold mb-4 text-gray-800">Prepare Yourself</h1>
+          <p className="text-lg mb-2 text-gray-700">The test will begin in:</p>
+          <div className="text-6xl font-bold text-red-600 mb-4">{countdown}</div>
+          <p className="text-base text-gray-600">Focus and be prepared to begin.</p>
+          <div className="mt-6">
+            <span className="inline-block px-5 py-2 bg-gray-800 text-white font-semibold rounded-md shadow transition duration-200 transform hover:bg-gray-700">
               Countdown
             </span>
           </div>

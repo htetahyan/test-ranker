@@ -1,5 +1,5 @@
 {
-  "id": "63d06522-af0e-4f28-97c2-2c7d1b489b72",
+  "id": "97f3b5be-b0bd-466c-a43a-2813c7a98270",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -121,24 +121,12 @@
           "primaryKey": false,
           "notNull": true
         },
-        "unique_id": {
-          "name": "unique_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
-        },
-        "job_location": {
-          "name": "job_location",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
         },
         "job_role": {
           "name": "job_role",
@@ -149,25 +137,6 @@
         "company_id": {
           "name": "company_id",
           "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "link": {
-          "name": "link",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "versions_id": {
-          "name": "versions_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 1
-        },
-        "work_arrangement": {
-          "name": "work_arrangement",
-          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -182,15 +151,7 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "Assessments_unique_id_unique": {
-          "name": "Assessments_unique_id_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "unique_id"
-          ]
-        }
-      }
+      "uniqueConstraints": {}
     },
     "public.CandidateInfo": {
       "name": "CandidateInfo",
@@ -250,15 +211,16 @@
           "primaryKey": false,
           "notNull": true
         },
+        "version_id": {
+          "name": "version_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
         "first_language": {
           "name": "first_language",
           "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "assessment_id": {
-          "name": "assessment_id",
-          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -331,11 +293,12 @@
           "notNull": true,
           "default": "'pending'"
         },
-        "assessment_id": {
-          "name": "assessment_id",
+        "version_id": {
+          "name": "version_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": 1
         },
         "created_at": {
           "name": "created_at",
@@ -578,6 +541,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "test_type": {
+          "name": "test_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -594,21 +563,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "MultipleChoicesQuestions_test_id_Tests_id_fk": {
-          "name": "MultipleChoicesQuestions_test_id_Tests_id_fk",
-          "tableFrom": "MultipleChoicesQuestions",
-          "tableTo": "Tests",
-          "columnsFrom": [
-            "test_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "cascade"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -723,18 +678,19 @@
           "notNull": true,
           "default": 300
         },
+        "version_id": {
+          "name": "version_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
         "order": {
           "name": "order",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "default": 1
-        },
-        "assessment_id": {
-          "name": "assessment_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
         },
         "created_at": {
           "name": "created_at",
@@ -830,6 +786,70 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "public.SessionData": {
+      "name": "SessionData",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "assessment_name": {
+          "name": "assessment_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "job_role": {
+          "name": "job_role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "generateBy": {
+          "name": "generateBy",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "question_count": {
+          "name": "question_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "session_id": {
+          "name": "session_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "duration": {
+          "name": "duration",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.Tests": {
       "name": "Tests",
       "schema": "",
@@ -875,12 +895,6 @@
         "description": {
           "name": "description",
           "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "assessments_id": {
-          "name": "assessments_id",
-          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -967,8 +981,8 @@
         }
       }
     },
-    "public.versions": {
-      "name": "versions",
+    "public.VersionAndTest": {
+      "name": "VersionAndTest",
       "schema": "",
       "columns": {
         "id": {
@@ -977,9 +991,28 @@
           "primaryKey": true,
           "notNull": true
         },
-        "name": {
-          "name": "name",
+        "test_id": {
+          "name": "test_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version_id": {
+          "name": "version_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
           "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'GENERATED'"
+        },
+        "assessment_id": {
+          "name": "assessment_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -999,9 +1032,113 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "VersionAndTest_test_id_Tests_id_fk": {
+          "name": "VersionAndTest_test_id_Tests_id_fk",
+          "tableFrom": "VersionAndTest",
+          "tableTo": "Tests",
+          "columnsFrom": [
+            "test_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "VersionAndTest_version_id_versions_id_fk": {
+          "name": "VersionAndTest_version_id_versions_id_fk",
+          "tableFrom": "VersionAndTest",
+          "tableTo": "versions",
+          "columnsFrom": [
+            "version_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "VersionAndTest_assessment_id_Assessments_id_fk": {
+          "name": "VersionAndTest_assessment_id_Assessments_id_fk",
+          "tableFrom": "VersionAndTest",
+          "tableTo": "Assessments",
+          "columnsFrom": [
+            "assessment_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
+    },
+    "public.versions": {
+      "name": "versions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "assessment_id": {
+          "name": "assessment_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "is_published": {
+          "name": "is_published",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "unique_id": {
+          "name": "unique_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "versions_unique_id_unique": {
+          "name": "versions_unique_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "unique_id"
+          ]
+        }
+      }
     }
   },
   "enums": {

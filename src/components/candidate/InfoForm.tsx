@@ -2,13 +2,14 @@
 
 import { SelectAssessments, SelectCandidates } from '@/db/schema/schema';
 import { useUploadInfoMutation } from '@/quries/CandidateQuery';
-import { Button, Input } from '@nextui-org/react';
+import { Button, Input, Select, SelectItem } from '@nextui-org/react';
 import { useFormik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+
 import * as Yup from 'yup';
 
-const CandidateInfoForm = ({ assessment, candidate }: { assessment: SelectAssessments, candidate: SelectCandidates }) => {
+const CandidateInfoForm = ({ versionId, candidate }: { versionId: number, candidate: SelectCandidates }) => {
   const [resume, setResume] = useState<any>(null);
 const [mutate,{isLoading}]=useUploadInfoMutation()
   const validationSchema = Yup.object({
@@ -32,7 +33,7 @@ const router=useRouter()
       birthDate: '',
       countryOfResidence: '',
       countryOfOrigin: '',
-      assessmentsId: assessment?.id,
+      versionId,
       candidateId: candidate.id,
     },
     validationSchema,
@@ -48,8 +49,8 @@ const router=useRouter()
      resume && formData.append('resume', resume);
 
  await mutate({formData}).unwrap().finally(() => {
-   router.push('/candidate/success');
- }); 
+ router.push('/candidate/success')
+ });
      /*  const res=await mutate({values,resume}) */
 
       // Handle form submission response
@@ -73,44 +74,46 @@ const router=useRouter()
   ];
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
+    <div className="max-w-5xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Candidate Information</h1>
-      <form onSubmit={formik.handleSubmit} className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <form onSubmit={formik.handleSubmit} className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {formFields.map((field, index) => (
           <div key={index}>
             <label className="block text-sm font-medium">{field.label}</label>
             {field.type === 'select' ? (
-              <select
-                name={field.name}
-                value={formik.values[field.name as keyof typeof formik.values]}
-                onChange={formik.handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              >
-                {field.options!.map(option => (
-                  <option key={option} value={option}>
-                    {option.charAt(0).toUpperCase() + option.slice(1)}
-                  </option>
-                ))}
-              </select>
+           <Select
+           isInvalid={!!(formik.touched[field.name as keyof typeof formik.values] && formik.errors[field.name as keyof typeof formik.values])}
+           errorMessage={formik.errors[field.name as keyof typeof formik.values]}
+           name={field.name}
+           selectedKeys={formik.values[field.name as keyof typeof formik.values] ? [formik.values[field.name as keyof typeof formik.values]] : []}
+           onChange={(e) => formik.setFieldValue(field.name, e.target.value as string)}
+           className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+         >
+           {field.options!.map((option) => (
+             <SelectItem key={option} value={option}>
+               {option.charAt(0).toUpperCase() + option.slice(1)}
+             </SelectItem>
+           ))}
+         </Select>
+         
             ) : (
               <Input
-
+isInvalid={!!(formik.touched[field.name as keyof typeof formik.values] && formik.errors[field.name as keyof typeof formik.values])}
                 name={field.name}
+              errorMessage={formik.errors[field.name as keyof typeof formik.values]}
                 type={field.type}
                 value={formik.values[field.name as keyof typeof formik.values] as string}
                 onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
                 className="mt-1 block w-full border border-gray-300 rounded-md p-2"
               />
             )}
-            {formik.touched[field.name as keyof typeof formik.values] && formik.errors[field.name as keyof typeof formik.values] ? (
-              <div className="text-red-500 text-sm">{formik.errors[field.name as keyof typeof formik.values]}</div>
-            ) : null}
+      
           </div>
         ))}
         <div className="col-span-2">
           <h1>Resume(optional)</h1>
-        <Input type="file" name="resume" onChange={(e) => resumeChange(e!.target!.files![0]!)} />
+        <Input type="file" name="resume" 
+        onChange={(e) => resumeChange(e!.target!.files![0]!)} />
         </div>
         <div className="col-span-2">
           <Button

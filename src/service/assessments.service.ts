@@ -1,34 +1,42 @@
 import db from "@/db"
-import { Assessments, Candidates, MultipleChoicesQuestions, Options, Questions, SelectMultipleChoicesQuestions, SelectTests, Tests } from "@/db/schema/schema"
+import { Assessments, Candidates, MultipleChoicesQuestions, Options, Questions, SelectAssessments, SelectMultipleChoicesQuestions, SelectTests, Tests, VersionAndTest, versions } from "@/db/schema/schema"
 import { and, count, eq, or } from "drizzle-orm"
-import { prepareMultipleQuestions, prepareOptions, prepareTest } from "./prepare.service"
+import { prepareMultipleQuestions } from "./prepare.service"
 import { unstable_cache } from "next/cache"
 import { option } from "framer-motion/client"
 import { v4 as uuidv4, } from 'uuid';
-export const createNewAssessment=async({name,companyId,jobLocation,jobRole,workArrangement}:{ name:string,companyId:number,jobLocation:string,jobRole:string,workArrangement:string})=>{
+import { main } from "./openai.service"
+import { extractTextsFromHtml, generate } from "./generate.service"
+import { redirect } from "next/navigation"
+export const createNewAssessment=async({name,companyId,jobRole}:{ name:string,companyId:number,jobRole:string})=>{
 
     const id=await db.insert(Assessments).values({
-uniqueId:uuidv4(),
+
         name,
         companyId,
-        jobLocation,
+       
+
         jobRole,
-        workArrangement
+       
         
     
     }).returning({id:Assessments.id})
-    return id[0].id
+    const version=await db.insert(versions).values({assessmentId:id[0].id,name:'default',isPublished:false,uniqueId:uuidv4()}).returning({id:versions.id})
+    return {id:id[0].id,versionId:version[0].id}
 }
-export const getTestsFromAssessmentId=async({assessmentId}:{assessmentId:number})=>{
+export const getTestsFromAssessmentId=async({assessmentId,versionId}:{assessmentId:number,versionId:number})=>{
 try{
     console.log(assessmentId,'assessmentId');
+    const  testId=await getGenerateTypeTestFromVersionAndTest({versionId,assessmentId})
     
-    
-    const arrays= await db.select().from(Tests).where(eq(Tests.assessmentsId,assessmentId))
+    const arrays=await db.select().from(Tests).where(eq(Tests.id,testId))
     const assessment=await db.select().from(Assessments).where(eq(Assessments.id,assessmentId))
+    console.log(arrays,'arrays');
     
     return {
         tests:arrays[0],
+     
+        
         assessment}
 
 }
@@ -39,25 +47,41 @@ catch(err:any){
 }
    
 }
-export const createNewTest=async({title,description,assessmentId,questionsCount,testType,duration}:any)=>{
+const createVersionAndTest=async({versionId,testId,assessmentId}:{testId:number,versionId:number,assessmentId:number})=>{
+  const isExist = await db.select().from(VersionAndTest).where(and(eq(VersionAndTest.versionId,versionId),eq(VersionAndTest.testId,testId)))
+  if(isExist.length>0) return
+  await db.insert(VersionAndTest).values({testId,versionId,assessmentId})
+}
+export const createNewTest=async({description,questionsCount,duration,versionId,title,assessmentId}:{assessmentId:number,title:string,description:string,questionsCount:number,duration:number,versionId:number})=>{
 try{ 
+  
     const id=await db.insert(Tests).values({
-        title,
         description,
-        testType,
+        testType:'GENERATED',
         generator:"ai",
+        title,
       
         
-        duration:parseInt(duration as string),
-        questionsCount:parseInt(questionsCount as string),
+        duration:duration,
+        questionsCount:questionsCount,
 
-        assessmentsId:parseInt(assessmentId as string),
 
     }).returning({id:Tests.id})
+    await createVersionAndTest({versionId,testId:id[0].id,assessmentId})
     return id[0].id
 
 }catch(err:any){
     throw new Error(err.message)}
+}
+export const  getVersionAndTest=async({testId,versionId}:{testId:number,versionId:number})=>{
+   const versionAndTest=await db.select().from(VersionAndTest).where(and(eq(VersionAndTest.testId,testId),eq(VersionAndTest.versionId,versionId)))
+   return versionAndTest[0]
+}
+export const getGenerateTypeTestFromVersionAndTest=async({versionId,assessmentId}:{versionId:number,assessmentId:number})=>{
+  
+    const tests=await db.select().from(VersionAndTest).where(and(eq(VersionAndTest.versionId,versionId),eq(VersionAndTest.type,'GENERATED'),eq(VersionAndTest.assessmentId,assessmentId)))
+    return tests?.[0]?.testId?? null
+
 }
 export const createQuestionAndOptions = async ({
     testId,
@@ -89,6 +113,7 @@ export const createQuestionAndOptions = async ({
       const insertedQuestion = await db
         .insert(MultipleChoicesQuestions)
         .values({
+          testType: "GENERATED",
           question: question.title,
           description: question.description,
           type: question.type,
@@ -154,7 +179,7 @@ export const createQuestionAndOptions = async ({
       optionsData.forEach(option => {
         // Map option ID to its corresponding number
         const optionNumber = option.id; // Assuming option.id is 1, 2, 3, or 4
-        options[optionNumber] = option.option; // Assuming option.option contains the option text
+        options[optionNumber] = option.content; // Assuming option.option contains the option text
   
         // Determine if the option is correct and set it as the solution
         if (option.isCorrect) {
@@ -186,12 +211,13 @@ export type MultipleChoiceAndOptions = {
   solution: 1 | 2 | 3 | 4;
   test:SelectTests
 };
-export const getTestAndQuestions = async ({ id }: { id: number }) => {
+export const getTestAndQuestions = async ({ id, versionId }: { id: number, versionId: number }) => {
   try {
-    
+     const testId=await getGenerateTypeTestFromVersionAndTest({versionId,assessmentId:id})
+  console.log(testId,'testId',id,versionId);
   
   // Fetch the test data
-  const test = await db.select().from(Tests).where(eq(Tests.assessmentsId, id)).then((data) => data[0]);
+  const test = await db.select().from(Tests).where(eq(Tests.id, testId)).then((data) => data[0]);
 if(!test){
  throw new Error("No test created for this assessment yet")
 } 
@@ -294,26 +320,30 @@ const updateQuestionAndOptions = async (
 }
 }
 
-export const createNewQuestion = async ({question,type,assessmentId,description,duration}:{question:string,type:string,assessmentId:number,description:string,duration:number}) => {
+export const createNewQuestion = async ({versionId,question,type,assessmentId,description,duration}:{versionId:number,question:string,type:string,assessmentId:number,description:string,duration:number}) => {
   try{
-    const questionCount= await db.select({ count: count() }).from(Questions).where(eq(Questions.assessmentId,assessmentId));
-
-        await db.insert(Questions).values({
+    const questionCount= await db.select({ count: count() }).from(Questions).where(eq(Questions.versionId,versionId));
+      console.log(questionCount)
+    const newQuestion=    await db.insert(Questions).values({
+          
       question,
-      assessmentId,
-      duration:300,
+      versionId,
+      duration,
       description,
       type,order: questionCount[0].count+1
 
     })
+      console.log(newQuestion,'newQuestion')
+      return newQuestion
   }
   catch(e:any){
+      console.log(e.meaage)
     throw new Error(e.message)
   }
 }
-export const getQuestionsFromAssessmentId = async ({assessmentId}:{assessmentId:number}) => {
+export const getQuestionsFromVersionId = async ({versionId}:{versionId:number}) => {
   try{
-    const questions = await db.select().from(Questions).where(eq(Questions.assessmentId,assessmentId))
+    const questions = await db.select().from(Questions).where(eq(Questions.versionId,versionId))
     return questions
   }
   catch(e:any){
@@ -328,12 +358,92 @@ export const editQuestionAndOptions = async ({question,id,options}:{
 
   await updateQuestionAndOptions({question,id,options})
 }
-export const getAssesssmentRelatedInfo = async ({assessmentId,userId}:{assessmentId:number,userId:number}) => {
+export const getAssesssmentRelatedInfo = async ({versionId,assessmentId,userId}:{versionId:number,assessmentId:number,userId:number}) => {
   
   const assessment = await db.select().from(Assessments).where(and(eq(Assessments.id,assessmentId),eq(Assessments.companyId,userId)))
-  const tests = await db.select().from(Tests).where(eq(Tests.assessmentsId,assessment[0].id))
-  const candidates = await db.select().from(Candidates).where(eq(Candidates.assessmentId,assessment[0].id))
 
-  
-  return {assessment:assessment[0],tests:tests[0],candidates}
+ /* const tests = await versionAndTest.map(async (item) => {
+
+    const test = await db.select().from(Tests).where(eq(Tests.id, item.testId))
+    return test[0]
+  })*/
+  const candidates = await db.select().from(Candidates).where(eq(Candidates.versionId,versionId))
+ const versionArray=await db.select().from(versions).where(eq(versions.assessmentId,assessmentId))
+  return {assessment:assessment[0],candidates,versionId,version:versionArray}
 }
+export const isVersionAndAssessmentExist = async ({versionId,assessmentId}:{versionId:number,assessmentId:number}) => {
+  
+  const assessment = await db.select().from(Assessments).where(eq(Assessments.id,assessmentId))
+ const version=await db.select().from(versions).where(eq(versions.id,versionId))
+ const isIdentical=assessment[0].id===version[0].assessmentId
+return isIdentical 
+}
+export const generateMultipleChoiceQuestions = async ({assessment,content,questionsCount,versionId,duration,type,url}:{url:string,type:string,duration:number,versionId:number,assessment:SelectAssessments,content:string,questionsCount:number}) => {
+  const assessmentId=assessment?.id
+  const versionCount= await db.select({ count: count() }).from(versions).where(eq(versions.assessmentId,assessmentId));
+  const version=await db.insert(versions).values({assessmentId,name:`Version ${versionCount[0].count+1}`,isPublished:false,
+  }).returning({id:versions.id})
+  let desc;
+  if(type==='URL'){
+    const response=await fetch(url)
+    const data=await response.text()
+    console.log(data);
+     desc= extractTextsFromHtml(data)
+  }else{
+    desc=content}
+  const prompt=generatePrompt(desc,questionsCount)
+   await generate({prompt,assessmentId,duration,questionsCount:questionsCount,versionId:version[0].id,title:`Generated`})
+ redirect(`/assessment/${assessmentId}/${version[0].id}`)
+  
+}
+const generatePrompt = (content: string, questionsCount: number) => ` Please create exactly ${questionsCount}  multiple-choice questions for the following Job description:
+      [${content}].
+    
+      Each question should be structured as follows:  
+      [{
+        "question": {
+          "title": "What is the primary goal of the project?",
+          "description": "The company is engaging in a complex mission that involves the coordination of multiple teams, risk assessment, and high-level decision-making. The project involves critical operations that require careful monitoring and management to ensure successful outcomes.",
+          "type": "multiple-choice"
+        },
+        "options": {
+          "1": "Coordinating between teams.",
+          "2": "Risk mitigation.",
+          "3": "Achieving long-term objectives.",
+          "4": "All of the above."
+        },
+        "solution": 4
+      },
+      {
+        "question": {
+          "title": "Chart-Based Analysis of Project Performance",
+          "description": "Based on the performance metrics provided in the chart, which factor plays the most significant role in ensuring the overall success of the project, and why?",
+          "type": "pie",
+          "labels": ["Team Coordination", "Risk Management", "Timely Delivery"],
+          "data": [40, 30, 30],
+          "backgroundColor": ["#FF6384", "#36A2EB", "#FFCE56"]
+        },
+        "options": {
+          "1": "Team Coordination ensures streamlined processes across departments.",
+          "2": "Risk Management is critical in avoiding costly delays.",
+          "3": "Timely Delivery is essential to meeting customer expectations.",
+          "4": "All of the above are important, but a combination of Team Coordination and Timely Delivery is most critical."
+        },
+        "solution": 4
+      },
+      // Add more complex questions not more than ${questionsCount}
+      ]
+        *above is the example response for essay type question and chart type question. You must response in above format without extra things like command and any other things.
+    
+      * Ensure each question has a medium long and complex options.
+
+      * Questions should vary in difficulty, adjusting to the job description.
+      * At least 3 chart question must be included in 10 questions with proper labels, data, and backgroundColor.
+      * chart question should not simple like you can answer just by looking at chart.Make it complicate and use math.
+      * you can add more than three labels and data and backgroundColor, prefer more complicated.
+      * when you make a chart type question, make sure it must related to chart don't make non sense question and add chart type without proper explanation in title and description, also don't make question and description that options is too obvious to choose add some calculation or complex logic.
+      * for example don't ask kind of question that you can immediately know one you look at chart. example like this "Consider the following data represented in a bar chart: Training Effectiveness (40%), Policy Understanding (30%), Program Adoption (20%), and General Satisfaction (10%). Determine the area with the most significant impact." that too basic and too simple.
+      * The question types can be multiple-choice, pie, line, bar, or polar.
+      * Avoid simple descriptions or directly quoting the job description; instead, focus on critical thinking and analytical aspects.
+      * You may mention the company name if it appears in the description.
+`;

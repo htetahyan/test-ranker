@@ -1,50 +1,44 @@
 'use client';
-import { jobsArray } from "@/utils/jobs";
-import { Button, Input, Select, SelectItem } from "@nextui-org/react";
+import { Button, Input } from "@nextui-org/react";
 import { useState } from "react";
-import { ErrorMessage, useFormik } from "formik";
+import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
-import { IoMdClock } from "react-icons/io";
-import { MdEventNote } from "react-icons/md";
 import * as Yup from 'yup';
 import { useCreateNewAssessmentMutation, useEditAssessmentMutation } from "@/quries/BaseQuery";
-import JobRoleInput from "./AutoCompleteInput";
 import AutocompleteInput from "./AutoCompleteInput";
 import { SelectAssessments } from "@/db/schema/schema";
+import { jobsArray } from "@/utils/jobs";
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string().required('Name is required').min(3, 'Name is too short').trim("white spaces are not allowed").strict(true),
-  jobRole: Yup.string().required('Job Role is required').min(3, 'Job Role is too short').trim("white spaces are not allowed").strict(true),
-  jobLocation: Yup.string().required('Job Location is required'),
-  workArrangement: Yup.string().required('Work Arrangement is required'),
+  name: Yup.string().required('Name is required').min(3, 'Name is too short').trim("White spaces are not allowed").strict(true),
+  jobRole: Yup.string().required('Job Role is required').min(3, 'Job Role is too short').trim("White spaces are not allowed").strict(true),
 });
 
-const AddTest = ({assessments}: {assessments: SelectAssessments|null }) => {
-
- 
+const AddTest = ({ assessments }: { assessments: SelectAssessments | null }) => {
   const router = useRouter();
   const [filteredJobs, setFilteredJobs] = useState<string[]>([]);
- assessments && router.prefetch(`/assessments/${assessments?.id!}/edit/tests`);
+  assessments && router.prefetch(`/assessments/${assessments?.id!}/edit/tests`);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
-const [mutate,{isLoading}]=useCreateNewAssessmentMutation()
-const [editMutate,{isLoading:editLoading}]=useEditAssessmentMutation()
+  const [mutate, { isLoading }] = useCreateNewAssessmentMutation();
+  const [editMutate, { isLoading: editLoading }] = useEditAssessmentMutation();
+
   const formik = useFormik({
     initialValues: {
-      name: assessments!==null ? assessments?.name : '',
-      jobRole:assessments!==null ? assessments?.jobRole : '',
-      jobLocation:assessments!==null ? assessments?.jobLocation : '',
-      workArrangement:assessments!==null ? assessments?.workArrangement : '',
+      name: assessments ? assessments.name : '',
+      jobRole: assessments ? assessments.jobRole : '',
     },
-
     validationSchema,
-    onSubmit: async(values) => {
-  if(assessments!==null){ 
-  const res= await editMutate({assessmentId:assessments.id,name:values.name,jobRole:values.jobRole,jobLocation:values.jobLocation,workArrangement:values.workArrangement}).unwrap()
-    if(res.message==="success"){
-      router.push(`/assessments/${assessments.id}/edit/tests`)}
-  }else {
-    const res= await  mutate({name:values.name,jobRole:values.jobRole,jobLocation:values.jobLocation,workArrangement:values.workArrangement}).unwrap()
-      router.push(`/assessments/${res}/edit/tests`);}
+    onSubmit: async (values) => {
+      if (assessments) {
+        const res = await editMutate({ assessmentId: assessments.id, name: values.name, jobRole: values.jobRole }).unwrap();
+        if (res.message === "success") {
+          router.push(`/assessments/${assessments.id}/edit/tests`);
+        }
+      } else {
+        const res = await mutate({ name: values.name, jobRole: values.jobRole }).unwrap();
+        console.log(res);
+        router.push(`/assessments/${res.assessmentId}/${res.versionId}/edit/tests`);
+      }
     },
   });
 
@@ -52,9 +46,7 @@ const [editMutate,{isLoading:editLoading}]=useEditAssessmentMutation()
     const { value } = e.target;
     formik.handleChange(e);
     if (value.length > 0) {
-      const filtered = jobsArray.filter((job) =>
-        job.toLowerCase().includes(value.toLowerCase())
-      );
+      const filtered = jobsArray.filter((job) => job.toLowerCase().includes(value.toLowerCase()));
       setFilteredJobs(filtered);
       setShowSuggestions(true);
     } else {
@@ -62,77 +54,49 @@ const [editMutate,{isLoading:editLoading}]=useEditAssessmentMutation()
       setShowSuggestions(false);
     }
   };
-const exit=()=>{
-  router.back()
-}
+
   const handleJobSelect = (job: string) => {
     formik.setFieldValue('jobRole', job);
     setShowSuggestions(false);
   };
 
+  const exit = () => {
+    router.back();
+  };
+
   return (
     <div className="w-screen h-screen">
-      <form onSubmit={formik.handleSubmit} className="w-full h-full p-4">
+      <form onSubmit={formik.handleSubmit} className="w-full h-full p-4 flex flex-col">
         <div className="w-full flex items-center justify-between p-6 px-4 border-b-2">
-          <div>
-            <Input
-              variant="faded"
-              defaultValue="untitled assessments"
-              name="name"
-              isInvalid={!!(formik.errors.name && formik.touched.name)}
-              errorMessage={formik.errors.name}
-              value={formik.values.name}
-              onChange={formik.handleChange}
-            />
-          
-         
-          </div>
-          <Button onClick={exit} className="mt-2" color="primary" size="md">
-            exit
-          </Button>
+        <Button onClick={exit} className="mt-2 bg-black" color="primary" size="md">
+            Exit
+          </Button>  
         </div>
-        <h1 className="text-2xl font-bold p-6 px-4">Details</h1>
-        <div className="w-full grid grid-cols-2 gap-4 mt-6 justify-center gap-y-6">
-          {fields.map((field: { name: string, label: string, type: string,mode?: any, options?: { value: string, label: string }[] }) => (
-            <div className="flex flex-col items-center w-full" key={field.name}>
-              {field.name === "jobRole" ? (
-               <AutocompleteInput fieldName="jobRole" label="Job Role" handleInputChange={handleJobRoleChange} showSuggestions={showSuggestions} filteredSuggestions={filteredJobs} handleSelect={handleJobSelect} formik={formik}/>
-              ) : field.type === "text" ? (
-                <Input
-                  label={`Enter ${field.label}`}
-                  id={field.name}
-                  name={field.name}
-                  type={field.type}
-                  isInvalid={!!(formik.errors[field.name as keyof typeof formik.errors] && formik.touched[field.name as keyof typeof formik.touched])}
-                  errorMessage={formik.errors[field.name as keyof typeof formik.errors]}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values[field.name as keyof typeof formik.values]}
-                />
-              ) : (
-                <Select
-                isInvalid={!!(formik.errors[field.name as keyof typeof formik.errors] && formik.touched[field.name as keyof typeof formik.touched])}
-                errorMessage={formik.errors[field.name as keyof typeof formik.errors]}
-                selectionMode={field.mode ?? "single"}
-                label={`Select ${field.label}`}
-                defaultSelectedKeys={[formik.values[field.name as keyof typeof formik.values]]} // Should be an array for "multiple"
-                onSelectionChange={(keys) => formik.setFieldValue(field.name, Array.from(keys).join(''))} // Convert to string for single selection
-                name={field.name}
-              >
-                {(field.options || []).map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </Select>
-              
-              )}
-            </div>
-          ))}
+        <div className="flex flex-col gap-4 mt-6 items-center">
+        <Input
+        label="Assessment Name"
+            variant="faded"
+            defaultValue="untitled assessments"
+            name="name"
+            isInvalid={!!(formik.errors.name && formik.touched.name)}
+            errorMessage={formik.errors.name}
+            value={formik.values.name}
+            onChange={formik.handleChange}
+          />
+         
+          <AutocompleteInput
+            fieldName="jobRole"
+            label="Job Role"
+            handleInputChange={handleJobRoleChange}
+            showSuggestions={showSuggestions}
+            filteredSuggestions={filteredJobs}
+            handleSelect={handleJobSelect}
+            formik={formik}
+          />
         </div>
         <div className="w-full flex justify-end">
-          <Button type="submit" className="mt-2" color="secondary" size="md">
-            Add
+          <Button disabled={isLoading || editLoading} isLoading={isLoading || editLoading} type="submit" className="mt-2 bg-black" color="secondary" size="md">
+            {assessments ? 'Edit' : 'Add'}
           </Button>
         </div>
       </form>
@@ -141,30 +105,3 @@ const exit=()=>{
 };
 
 export default AddTest;
-
-const fields = [
-  { name: "jobRole", label: "Job Role", type: "text" },
- 
-  {
-    name: "jobLocation",
-    label: "Job Location",
-    type: "dropDown",
-    options: [
-      { label: "EMCA", value: "EMCA" },
-      { label: "EUROPE", value: "EUROPE" },
-    ],
-    mode: "multiple",
-  },
-  {
-    name: "workArrangement",
-    label: "Work Arrangement",
-    type: "dropDown",
-    options: [
-      { label: "remote", value: "remote" },
-      { label: "hybrid", value: "hybrid" },
-      { label: "onsite", value: "onsite" },
-    ],
-    mode: "multiple",
-  },
-];
-

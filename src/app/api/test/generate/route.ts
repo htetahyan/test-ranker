@@ -1,40 +1,41 @@
   import db from "@/db"
 import { MultipleChoiceAnswers, MultipleChoicesQuestions, Options, Tests } from "@/db/schema/schema"
-import { createNewTest, createQuestionAndOptions } from "@/service/assessments.service"
+import { createNewTest, createQuestionAndOptions, getGenerateTypeTestFromVersionAndTest } from "@/service/assessments.service"
+import { extractTextsFromHtml, generate } from "@/service/generate.service"
 import { main } from "@/service/openai.service"
 import { count, eq } from "drizzle-orm"
 import { NextRequest, NextResponse } from "next/server"
-import parse from 'html-dom-parser';
 
 export const POST=async(req:NextRequest)=>{
 try {
     
 
     const body=await req.json()
-    const {title,description,duration,questionsCount,testType,assessmentId,generateBy,pdf,link}=body
-    if(!title  || !duration || !questionsCount || !testType  || !assessmentId ||!generateBy){
+    const {title,description,duration,questionsCount,versionId,generateBy,pdf,link,assessmentId}=body
+    if(!title  || !duration || !questionsCount   || !versionId ||!generateBy){
         throw new Error("Please provide all fields")
     }
-    
-    const isTestAlreadyExist=await db.select().from(Tests).where(eq(Tests.assessmentsId,assessmentId))
+    const testId=await getGenerateTypeTestFromVersionAndTest({versionId,assessmentId})
+    if(testId!==null && testId!==undefined){
+      const isTestAlreadyExist=await db.select().from(Tests).where(eq(Tests.id,testId??0))
 
     if(isTestAlreadyExist[0]?.id){
-      await deleteAll(isTestAlreadyExist)
-
-    
+      await deleteAll(isTestAlreadyExist)    
     }
+    }
+    
 
    
   switch(generateBy){
     case "job description":
       const prompt = generatePrompt(description,questionsCount);
     
-    return generate({prompt,title,description:description,assessmentId,duration,questionsCount,testType})
+    return generate({prompt,title,versionId,duration,questionsCount,assessmentId})
 
     break;
   case "pdf":
     const pdfPrompt = generatePrompt(pdf,questionsCount)
-  return generate({prompt:pdfPrompt,title,description:pdf,assessmentId,duration,questionsCount,testType})
+  return generate({prompt:pdfPrompt,title,versionId,duration,questionsCount,assessmentId})
 break;
 case"link":
  const response=await fetch(link)
@@ -45,13 +46,16 @@ console.log(text);
 
  
  const linkPrompt = generatePrompt(text,questionsCount)
-return generate({prompt:linkPrompt,title,description:text,assessmentId,duration,questionsCount,testType})
+return generate({prompt:linkPrompt,title,versionId,duration,questionsCount,assessmentId})
   }
 
   
-   
+   return NextResponse.json({message:"success"},{status:201})
 }
+
     catch (error:any) {
+      console.log(error);
+      
     return NextResponse.json({message:error.message},{status:500})
     }
 
@@ -85,35 +89,7 @@ const deleteAll=async(isTestAlreadyExist:any)=>{
   
   
 }
-const generate=async({prompt,title,description,assessmentId,duration,questionsCount,testType}:{prompt:string,title:string,
-  description:string,assessmentId:string,duration:string,questionsCount:string,testType:string
-})=>{
-  const array=await main(prompt) as any
-  
-  
-  const testId=await createNewTest({title,description,assessmentId,duration,questionsCount,testType} as any)
-  const multipleChoiceQuestionsCount=await db.select({ count: count() }).from(MultipleChoicesQuestions).where(eq(MultipleChoicesQuestions.testId,testId));
-  
-    await array.map((question:any,index:number)=>{return createQuestionAndOptions({testId,question:question.question,answer:question.answer,options:question.options,correctOption:question.solution,order:multipleChoiceQuestionsCount[0].count===0?multipleChoiceQuestionsCount[0].count+index+1:multipleChoiceQuestionsCount[0].count+index})})
-  
-    
-    return NextResponse.json({message:'success',},{status:201})
-}
-const extractTextsFromHtml = (html: string) => {
-  const dom = parse(html);
 
-  const extractText = (dom: any): string => {
-    if (Array.isArray(dom)) {
-      return dom.map(extractText).join(''); // Traverse array of elements
-    }
-    if (dom.type === 'text') {
-      return dom.data; // Extract text node content
-    }
-    return dom.children ? extractText(dom.children) : ''; // Recurse for children
-  };
-
-  return extractText(dom);
-};
 const generatePrompt = (content: string, questionsCount: number) => ` Please create exactly ${questionsCount}  multiple-choice questions for the following Job description:
       [${content}].
     

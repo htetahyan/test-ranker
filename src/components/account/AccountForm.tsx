@@ -24,7 +24,7 @@ const validationSchema = Yup.object().shape({
 });
 
 
-const AccountForm=()=> {
+const AccountForm=({callbackUrl}:{callbackUrl:string})=> {
   const [selected, setSelected] = React.useState<any>("login");
   const router=useRouter()
   
@@ -43,7 +43,7 @@ const [mutate,{isLoading}]=useAccountMutation()
     onSubmit: async(values) => {
       const res=await mutate(values).unwrap()
       if(res.redirect){
-        router.push('/dashboard')
+       callbackUrl?router.push(callbackUrl):router.push('/account/success')
       }
     },
   });

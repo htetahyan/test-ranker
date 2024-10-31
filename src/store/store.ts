@@ -1,11 +1,11 @@
 import { baseApi } from '@/quries/BaseQuery'
 import { configureStore } from '@reduxjs/toolkit'
 import {CustomSonnerLoaderMiddleWare} from './listenerMiddleware'
-
+import  formReducer from './slice/MultiStepFormSlice'
 export const store = configureStore({
   reducer: {
   [baseApi.reducerPath]: baseApi.reducer,
-
+multiStepForm:formReducer
 
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: false}).concat(baseApi.middleware,CustomSonnerLoaderMiddleWare),

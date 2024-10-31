@@ -22,8 +22,8 @@ const validationSchema = Yup.object().shape({
     questionsCount: Yup.number().required('Questions Count is required').min(2, 'Questions Count is too short').strict(true),
 })
 
-const MultipleChoicesContainer = ({ id }: { id: number }) => {
-    const { data: array, isLoading, isSuccess } = useGetMultipleChoiceAndOptionsQuery({ id })
+const MultipleChoicesContainer = ({ id,versionId }: { id: number,versionId:number }) => {
+    const { data: array, isLoading, isSuccess } = useGetMultipleChoiceAndOptionsQuery({ id ,versionId})
     const [mutate,{isLoading:isGenerating}]=useGenerateMoreTestMutation()
     const sortMultipleChoiceByOrderNumberDesc =  array?.data?.multipleChoiceQuestions ?? [] 
     const {isOpen,onClose,onOpen,onOpenChange}=useDisclosure()
@@ -50,7 +50,7 @@ const formik=useFormik({
                     <MultipleChoice key={i} MultipleChoice={m} />
                 ))
             ) : (
-                <GenerateTestWithAi id={id} text={"generate test with ai"} />
+                <GenerateTestWithAi versionId={id} assessmentId={id} text={"generate test with ai"} />
             )}</div>
             {isLoading &&  <Skeleton className="rounded-lg">
         <div className="h-24 rounded-lg bg-default-300"></div>
@@ -58,9 +58,9 @@ const formik=useFormik({
       
       }<div className='h-[10vh] z-20 bg-white w-full items-center px-2 gap-10 flex justify-around fixed bottom-0'>
 
-      {isSuccess && sortMultipleChoiceByOrderNumberDesc.length>0 &&  <GenerateTestWithAi id={id} text={'Delete all tests and regenerate'}  />}
+      {isSuccess && sortMultipleChoiceByOrderNumberDesc.length>0 &&  <GenerateTestWithAi assessmentId={id} versionId={versionId} text={'Delete all tests and regenerate'}  />}
       {isSuccess && sortMultipleChoiceByOrderNumberDesc.length>0 && <Button onClick={onOpen} color='secondary' variant='solid' className='bg-gradient-to-r from-purple-600 to-pink-600 text-white' >Custom prompt</Button>}
-      <Link href={`/assessments/${id}/edit/questions`}> 
+      <Link href={`/assessments/${id}/${versionId}/edit/custom-tests`}> 
 
        <Button  color='secondary' variant='solid' className='bg-purple-600 text-white' >Next</Button>    </Link>
        <Modal size='md' isDismissable={false} isOpen={isOpen} onClose={onClose} onOpenChange={onOpenChange}>

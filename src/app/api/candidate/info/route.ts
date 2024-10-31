@@ -17,9 +17,9 @@ export const POST=async(req:NextRequest)=>{
         const countryOfResidence = JSON.parse(formData.get('countryOfResidence') as string || '{}');
         const countryOfOrigin = JSON.parse(formData.get('countryOfOrigin') as string || '{}');
         const firstLanguage = JSON.parse(formData.get('firstLanguage') as string || '{}');
-        const assessmentsId = JSON.parse(formData.get('assessmentsId') as string || '{}');
+        const versionId = JSON.parse(formData.get('versionId') as string || '0');
         const candidateId = JSON.parse(formData.get('candidateId') as string || '{}');
-        if(!assessmentsId || !candidateId) return NextResponse.json({message:"invalid request "+assessmentsId+' '+candidateId},{status:400})
+        if(! versionId || !candidateId) return NextResponse.json({message:"invalid request "+versionId+' '+candidateId},{status:400})
         
         const resume = formData.get('resume') as File | null; // Assuming resume is a file
         const isAlreadyExist = await db.select().from(CandidateInfo).where(and(eq(CandidateInfo.candidateId,candidateId),eq(CandidateInfo.candidateId,parseInt(candidateId))))
@@ -28,20 +28,20 @@ export const POST=async(req:NextRequest)=>{
             throw new Error("Mandatory fields are missing: Gender, Candidate ID, Highest Education, Study Field, or Most Relevant Experience.");
         }
         
-        if(resume){ 
+        if(resume){
             const response=await uploadArrayBuffer(resume!,resume?.name!)
         await db.insert(Resume).values({
             //@ts-nocheck
             name:"resume!.name! as string",
-size:resume!.size! as number,
+size:resume!.size! ??   2048 as number,
             candidateId:candidateId!,
-        
+
             type:resume?.type! as string,
             url:response!.requestId as string,
         })}
         await db.insert(CandidateInfo).values({
            
-            assessmentId:assessmentsId! as number,
+            versionId:versionId! as number,
             highestEducation:highestEducation,
             studyField:studyField,
             mostRelevantExperience:mostRelevantExperience,
@@ -60,6 +60,7 @@ size:resume!.size! as number,
 
         return NextResponse.json({message:"success"},{status:200})
     }catch(err:any){
+        console.log(err.message)
         return NextResponse.json({message:err.message},{status:500})
     }
     }

@@ -7,7 +7,12 @@ import MyQuillEditor from '../textEditor/Editor'
 import { IoMdCreate } from 'react-icons/io'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
-import { useCreateNewQuestionMutation, useDeleteQuestionByIdMutation, useGetQuestionsFromAssessmentIdQuery } from '@/quries/BaseQuery'
+import {
+  useCreateNewQuestionMutation,
+  useDeleteQuestionByIdMutation,
+
+  useGetQuestionsFromVersionIdQuery
+} from '@/quries/BaseQuery'
 
 const validationSchema = Yup.object().shape({
   question: Yup.string().required('Title is required').trim("White spaces are not allowed").strict(true),
@@ -16,16 +21,17 @@ const validationSchema = Yup.object().shape({
 
 interface EditQuestionsProps {
   assessmentId: number;
+  versionId: number
 }
 
 interface CurrentModalState {
   type: 'essay' | 'video' | 'audio' | 'fileAttachment' | '';
 }
 
-const EditQuestions = ({ assessmentId }: EditQuestionsProps) => {
+const EditQuestions = ({ assessmentId,versionId }: EditQuestionsProps) => {
   const [mutate, { isLoading }] = useCreateNewQuestionMutation()
 
-  const { data, isLoading: questionLoading } = useGetQuestionsFromAssessmentIdQuery({ assessmentId })
+  const { data, isLoading: questionLoading } = useGetQuestionsFromVersionIdQuery({ versionId })
   const [currentModal, setCurrentModal] = useState<CurrentModalState>({ type: '' })
 
   const { isOpen, onOpen, onOpenChange,onClose } = useDisclosure()
@@ -40,6 +46,7 @@ const EditQuestions = ({ assessmentId }: EditQuestionsProps) => {
     onSubmit: async (values) => {
       await mutate({
         assessmentId,
+        versionId,
         question: values.question,
         description: values.description,
         type: currentModal.type,

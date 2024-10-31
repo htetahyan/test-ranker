@@ -9,8 +9,9 @@ export const POST=async(req:NextRequest)=>{
         const {answers,candidateId}=body
         const candidate= await db.select().from(Candidates).where(eq(Candidates.generatedUrl,candidateId))
         const alreadyAnswered= await db.select().from(MultipleChoiceAnswers).where(and(eq(MultipleChoiceAnswers.candidateId,candidate[0].id)))
-        if(alreadyAnswered.length>0) return NextResponse.json({message:"Test is Already answered,skipping ..."},{status:200})
-        answers.map(async(id:number)=>{
+
+/*         if(alreadyAnswered.length>0) return NextResponse.json({message:"Test is Already answered,skipping ..."},{status:200})
+ */        answers.map(async(id:number)=>{
             if(!id || candidate.length==0 ) return
             const alreadyAnswered= await db.select().from(MultipleChoiceAnswers).where(and(eq(MultipleChoiceAnswers.candidateId,candidate[0].id),eq(MultipleChoiceAnswers.optionId,id)))
             if(alreadyAnswered.length>0) throw new Error("Already answered")

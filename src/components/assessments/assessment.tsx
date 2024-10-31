@@ -1,44 +1,54 @@
-import React from 'react'
+import React from 'react';
 import CandidateList from '@/components/assessments/CandidateList';
 import InviteCandidate from '@/components/assessments/InviteCandidate';
-import MultipleChoice from '@/components/multipleChoice/MultipleChoice';
-import db from '@/db';
-import { getAssesssmentRelatedInfo } from '@/service/assessments.service'
-import { currentUser } from '@/service/auth.service';
-import { Button } from '@nextui-org/react'
-import { count, eq } from 'drizzle-orm';
+import { Button } from '@nextui-org/react';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
-import { FaBackspace, FaPen } from 'react-icons/fa';
 import { IoMdArrowRoundBack } from 'react-icons/io';
-import { RiEyeCloseFill } from 'react-icons/ri';
-import { SelectAssessments } from '@/db/schema/schema';
+import { FaPen } from 'react-icons/fa';
 
-const Assessment = ({data}:{data:any}) => {
+const Assessment = ({ data }:any) => {
+  console.log(data?.version,'////')
   return (
-    <div className='w-screen min-h-screen bg-gray-100'>
-        <div className='flex justify-start w-full p-4 items-center'>
-            <div className='flex items-center gap-2 w-full '>
-              <Link href={'/dashboard'}><Button startContent={<IoMdArrowRoundBack />} className='w-fit mx-4  '>Back</Button>
-              </Link>
-            <div >
-                <h1 className='text-5xl font-bold'>{data?.assessment?.name}</h1>
-                <p className='text-gray-500'>{data?.assessment?.jobRole}</p>
-                <p className='text-gray-500'>{data?.assessment?.jobLocation}</p>
-                <p className='text-gray-500'>{data?.assessment?.workArrangement}</p>
-            </div>
-          
-            </div>  <div className='flex justify-end w-full gap-2 '>
-{/*                <Button endContent={<RiEyeCloseFill/>}  variant='ghost'>preview</Button>
- */}             <Link href={`/assessments/${data?.assessment?.id}/edit/assessment`}><Button endContent={<FaPen/>} isIconOnly variant='flat'></Button></Link>
-
-            </div>
+    <div className="w-screen min-h-screen bg-gray-50 text-gray-800">
+      <div className="flex justify-between items-center p-6 bg-white shadow-sm">
+        <Link href="/dashboard">
+          <Button 
+            startContent={<IoMdArrowRoundBack />} 
+            className="bg-black text-white hover:bg-gray-800"
+          >
+            Back
+          </Button>
+        </Link>
+        <div className="text-center">
+          <h1 className="text-4xl font-semibold text-gray-900">{data?.assessment?.name}</h1>
+          <div className="text-gray-600">
+            <p>{data?.assessment?.jobRole}</p>
+            <p>{data?.assessment?.jobLocation}</p>
+            <p>{data?.assessment?.workArrangement}</p>
+          </div>
         </div>
-        <InviteCandidate assessment={data?.assessment}/>
+        <div className="flex items-center gap-4">
+          <Button 
+            className="bg-gray-200 text-gray-700 hover:bg-gray-300"
+            endContent={
+              <div className={`w-3 h-3 rounded-full ${data?.version.isPublished ? 'bg-green-500' : 'bg-red-500'}`} />
+            }
+            variant="solid"
+          >
+            {!data?.version.isPublished ? 'Published' : 'Draft'}
+          </Button>
+          <Link href={`/assessments/${data?.assessment?.id}/${data?.versionId}/edit/assessment`}>
+            <Button isIconOnly className="bg-gray-200 text-gray-700 hover:bg-gray-300" endContent={<FaPen />} />
+          </Link>
+        </div>
+      </div>
 
-      <CandidateList candidates={data?.candidates }/>
+      <div className="p-6">
+        <InviteCandidate versionId={data?.versionId} version={data?.version} assessment={data?.assessment}/>
+        <CandidateList assessmentId={data?.assessment?.id} candidates={data?.candidates} />
+      </div>
     </div>
-  )
+  );
 }
 
-export default Assessment
+export default Assessment;

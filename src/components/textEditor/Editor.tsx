@@ -20,7 +20,6 @@ const MyQuillEditor = ({ formik, name }: { formik: any, name: string }) => {
     toolbar: [
       [{ 'size': ['small', false, 'large', 'huge'] }], // font size options
       ['bold', 'italic', 'underline', 'strike', { 'align': [] }, 'color', 'link', 'image'],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }], // list options
       [{ 'align': [] }], // Text alignment
       ['blockquote', 'code-block']
     ],
@@ -31,7 +30,7 @@ const MyQuillEditor = ({ formik, name }: { formik: any, name: string }) => {
 
   const formats = [
     'bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block',
-    'header', 'size', 'link', 'image', 'list', 'bullet', 'align', 'color'
+    'header', 'size', 'link', 'image', 'list', 'align', 'color'
   ];
 
   return (

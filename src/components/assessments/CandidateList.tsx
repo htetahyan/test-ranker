@@ -5,7 +5,7 @@ import { SelectCandidates } from "@/db/schema/schema";
 import Link from "next/link";
 
 
-export default function CandidateList({candidates}:{candidates: SelectCandidates[]}) {
+export default function CandidateList({candidates,assessmentId}:{candidates: SelectCandidates[],assessmentId:number}) {
   const [page, setPage] = React.useState(1);
   const rowsPerPage = 4;
 
@@ -71,7 +71,7 @@ export default function CandidateList({candidates}:{candidates: SelectCandidates
               new Date(getKeyValue(item, columnKey)).toLocaleString()
             ):
             
-            (  <Link href={`/assessments/${item.assessmentId}/candidates/${item.id}`}  className="underline">
+            (  <Link href={`/assessments/${assessmentId}/${item.versionId}/candidates/${item.id}`}  className="underline">
               {getKeyValue(item, columnKey)}</Link>
             )}
                       

@@ -10,7 +10,7 @@ import MyQuillEditor from '../textEditor/Editor';
 import { Bar, Pie, Line, PolarArea } from 'react-chartjs-2';
 
 const MultipleChoice = ({ MultipleChoice }: { MultipleChoice: { question: SelectMultipleChoicesQuestions, options: SelectOptions[] } }) => {
-  const orderedOptions = MultipleChoice?.options && [...MultipleChoice.options].sort((a, b) => {
+  const orderedOptions = MultipleChoice?.options && [...MultipleChoice?.options].sort((a, b) => {
     return (a?.order ?? 0) - (b?.order ?? 0);
   });
 
@@ -50,9 +50,9 @@ const MultipleChoice = ({ MultipleChoice }: { MultipleChoice: { question: Select
 
   const formik = useFormik({
     initialValues: {
-      question: MultipleChoice.question.question,
-      options: orderedOptions.map(option => ({
-        option: option.option,
+      question: MultipleChoice?.question?.question,
+      options: orderedOptions?.map(option => ({
+        option: option.content,
         isCorrect: option.isCorrect,
         id: option.id,
       })),

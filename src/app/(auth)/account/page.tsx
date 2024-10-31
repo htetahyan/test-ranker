@@ -1,9 +1,10 @@
 import AccountForm from '@/components/account/AccountForm'
 import React from 'react'
 
-const page = () => {
+const page = async(props:{searchParams: Promise<{callback:string}>}) => {
+  const {callback}=await props.searchParams
   return (
-   <AccountForm/>
+   <AccountForm callbackUrl={callback}/>
   )
 }
 

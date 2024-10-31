@@ -45,17 +45,7 @@ return completion;
 }
 
 // Validation function for the quiz format
-function validateQuizFormat(quizData: any): boolean {
-  if (!Array.isArray(quizData)) return false;
 
-  return quizData.every((question) =>
-    typeof question.question === 'string' &&
-    typeof question.options === 'object' &&
-    ['1', '2', '3', '4'].every(key => typeof question.options[key] === 'string') &&
-    typeof question.solution === 'number' &&
-    [1, 2, 3, 4].includes(question.solution) // Ensure the solution is one of 1, 2, 3, or 4
-  );
-}
 
 // Clean and parse response into a JavaScript array
 async function cleanAndParseResponse(response: any): Promise<any[]> {
@@ -80,15 +70,6 @@ async function cleanAndParseResponse(response: any): Promise<any[]> {
     throw new Error("Invalid JSON format: " + error.message);
   }
 }
-
-
-
-
-
-
-
-
-
 // Process completion choices
 async function printChoices(completion: any): Promise<any> {
   for (const choice of completion.choices) {
@@ -107,3 +88,4 @@ export async function main(prompt: string) {
   const completion = await getCompletion(client, prompt, maxTokens);
   return await printChoices(completion);
 }
+ 

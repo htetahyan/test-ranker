@@ -15,6 +15,7 @@ import {
     bigint,
     uuid,
 } from "drizzle-orm/pg-core";
+import { version } from "os";
 import { sizeInBytes } from "pdf-lib";
 
 // --------------------
@@ -49,16 +50,10 @@ export const usersRelations = relations(Users, ({ many }) => ({
 export const Assessments = pgTable("Assessments", {
     id: serial("id").primaryKey(),
     name: text("name").notNull(),
-    uniqueId: text("unique_id").notNull().unique(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
-    jobLocation: text("job_location").notNull(),
     jobRole: text("job_role").notNull(),
     companyId: integer("company_id").notNull(),
-    link: text("link"),
-    versionsId: integer("versions_id").default(1),
-
-    workArrangement: text("work_arrangement").notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+        updatedAt: timestamp("updated_at").defaultNow().notNull(),
 
 });
 export const AssessmentsRelations = relations(Assessments, ({ one, many }) => ({
@@ -67,19 +62,26 @@ export const AssessmentsRelations = relations(Assessments, ({ one, many }) => ({
         fields: [Assessments.companyId],
         references: [Users.id],
     }),
-    versions: one(versions, {
-        fields: [Assessments.versionsId],
-        references: [versions.id],
-    }),
+    versions: many(versions),
+ 
 }));
 export const versions = pgTable("versions", {
     id: serial("id").primaryKey(),
+    assessmentId: integer("assessment_id").default(1).notNull(),
     name: text("name").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
+    isPublished: boolean("is_published").default(false).notNull(),
+    uniqueId: text("unique_id").unique(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
-export const versionsRelations = relations(versions, ({ many }) => ({
-    Assessments: many(Assessments),
+export const versionsRelations = relations(versions, ({ many ,one }) => ({
+ 
+    Questions: many(Questions),
+    assessment: one(Assessments, {
+        fields: [versions.assessmentId],
+        references: [Assessments.id],
+    })
+
 }))
 export const Tests= pgTable("Tests", {
     id: serial("id").primaryKey(),
@@ -90,17 +92,26 @@ export const Tests= pgTable("Tests", {
     
 testType: text("test_type").notNull(),
     description: text("description").notNull(),
-    assessmentsId: integer("assessments_id").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 
 });
+export const VersionAndTest= pgTable("VersionAndTest", {
+    id: serial("id").primaryKey(),
+    testId: integer("test_id").notNull().references(() => Tests.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    versionId: integer("version_id").notNull().references(() => versions.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    type:text("type").default("GENERATED").notNull(),
+    assessmentId: integer("assessment_id").notNull().references(() => Assessments.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    order: integer("order").notNull().default(1),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+})
+
 export const TestsRelations = relations(Tests, ({ one,many }) => ({
-    Assessments: one(Assessments, {
-        fields: [Tests.assessmentsId],
-        references: [Assessments.id],
-    }),
+
    MultipleChoicesQuestions: many(MultipleChoicesQuestions),
+
+  
   
  
   
@@ -121,21 +132,15 @@ export const CandidateInfo= pgTable("CandidateInfo", {
     birthDate: text("birth_date").notNull(),
     countryOfResidence: text("country_of_residence").notNull(),
     countryOfOrigin: text("country_of_origin").notNull(),
+    versionId: integer("version_id").default(1).notNull(),
     firstLanguage: text("first_language").notNull(),
-    assessmentId: integer("assessment_id").notNull(),
     candidateId: integer("candidate_id").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
-
+    
 
 })
-export const CandidateInfoRelations = relations(CandidateInfo, ({ one }) => ({
-    Assessments: one(Assessments, {
-        fields: [CandidateInfo.assessmentId],
-        references: [Assessments.id],
-    }),
-   
-  }));
+
 
 export const Candidates= pgTable("Candidates", {
     id: serial("id").primaryKey(),
@@ -146,7 +151,7 @@ export const Candidates= pgTable("Candidates", {
     status: text("status").notNull().default("pending"),
 
    
-assessmentId:integer("assessment_id").notNull(),
+versionId: integer("version_id").default(1).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     generatedUrl: text("generated_url"),
     score: integer("score"),
@@ -159,34 +164,34 @@ export const Questions= pgTable("Questions", {
     type: text("type").notNull(),
     description: text("description").notNull(),
     duration: bigint("duration",{mode:"number"}).default(300).notNull(),
+    versionId: integer("version_id").default(1).notNull(),
     order: integer("order").notNull().default(1),
-    assessmentId: integer("assessment_id").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 
 });
 export const QuestionsRelations = relations(Questions, ({ one }) => ({
-    Assessments: one(Assessments, {
-        fields: [Questions.assessmentId],
-        references: [Assessments.id],
-    }),
+ version: one(versions, {
+        fields: [Questions.versionId],
+        references: [versions.id],
+    })
     
 }))
-export const MultipleChoicesQuestions= pgTable("MultipleChoicesQuestions", {
+export const MultipleChoicesQuestions = pgTable("MultipleChoicesQuestions", {
     id: serial("id").primaryKey(),
-   question: text("question").notNull(),
-   description: text("description").notNull().default(""),
-
-   type: text("type").notNull(),
-   label: text("label").array(),
-   data: text("data").array(),
-   background: text("background").array(),
-   order: integer("order").notNull().default(1),
-    testId: bigint("test_id",{mode:"number"}).notNull().references(() => Tests.id, { onDelete: "cascade", onUpdate: "cascade" })
-,    createdAt: timestamp("created_at").defaultNow().notNull(),
+    question: text("question").notNull(),
+    description: text("description").notNull().default(""),
+    type: text("type").notNull(),
+    label: text("label").array(),
+    data: text("data").array(),
+    background: text("background").array(),
+    order: integer("order").notNull().default(1),
+    testId: bigint("test_id", { mode: "number" }).notNull(),
+    testType: text("test_type").notNull(),  // Specify if it's "Tests" or "customTests"
+    createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
-
 });
+
 export const MultipleChoicesQuestionsRelations = relations(MultipleChoicesQuestions, ({ one }) => ({
     Tests: one(Tests, {
         fields: [MultipleChoicesQuestions.testId],
@@ -194,14 +199,15 @@ export const MultipleChoicesQuestionsRelations = relations(MultipleChoicesQuesti
         references: [Tests.id],
     }),
 
-}))
+}));
+
 
 export const CandidatesRelations = relations(Candidates, ({ one }) => ({
-    Assessments: one(Assessments, {
-        fields: [Candidates.assessmentId],
-        references: [Assessments.id],
-    })
-    
+   
+  version: one(versions, {
+    fields: [Candidates.versionId],
+    references: [versions.id],
+  })  
 }));
 
 export const Options= pgTable("Options", {
@@ -255,6 +261,18 @@ export const MultipleChoiceAnswers= pgTable("MultipleChoiceAnswers", {
     isCorrect: boolean("is_correct").notNull().default(false).notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
+
+export const SessionData= pgTable("SessionData", {
+    id: serial("id").primaryKey(),
+    assessmentName: text("assessment_name").notNull(),
+    jobRole: text("job_role").notNull(),
+    url: text("url"),
+    generateBy:text('generateBy').notNull(),
+    description: text("description"),
+    questionCount: integer("question_count").notNull(),
+    sessionId: text("session_id").notNull(),
+    duration: integer("duration").notNull(),
+})
 export type SelectAssessments=typeof Assessments.$inferSelect
 export type SelectTests=typeof Tests.$inferSelect
 export type SelectCandidates=typeof Candidates.$inferSelect
@@ -266,3 +284,6 @@ export type SelectMultipleChoicesQuestions=typeof MultipleChoicesQuestions.$infe
 export type SelectOptions=typeof Options.$inferSelect
 export type SelectAnswers=typeof Answers.$inferSelect
 export type SelectUsers=typeof Users.$inferSelect
+export type SelectVersions=typeof versions.$inferSelect
+export type SelectMultipleChoiceAnswers=typeof MultipleChoiceAnswers.$inferSelect
+export type SelectSessionData=typeof SessionData.$inferSelect

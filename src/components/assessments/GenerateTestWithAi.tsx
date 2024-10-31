@@ -63,7 +63,7 @@ const validationSchema = Yup.object().shape({
 
 });
 
-const GenerateTestWithAi = ({ id,text }: { id: number,text:string }) => {
+const GenerateTestWithAi = ({  versionId,text,assessmentId }: { assessmentId: number,versionId: number,text:string }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [mutate, { isLoading }] = useGenerateTestMutation();
     const router = useRouter();
@@ -72,8 +72,9 @@ const GenerateTestWithAi = ({ id,text }: { id: number,text:string }) => {
         initialValues: {
             title: '',
             description: '',
+            assessmentId,
          
-            assessmentId: id,
+            versionId,
             duration: '',
             questionsCount: 0,
             link:'',

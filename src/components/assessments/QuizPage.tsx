@@ -12,7 +12,7 @@ import { Bar, Line, Pie, PolarArea } from 'react-chartjs-2'
 
 
 
-const QuizPage = ({ questions ,candidate_uniqueId,uniqueId}: { questions: MultipleChoiceAndOptions[], candidate_uniqueId:string,uniqueId:string }) => {
+const QuizPage = ({ questions ,candidate_uniqueId,uniqueId,order}: {order:number, questions: MultipleChoiceAndOptions[], candidate_uniqueId:string,uniqueId:string }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isTimeUp, setIsTimeUp] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<(number | null)[]>(Array(questions.length).fill(null));
@@ -51,7 +51,7 @@ const router=useRouter()
   
       // Log testId and selectedOptions, await mutate call
       await mutate({ candidateId: candidate_uniqueId, answers: selectedOptions }).unwrap().finally(()=>
-        router.push(`/candidate/${uniqueId}/${candidate_uniqueId}/questions/1`)
+        router.push(`/candidate/${uniqueId}/${candidate_uniqueId}/tests/${order+1}`)
       );
       
     } catch (error) {
@@ -73,7 +73,7 @@ const router=useRouter()
     <>
       <div className="w-full flex justify-center">
         {/* Pass the total quiz duration and setIsTimeUp callback to the Timer component */}
-        <Timer duration={100} setIsTimeUp={setIsTimeUp} />
+        <Timer duration={questions[currentQuestionIndex]?.test?.duration??300} setIsTimeUp={setIsTimeUp} />
       </div>
 
       <div className=" items-center justify-center h-fit relative overflow-hidden w-screen bg-gray-50">
@@ -86,11 +86,11 @@ const router=useRouter()
               </h1>
        
             </div>
-          <DisplayQuestions question={questions[currentQuestionIndex]!.question}/>
+          <DisplayQuestions question={questions?.[currentQuestionIndex]?.question}/>
         
             {/* Right Column - Options */}
             <div className="space-y-4">
-              {Object.entries(currentQuestion.options).map(([key, value]) => (
+              {Object?.entries(currentQuestion?.options).map(([key, value]) => (
                 <button
                   key={key}
                   onClick={() => handleOptionClick(Number(key))}

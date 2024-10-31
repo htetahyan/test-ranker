@@ -3,11 +3,11 @@ import { Assessments, Candidates, SelectCandidates } from "@/db/schema/schema"
 import { and, eq } from "drizzle-orm";
 import { v4 as uuidv4, } from 'uuid';
 
-export const createCandidate = async ({fullName,email,assessmentId}:{fullName:string,email:string,assessmentId:number}) => {
+export const createCandidate = async ({fullName,email,versionId}:{fullName:string,email:string,versionId:number}) => {
     try {
         
         const candidate = await db.insert(Candidates).values({
-            assessmentId,
+            versionId,
             email,
             generatedUrl:uuidv4(),
             currentStep:'sign',
@@ -57,8 +57,8 @@ export const redirectByCandidateStep =  ({
     return { redirect: false };
   };
   export const getCandidateFromCandidateUniqueIdAndUniqueId = async (candidateUniqueId:string,uniqueId:string)=>{
-      const assessment=await db.select().from(Assessments).where(eq(Assessments.uniqueId, uniqueId))
-      const candidate = await db.select().from(Candidates).where(and(eq(Candidates.assessmentId, assessment[0].id),eq(Candidates.generatedUrl, candidateUniqueId))).then((data) => data[0]);
-
-      return candidate
+   const candidate = await db.select().from(Candidates).where(and(eq(Candidates.generatedUrl,candidateUniqueId),eq(Candidates.generatedUrl,candidateUniqueId))).then((data) => data[0])
+   console.log(candidate);
+     
+   return candidate
   }

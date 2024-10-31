@@ -17,7 +17,7 @@ export const POST=async (req:NextRequest, props:{params: Promise<{id:string}>}) 
           if(!id){
               throw new Error("Please provide id")
           }
-          const test=await db.select().from(Tests).where(eq(Tests.assessmentsId,id))
+          const test=await db.select().from(Tests).where(eq(Tests.versionId,id))
           const newPrompt=generatePrompt(prompt,test[0]?.description,questionsCount)
           const array= await main(newPrompt)
           const multipleChoiceQuestionsCount=await db.select({ count: count() }).from(MultipleChoicesQuestions).where(eq(MultipleChoicesQuestions.testId,test[0]?.id));
