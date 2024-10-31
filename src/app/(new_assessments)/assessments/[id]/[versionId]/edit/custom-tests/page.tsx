@@ -8,7 +8,7 @@ import React from 'react'
 import Link from "next/link";
 import {Button} from "@nextui-org/react";
 
-const page = async(props:{params:{id:string,versionId:string}}) => {
+const page = async(props:{params:Promise<{id:string,versionId:string}>}) => {
     const {id,versionId}=await props.params
     const customTests=await getCustomTests()
    

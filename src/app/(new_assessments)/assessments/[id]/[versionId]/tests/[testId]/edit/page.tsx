@@ -3,9 +3,9 @@ import { getTestAndQuestions } from '@/service/assessments.service'
 import { Button } from '@nextui-org/react'
 import React from 'react'
 
-const page = async (props: { params: Promise<{ id: string, testId: string }> }) => {
+const page = async (props: { params: Promise<{ id: string, testId: string, versionId: string }> }) => {
   const params = await props.params;
-  const array = await getTestAndQuestions({ id: Number(params.testId) });
+  const array = await getTestAndQuestions({ id: Number(params.testId) ,versionId:Number(params.versionId)});
   console.log(array);
   const sortMultipleChoiceByOrderNumberDesc =array && array?.multipleChoiceQuestions?.sort((a: any, b: any) => b.order - a.order)
   return (

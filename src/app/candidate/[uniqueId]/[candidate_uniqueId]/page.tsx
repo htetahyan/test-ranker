@@ -1,5 +1,5 @@
 import db from '@/db'
-import { Assessments, Candidates } from '@/db/schema/schema'
+import { Assessments, Candidates, versions } from '@/db/schema/schema'
 import { eq } from 'drizzle-orm'
 import { redirect } from 'next/navigation'
 import React from 'react'
@@ -9,7 +9,7 @@ const page = async (
 ) => {
   const params = await props.params;
   const { uniqueId, candidate_uniqueId } = params
-  const assessment = await db.select().from(Assessments).where(eq(Assessments.uniqueId, uniqueId))
+  const version = await db.select().from(versions).where(eq(versions.uniqueId, uniqueId))
   const candidate = await db.select().from(Candidates).where(eq(Candidates.generatedUrl, candidate_uniqueId)).then((data) => data[0])
   const current_step=candidate?.currentStep
   console.log(current_step);

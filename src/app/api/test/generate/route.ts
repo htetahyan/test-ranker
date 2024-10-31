@@ -17,7 +17,7 @@ try {
     }
     const testId=await getGenerateTypeTestFromVersionAndTest({versionId,assessmentId})
     if(testId!==null && testId!==undefined){
-      const isTestAlreadyExist=await db.select().from(Tests).where(eq(Tests.id,testId??0))
+      const isTestAlreadyExist=await db.select().from(Tests).where(eq(Tests.id,testId))
 
     if(isTestAlreadyExist[0]?.id){
       await deleteAll(isTestAlreadyExist)    

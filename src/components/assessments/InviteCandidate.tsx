@@ -53,7 +53,7 @@ export function InviteTabs({versionId,version,assessment}:{versionId:number,vers
           <Card>
             <CardBody>
 
-<GenerateInviteUrl versionId={versionId}/>            </CardBody>
+<GenerateInviteUrl version={version} versionId={versionId}/>            </CardBody>
           </Card>  
         </Tab>
         <Tab key="videos" title="batch invite">
@@ -71,7 +71,7 @@ const validationSchema = Yup.object().shape({
   fullName: Yup.string().required('Name is required').min(3, 'Name is too short').trim("white spaces are not allowed").strict(true),
   email: Yup.string().email('Invalid email').required('Email is required').trim("white spaces are not allowed").strict(true),
 })
-export const GenerateInviteUrl = ({versionId}:{versionId:number}) => {
+export const GenerateInviteUrl = ({versionId,version}:{versionId:number,version:SelectVersions}) => {
   const [mutate]=useCreateNewCandidateMutation()
   const [candidates,setCandidates]=React.useState<{fullName:string,email:string,generatedUrl:string}[]>([])
   const formik=useFormik({
@@ -82,7 +82,7 @@ fullName:'',      email:'',versionId:versionId
     onSubmit:async()=>{
      const res= await mutate(formik.values).unwrap()
      if(res.message==="success"){
-       setCandidates([...candidates,{fullName:formik.values.fullName,email:formik.values.email,generatedUrl:process.env.NEXT_PUBLIC_URL+'/candidate/'+assessment?.id+'/'+res.generatedUrl}])
+       setCandidates([...candidates,{fullName:formik.values.fullName,email:formik.values.email,generatedUrl:process.env.NEXT_PUBLIC_URL+'/candidate/'+version?.uniqueId+'/'+res.generatedUrl}])
      }
     }
   })

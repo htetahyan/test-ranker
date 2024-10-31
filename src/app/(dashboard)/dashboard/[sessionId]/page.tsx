@@ -8,7 +8,7 @@ import { Skeleton } from '@nextui-org/react'
 import React from 'react'
 import {v4 as uuidv4} from 'uuid'
 import { redirect } from 'next/navigation'
-const page = async(props: { params: { sessionId: string } }) => {
+const page = async(props: { params: Promise<{ sessionId: string }> }) => {
     const { sessionId } = await props.params
     const user=await currentUser()
     const sessionData=await db.select().from(SessionData).where(eq(SessionData.sessionId,sessionId))

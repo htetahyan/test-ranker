@@ -1,6 +1,6 @@
 import db from "@/db"
 import { MultipleChoicesQuestions, Tests } from "@/db/schema/schema"
-import { createQuestionAndOptions } from "@/service/assessments.service"
+import { createQuestionAndOptions, getGenerateTypeTestFromVersionAndTest } from "@/service/assessments.service"
 import { main } from "@/service/openai.service"
 import { count, eq } from "drizzle-orm"
 import { NextRequest, NextResponse } from "next/server"
@@ -11,13 +11,15 @@ export const POST=async (req:NextRequest, props:{params: Promise<{id:string}>}) 
       try{
           const body=await req.json()
           const id=parseInt(params.id)
-          const {prompt,questionsCount}=body
+          const {prompt,questionsCount,versionId}=body
           console.log(prompt,questionsCount,id);
           
           if(!id){
               throw new Error("Please provide id")
           }
-          const test=await db.select().from(Tests).where(eq(Tests.versionId,id))
+          const testId=await getGenerateTypeTestFromVersionAndTest({versionId,assessmentId:id})
+          const test=await db.select().from(Tests).where(eq(Tests.id,testId))
+
           const newPrompt=generatePrompt(prompt,test[0]?.description,questionsCount)
           const array= await main(newPrompt)
           const multipleChoiceQuestionsCount=await db.select({ count: count() }).from(MultipleChoicesQuestions).where(eq(MultipleChoicesQuestions.testId,test[0]?.id));
