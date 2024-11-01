@@ -104,7 +104,7 @@ const AddMultipleChoice: React.FC<AddMultipleChoiceProps> = ({ testId }) => {
 
   return (
     <div className="p-4">
-      <Button color="primary" onClick={onOpen}>
+      <Button className='bg-black text-white' onClick={onOpen}>
         Add Custom Test
       </Button>
       <Modal size="lg" isOpen={isOpen} onClose={onClose} isDismissable={false}>
@@ -161,7 +161,7 @@ const AddMultipleChoice: React.FC<AddMultipleChoiceProps> = ({ testId }) => {
                 ))}
               </div>
 
-              <Button isDisabled={isLoading} type="submit" isLoading={isLoading} color="success">
+              <Button className="mt-4 bg-black text-white" isDisabled={isLoading} type="submit" isLoading={isLoading} color="success">
                 Submit
               </Button>
             </form>

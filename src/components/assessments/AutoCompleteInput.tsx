@@ -21,6 +21,7 @@ const AutocompleteInput = ({
   return (
     <div className="relative w-full">
       <Input
+      variant='underlined'
         label={`Enter ${label}`}
         id={fieldName}
         name={fieldName}

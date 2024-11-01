@@ -27,8 +27,10 @@ if(existingUser.length === 0){
         throw new Error(error.message)
     }
 }
-
-const hashPassword=(password:string)=>{
+export const comparePassword=(password:string,hashedPassword:string)=>{
+    return compareSync(password,hashedPassword)
+}
+export const hashPassword=(password:string)=>{
     return hashSync(password, genSaltSync(10))
 }
 export const currentUser=async()=>{

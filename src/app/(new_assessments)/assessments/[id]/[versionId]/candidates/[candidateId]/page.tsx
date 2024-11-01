@@ -33,7 +33,7 @@ const CandidateNotFoundModernPage = ({ id }: { id: string }) => {
         The candidate you are looking for does not exist or has been removed.
       </p>
       <Link href={`/assessments/${id}`}>
-        <Button>Back to Assessments</Button>
+        <Button className="bg-black text-white hover:bg-gray-800">Back to Assessments</Button>
       </Link>
 
     </div>

@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Card,
   CardHeader,
@@ -8,20 +8,25 @@ import {
   Link,
   Pagination,
   Button,
+  Skeleton,
 } from "@nextui-org/react";
 import { FaArrowRight, FaPlus } from 'react-icons/fa';
-import { SelectAssessments } from '@/db/schema/schema';
 import Empty from '../animation/Empty';
 
-const DashboardTable = ({ assessments, versionCount, version }: { assessments: SelectAssessments[], versionCount: number, version: any }) => {
-  const [page, setPage] = React.useState(1);
+const DashboardTable = ({ assessments }:{assessments: any}) => {
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const rowsPerPage = 6;
 
-  // Calculate total pages based on the assessments length
+  useEffect(() => {
+    // Simulate a 2-second loading time
+    const timer = setTimeout(() => setLoading(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
   const pages = Math.ceil(assessments.length / rowsPerPage);
 
-  // Paginated data
-  const paginatedAssessments = React.useMemo(() => {
+  const paginatedAssessments = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
     return assessments.slice(start, end);
@@ -33,33 +38,54 @@ const DashboardTable = ({ assessments, versionCount, version }: { assessments: S
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-semibold text-gray-800">Assessments Overview</h1>
           <Link href="/assessments/new">
-            <Button className="flex items-center bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition duration-200 shadow-md">
+            <Button className="flex items-center bg-black text-white px-6 py-3 rounded-lg transition duration-200 shadow-md">
               <FaPlus className="mr-2" />
               New Assessment
             </Button>
           </Link>
         </div>
 
-        
-          {assessments.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">{ 
-            paginatedAssessments.map((assessment) => (
-              <Card key={assessment.id} className="bg-gradient-to-r from-gray-700 to-gray-900 text-white shadow-lg p-6 rounded-xl">
+        {loading ? (
+          // Skeleton layout
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {Array.from({ length: rowsPerPage }).map((_, index) => (
+              <Card key={index} className="w-full space-y-5 p-4 rounded-lg">
+                <Skeleton className="rounded-lg">
+                  <div className="h-24 rounded-lg bg-default-300"></div>
+                </Skeleton>
+                <div className="space-y-3">
+                  <Skeleton className="w-3/5 rounded-lg">
+                    <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
+                  </Skeleton>
+                  <Skeleton className="w-4/5 rounded-lg">
+                    <div className="h-3 w-4/5 rounded-lg bg-default-200"></div>
+                  </Skeleton>
+                  <Skeleton className="w-2/5 rounded-lg">
+                    <div className="h-3 w-2/5 rounded-lg bg-default-300"></div>
+                  </Skeleton>
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : assessments.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {paginatedAssessments.map((item: any,i:number) => (
+              <Card key={i} className="bg-gradient-to-r from-gray-700 to-gray-900 text-white shadow-lg p-6 rounded-xl">
                 <CardHeader className="pb-2 flex items-center gap-4">
-                  <h3 className="text-xl font-semibold">{assessment.name}</h3>
-                  <p className="text-sm text-gray-400">{assessment.jobRole || "Create a vision. To get started, imagine your dream life."}</p>
+                  <h3 className="text-xl font-semibold">{item.Assessments.name}</h3>
+                  <p className="text-sm text-gray-400">{item.Assessments.jobRole || "No job role specified"}</p>
                 </CardHeader>
 
                 <CardBody className="text-gray-300 pb-4">
-                  <p className="text-lg">{new Date(assessment.createdAt).toLocaleDateString()}</p>
+                  <p className="text-lg">{new Date(item.Assessments.createdAt).toLocaleDateString()}</p>
                 </CardBody>
 
                 <CardFooter className="flex justify-between items-center pt-2">
                   <div className="flex flex-col">
-                    <p className="text-xs uppercase text-gray-400">Total Versions</p>
-                    <p className="text-lg font-bold">{versionCount}</p>
+                    <p className="text-xs uppercase text-gray-400">Version</p>
+                    <p className="text-lg font-bold">{item.versions.name}</p>
                   </div>
-                  <Link href={`/assessments/${assessment.id}/${version?.id}`}>
+                  <Link href={`/assessments/${item.Assessments.id}/${item.versions.id}`}>
                     <Button className="text-white bg-blue-500 hover:bg-blue-600 rounded-full">
                       <FaArrowRight />
                     </Button>
@@ -67,13 +93,12 @@ const DashboardTable = ({ assessments, versionCount, version }: { assessments: S
                 </CardFooter>
               </Card>
             ))}
-            </div>
-          ) : (
-            <Empty text="No Assessments Found" />
-          )}
-        </div>
+          </div>
+        ) : (
+          <Empty text="No Assessments Found" />
+        )}
 
-        {assessments.length > 0 && (
+        {assessments.length > 0 && !loading && (
           <div className="flex justify-center mt-8">
             <Pagination
               isCompact
@@ -88,6 +113,7 @@ const DashboardTable = ({ assessments, versionCount, version }: { assessments: S
           </div>
         )}
       </div>
+    </div>
   );
 };
 

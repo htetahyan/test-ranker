@@ -38,6 +38,7 @@ Dashboard          </Link>
              <Avatar
               isBordered
               as="button"
+              
               className="transition-transform"
               color="secondary"
               name={user.name}

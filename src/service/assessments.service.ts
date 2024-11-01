@@ -361,13 +361,14 @@ export const editQuestionAndOptions = async ({question,id,options}:{
 export const getAssesssmentRelatedInfo = async ({versionId,assessmentId,userId}:{versionId:number,assessmentId:number,userId:number}) => {
   
   const assessment = await db.select().from(Assessments).where(and(eq(Assessments.id,assessmentId),eq(Assessments.companyId,userId)))
-
+const versionAndTest=await db.select().from(VersionAndTest).where(and(eq(VersionAndTest.versionId,versionId),eq(VersionAndTest.assessmentId,assessmentId)))
+if(versionAndTest.length===0) return null;
  /* const tests = await versionAndTest.map(async (item) => {
 
     const test = await db.select().from(Tests).where(eq(Tests.id, item.testId))
     return test[0]
   })*/
-  const candidates = await db.select().from(Candidates).where(eq(Candidates.versionId,versionId))
+  const candidates = await db.select().from(Candidates).where(eq(Candidates.versionId,versionAndTest[0].versionId))
  const versionArray=await db.select().from(versions).where(eq(versions.assessmentId,assessmentId))
   return {assessment:assessment[0],candidates,versionId,version:versionArray}
 }

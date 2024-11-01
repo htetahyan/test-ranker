@@ -66,16 +66,18 @@ const AddTest = ({ assessments }: { assessments: SelectAssessments | null }) => 
 
   return (
     <div className="w-screen h-screen">
-      <form onSubmit={formik.handleSubmit} className="w-full h-full p-4 flex flex-col">
+      <form onSubmit={formik.handleSubmit} className="w-full h-full items-center jus p-4 flex flex-col">
         <div className="w-full flex items-center justify-between p-6 px-4 border-b-2">
-        <Button onClick={exit} className="mt-2 bg-black" color="primary" size="md">
+        <Button onClick={exit} className="mt-2 bg-black text-white" color="primary" size="md">
             Exit
           </Button>  
         </div>
-        <div className="flex flex-col gap-4 mt-6 items-center">
+        <div className="flex flex-col gap-4 mt-6 w-1/2  items-center">
+        <h1 className="text-3xl font-bold">{assessments ? 'Edit Test' : 'Create New Test'}</h1>
         <Input
         label="Assessment Name"
-            variant="faded"
+            variant="underlined"
+
             defaultValue="untitled assessments"
             name="name"
             isInvalid={!!(formik.errors.name && formik.touched.name)}
@@ -86,6 +88,7 @@ const AddTest = ({ assessments }: { assessments: SelectAssessments | null }) => 
          
           <AutocompleteInput
             fieldName="jobRole"
+        
             label="Job Role"
             handleInputChange={handleJobRoleChange}
             showSuggestions={showSuggestions}
@@ -95,8 +98,8 @@ const AddTest = ({ assessments }: { assessments: SelectAssessments | null }) => 
           />
         </div>
         <div className="w-full flex justify-end">
-          <Button disabled={isLoading || editLoading} isLoading={isLoading || editLoading} type="submit" className="mt-2 bg-black" color="secondary" size="md">
-            {assessments ? 'Edit' : 'Add'}
+          <Button disabled={isLoading || editLoading} isLoading={isLoading || editLoading} type="submit" className="mt-2 bg-black text-white"  size="md">
+            {assessments ? 'Edit' : 'Create'}
           </Button>
         </div>
       </form>

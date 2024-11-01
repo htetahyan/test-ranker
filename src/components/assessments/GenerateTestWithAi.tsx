@@ -146,11 +146,12 @@ console.log(formik.errors);
                     <>
                         <ModalHeader>Generate Test With AI</ModalHeader>
                         <ModalBody>
-                            <form onSubmit={formik.handleSubmit} className="grid grid-cols-2 gap-4">
+                            <form onSubmit={formik.handleSubmit} className="grid grid-cols-1 gap-4">
                                 {fields.map((field: any) => (
                                     <div className="flex flex-col items-center w-full" key={field.name}>
                                         {field.type === "text" ? (
                                             <Input
+                                            variant='underlined'
                                                 label={`Enter ${field.label}`}
                                                 id={field.name}
                                                 name={field.name}
@@ -252,6 +253,7 @@ console.log(formik.errors);
                                 )}
                                 {generateBy === 'pdf' && (
                                     <Input
+                                    
                                         label="Upload PDF"
                                         type="file"
                                         placeholder="Upload PDF"
@@ -262,7 +264,7 @@ console.log(formik.errors);
                                         errorMessage={formik.errors.pdf}
                                     />
                                 )}
-                                <Button isDisabled={isLoading} isLoading={isLoading} type='submit'>
+                                <Button isDisabled={isLoading} className='w-fit bg-black text-white' isLoading={isLoading} type='submit'>
                                     Submit
                                 </Button>
                             </form>

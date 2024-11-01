@@ -96,7 +96,7 @@ const [mutate,{isLoading}]=useAccountMutation()
                   <div className="text-red-500">{formik.errors.password}</div>
                 )}
                 <div className="flex gap-2 justify-end">
-                  <Button fullWidth color="primary" type="submit">
+                  <Button fullWidth  type="submit">
                     Login
                   </Button>
                 </div>

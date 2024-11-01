@@ -3,22 +3,15 @@ import CandidateList from '@/components/assessments/CandidateList';
 import InviteCandidate from '@/components/assessments/InviteCandidate';
 import { Button } from '@nextui-org/react';
 import Link from 'next/link';
-import { IoMdArrowRoundBack } from 'react-icons/io';
 import { FaPen } from 'react-icons/fa';
+import BackButton from './BackButton';
 
 const Assessment = ({ data }:any) => {
-  console.log(data?.version,'////')
+
   return (
     <div className="w-screen min-h-screen bg-gray-50 text-gray-800">
       <div className="flex justify-between items-center p-6 bg-white shadow-sm">
-        <Link href="/dashboard">
-          <Button 
-            startContent={<IoMdArrowRoundBack />} 
-            className="bg-black text-white hover:bg-gray-800"
-          >
-            Back
-          </Button>
-        </Link>
+      <BackButton  />
         <div className="text-center">
           <h1 className="text-4xl font-semibold text-gray-900">{data?.assessment?.name}</h1>
           <div className="text-gray-600">

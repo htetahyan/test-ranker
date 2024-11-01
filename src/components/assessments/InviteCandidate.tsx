@@ -45,7 +45,7 @@ export function InviteTabs({versionId,version,assessment}:{versionId:number,vers
             <CardBody className='flex flex-col gap-4'>
               <h1>Public Url</h1>
               <p className='text-blue-500'>{process.env.NEXT_PUBLIC_URL+'/candidate/'+uniqueId+'/intro'}</p>
-              <Button  variant='solid' className=' text-white w-fit'>Copy</Button>
+              <Button  variant='solid' className='bg-black text-white w-fit'>Copy</Button>
             </CardBody>
           </Card>  
         </Tab>

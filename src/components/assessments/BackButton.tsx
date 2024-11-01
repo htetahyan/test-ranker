@@ -2,14 +2,15 @@
 import { Button } from '@nextui-org/react'
 import { useRouter } from 'next/navigation'
 import React from 'react'
+import { IoMdArrowRoundBack } from 'react-icons/io';
 
-const BackButton = ({id}:{id:number}) => {
+const BackButton = () => {
     const router=useRouter()
     const back=()=>{
-        router.push(`/assessments/${id}/edit/assessment`)
+        router.back()
     }
   return (
-    <Button onClick={back}>
+    <Button startContent={<IoMdArrowRoundBack />} className='bg-black text-white hover:bg-gray-800' onClick={back}>
         back
     </Button>
   )
