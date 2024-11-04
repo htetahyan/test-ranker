@@ -10,7 +10,7 @@ import React from 'react'
 
 import {  useParams, useRouter } from 'next/navigation'
 import { usePostSessionMutation } from '@/quries/AccoutQuery'
-const page =  () => {
+const Page =  () => {
   
 
     const {sessionId} = useParams<{ sessionId: string }>()
@@ -28,4 +28,4 @@ const submit=async()=>{
   )
 }
 
-export default page
+export default Page
