@@ -25,6 +25,7 @@ const DashboardChart = () => {
 
   const jobRoles = data.map(item => item.Assessments.jobRole);
   const jobRoleCounts = jobRoles.reduce((acc, role) => {
+    //@ts-ignore
     acc[role] = (acc[role] || 0) + 1;
     return acc;
   }, {});
@@ -42,6 +43,7 @@ const DashboardChart = () => {
 
   const candidateStatuses = data.map(item => item.Candidates?.currentStep || 'No Candidate');
   const statusCounts = candidateStatuses.reduce((acc, status) => {
+    //@ts-ignore
     acc[status] = (acc[status] || 0) + 1;
     return acc;
   }, {});
@@ -59,7 +61,7 @@ const DashboardChart = () => {
 
   const scores = data
     .filter(item => item.Candidates && item.Candidates.score !== null)
-    .map(item => item.Candidates.score);
+    .map(item => item?.Candidates?.score);
   const scoreChartData = {
     labels: scores.map((_, index) => `Candidate ${index + 1}`),
     datasets: [
