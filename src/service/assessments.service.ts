@@ -1,5 +1,5 @@
 import db from "@/db"
-import { Assessments, Candidates, MultipleChoicesQuestions, Options, Questions, SelectAssessments, SelectMultipleChoicesQuestions, SelectTests, Tests, VersionAndTest, versions } from "@/db/schema/schema"
+import { Assessments, Candidates, MultipleChoicesQuestions, Options, Questions, SelectAssessments, SelectMultipleChoicesQuestions, SelectTests, SessionData, Tests, VersionAndTest, versions } from "@/db/schema/schema"
 import { and, count, eq, or } from "drizzle-orm"
 import { prepareMultipleQuestions } from "./prepare.service"
 import { unstable_cache } from "next/cache"
@@ -106,7 +106,7 @@ export const createQuestionAndOptions = async ({
     order: number
      // Using numbers for options
   }) => {
-    try {
+   
       
       
       // Insert the question into the `MultipleChoicesQuestions` table
@@ -126,7 +126,6 @@ export const createQuestionAndOptions = async ({
         })
         .returning({ id: MultipleChoicesQuestions.id });
   
-      console.error(options, correctOption);
     
       const questionId = insertedQuestion[0].id; // Get the newly created question ID
     
@@ -145,13 +144,24 @@ export const createQuestionAndOptions = async ({
           isCorrect: i + 1 === correctOption, // Mark the correct option (i + 1 because index is 0-based)
         });
       }
-    } catch (err: any) {
-      console.log(err.message);
-      
-      throw new Error(err.message);
-    }
+    
   };
+  export const generateAssessmentWithSessionData=async(sessionData:any,user:any,sessionId:any)=>{
+  
+    const assessment=await db.insert(Assessments).values({
+    name:sessionData[0].assessmentName,
  
+    jobRole:sessionData[0].jobRole,
+   companyId:user?.id as number,
+  
+  }) .returning()  
+  const version=await db.insert(versions).values({assessmentId:assessment[0].id,name:'default',isPublished:false,uniqueId:uuidv4()}).returning({id:versions.id})
+
+ await generateMultipleChoiceQuestions({assessment:assessment[0],versionId:version[0].id,content:sessionData[0]!.description!,questionsCount:sessionData[0].questionCount,duration:sessionData[0].duration,type:sessionData[0].generateBy,url:sessionData[0].url!})
+
+    await db.delete(SessionData).where(eq(SessionData.sessionId,sessionId))
+    return {assessmentId:assessment[0].id,versionId:version[0].id}
+    }
 
   export const getAllMultipleChoiceAndOptions = async ({ id }: { id: number }): Promise<MultipleChoiceAndOptions[]> => {
   

@@ -5,6 +5,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useAccountMutation } from "@/quries/AccoutQuery";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 const validationSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
   password: Yup.string().required("Password is required"),
@@ -43,6 +44,7 @@ const [mutate,{isLoading}]=useAccountMutation()
     onSubmit: async(values) => {
       const res=await mutate(values).unwrap()
       if(res.redirect){
+        toast.loading("loading",{duration:2000})
        callbackUrl?router.push(callbackUrl):router.push('/account/success')
       }
     },

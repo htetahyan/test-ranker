@@ -9,8 +9,15 @@ export const AccountQuery=baseApi.injectEndpoints({
                 method: 'POST',
                 body:JSON.stringify(body)
             })
-        })
+        }),
+        PostSession: builder.mutation({
+            query: ({sessionId}:{sessionId:string}) => ({
+                url: '/api/session',
+                method: 'POST',
+                body:JSON.stringify({sessionId})
+            })
+        }),
 })
 
 })
-export const {useAccountMutation} = AccountQuery
+export const {useAccountMutation,usePostSessionMutation} = AccountQuery

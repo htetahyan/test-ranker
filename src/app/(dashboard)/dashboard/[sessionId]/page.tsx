@@ -1,41 +1,29 @@
+'use client'
 import db from '@/db'
 import { Assessments, SessionData, versions } from '@/db/schema/schema'
 import { generateMultipleChoiceQuestions } from '@/service/assessments.service'
 import { currentUser } from '@/service/auth.service'
 import { Button } from '@nextui-org/react'
-import { eq } from 'drizzle-orm'
+
 import { Skeleton } from '@nextui-org/react'
 import React from 'react'
-import {v4 as uuidv4} from 'uuid'
-import { redirect } from 'next/navigation'
-const page = async(props: { params: Promise<{ sessionId: string }> }) => {
-    const { sessionId } = await props.params
 
-    const user=await currentUser()
-    const sessionData=await db.select().from(SessionData).where(eq(SessionData.sessionId,sessionId))
-    if(sessionData.length===0) redirect  ('/dashboard/assessments')
-    const generateAssessment=async()=>{
-      'use server'
-    
-      const assessment=await db.insert(Assessments).values({
-      name:sessionData[0].assessmentName,
-   
-      jobRole:sessionData[0].jobRole,
-     companyId:user?.id as number,
-    
-    }) .returning()  
-    const version=await db.insert(versions).values({assessmentId:assessment[0].id,name:'default',isPublished:false,uniqueId:uuidv4()}).returning({id:versions.id})
+import {  useParams, useRouter } from 'next/navigation'
+import { usePostSessionMutation } from '@/quries/AccoutQuery'
+const page =  () => {
+  
 
-   await generateMultipleChoiceQuestions({assessment:assessment[0],versionId:version[0].id,content:sessionData[0]!.description!,questionsCount:sessionData[0].questionCount,duration:sessionData[0].duration,type:sessionData[0].generateBy,url:sessionData[0].url!})
-
-      await db.delete(SessionData).where(eq(SessionData.sessionId,sessionId))
-      redirect(`/assessments/${assessment[0].id}/${version[0].id}/edit/tests`)
-      }
-    await generateAssessment()
+    const {sessionId} = useParams<{ sessionId: string }>()
+const [mutate,{isLoading}]=usePostSessionMutation()
+const router=useRouter()
+const submit=async()=>{
+  const res=await mutate({sessionId}).unwrap()
+  if(res?.redirect) router.push(res?.redirect)
+}
   return (
-    <div className='flex justify-center w-screen items-center h-screen'>
-      <Skeleton className='w-1/2 h-1/2' />
-      <Button isLoading={true}  >generating...</Button>
+    <div className='flex  flex-col justify-center w-[90vw] items-center h-screen'>
+     {isLoading &&  <Skeleton className='w-1/2 h-1/2' />}
+      <Button isLoading={isLoading} className='bg-black text-white' onClick={submit}  >Generate your tests</Button>
     </div>
   )
 }
