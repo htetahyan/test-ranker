@@ -12,14 +12,19 @@ import {
 } from "@nextui-org/react";
 import { FaArrowRight, FaPlus } from 'react-icons/fa';
 import Empty from '../animation/Empty';
+import { SelectAssessments, SelectVersions } from '@/db/schema/schema';
 
-const DashboardTable = ({ assessments }:{assessments: any}) => {
+type Data = {
+  Assessments: SelectAssessments,
+  versions: SelectVersions
+};
+
+const DashboardTable: React.FC<{ assessments: Data[] }> = ({ assessments }) => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const rowsPerPage = 6;
 
   useEffect(() => {
-    // Simulate a 2-second loading time
     const timer = setTimeout(() => setLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
@@ -33,32 +38,27 @@ const DashboardTable = ({ assessments }:{assessments: any}) => {
   }, [page, assessments]);
 
   return (
-    <div className="min-h-screen py-10 px-5 bg-gray-50">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-semibold text-gray-800">Assessments Overview</h1>
+    <div className="min-h-screen py-10 px-4 bg-gray-50">
+      <div className="max-w-5xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-semibold text-gray-800">Assessments</h1>
           <Link href="/assessments/new">
-            <Button className="flex items-center bg-black text-white px-6 py-3 rounded-lg transition duration-200 shadow-md">
-              <FaPlus className="mr-2" />
-              New Assessment
+            <Button className="flex items-center bg-black text-white px-5 py-2 rounded-lg shadow-md">
+              <FaPlus className="mr-2" /> New Assessment
             </Button>
           </Link>
         </div>
 
         {loading ? (
-          // Skeleton layout
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array.from({ length: rowsPerPage }).map((_, index) => (
-              <Card key={index} className="w-full space-y-5 p-4 rounded-lg">
+              <Card key={index} className="p-4 rounded-lg">
                 <Skeleton className="rounded-lg">
-                  <div className="h-24 rounded-lg bg-default-300"></div>
+                  <div className="h-20 rounded-lg bg-default-300"></div>
                 </Skeleton>
-                <div className="space-y-3">
+                <div className="mt-3 space-y-2">
                   <Skeleton className="w-3/5 rounded-lg">
                     <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
-                  </Skeleton>
-                  <Skeleton className="w-4/5 rounded-lg">
-                    <div className="h-3 w-4/5 rounded-lg bg-default-200"></div>
                   </Skeleton>
                   <Skeleton className="w-2/5 rounded-lg">
                     <div className="h-3 w-2/5 rounded-lg bg-default-300"></div>
@@ -68,26 +68,20 @@ const DashboardTable = ({ assessments }:{assessments: any}) => {
             ))}
           </div>
         ) : assessments.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {paginatedAssessments.map((item: any,i:number) => (
-              <Card key={i} className="bg-gradient-to-r from-gray-700 to-gray-900 text-white shadow-lg p-6 rounded-xl">
-                <CardHeader className="pb-2 flex items-center gap-4">
-                  <h3 className="text-xl font-semibold">{item.Assessments.name}</h3>
-                  <p className="text-sm text-gray-400">{item.Assessments.jobRole || "No job role specified"}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {paginatedAssessments.map((item, i) => (
+              <Card key={i} className="bg-gradient-to-r from-gray-700 to-gray-900 text-white shadow-lg p-3 rounded-lg">
+                <CardHeader className="pb-2 flex flex-col space-y-1">
+                  <h3 className="text-lg font-semibold">{item.Assessments.name}</h3>
+                  <p className="text-sm">{item.Assessments.jobRole || "No job role specified"}</p>
                 </CardHeader>
-
-                <CardBody className="text-gray-300 pb-4">
-                  <p className="text-lg">{new Date(item.Assessments.createdAt).toLocaleDateString()}</p>
+                <CardBody className="text-gray-400 text-sm">
+                  {new Date(item.Assessments.createdAt).toLocaleDateString()}
                 </CardBody>
-
                 <CardFooter className="flex justify-between items-center pt-2">
-                  <div className="flex flex-col">
-                    <p className="text-xs uppercase text-gray-400">Version</p>
-                    <p className="text-lg font-bold">{item.versions.name}</p>
-                  </div>
+                  <span className="text-sm">{item.versions.isPublished ? "Published" : "Draft"}</span>
                   <Link href={`/assessments/${item.Assessments.id}/${item.versions.id}`}>
-                    <Button className="text-white bg-blue-500 hover:bg-blue-600 rounded-full">
-                      <FaArrowRight />
+                    <Button isIconOnly endContent={<FaArrowRight  />} className="text-black bg-slate-200 hover:bg-slate-400 rounded-full p-">
                     </Button>
                   </Link>
                 </CardFooter>
@@ -99,7 +93,7 @@ const DashboardTable = ({ assessments }:{assessments: any}) => {
         )}
 
         {assessments.length > 0 && !loading && (
-          <div className="flex justify-center mt-8">
+          <div className="flex justify-center mt-6">
             <Pagination
               isCompact
               showControls

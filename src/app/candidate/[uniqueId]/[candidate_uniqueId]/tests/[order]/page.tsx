@@ -23,15 +23,14 @@ if(!versionAndTest) redirect('/candidate/'+params.uniqueId+'/'+params.candidate_
 
 const candidate = await getCandidateFromCandidateUniqueIdAndUniqueId(params.candidate_uniqueId, params.uniqueId)
   const response=await getAllMultipleChoiceAndOptions({id:versionAndTest?.testId})
-  console.log(response,versionAndTest,candidate,version,'s');
-
+ const test= await db.select().from(Tests).where(eq(Tests.id,versionAndTest?.testId)).then((data) => data[0])
   const {redirect: routing, url} =  redirectByCandidateStep({ candidate, uniqueId: params.uniqueId, currentPage: 'test' });
   /*   if (routing) redirect(url!); */
 
   return (
     <div>
       
-     <Test order={parseInt(params.order)} response={response} uniqueId={params.uniqueId}  candidate_uniqueId={params.candidate_uniqueId}/>
+     <Test order={parseInt(params.order)} test={test} response={response} uniqueId={params.uniqueId}  candidate_uniqueId={params.candidate_uniqueId}/>
     </div>
   )
 }

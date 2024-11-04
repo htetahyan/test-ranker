@@ -21,16 +21,13 @@ const page = async () => {
     .orderBy(asc(Assessments.createdAt)) ?? [];
 
   // Check if there's at least one assessment
-  let versionsArray = [] as any;
-  let versionCount = 0;
-
-  console.log(assessments, 'assessments');
+ 
   
 
   return (
     <div> <DashboardTable 
    
-      assessments={assessments} 
+      assessments={assessments as any} 
     // Handle case where versionsArray is empty
     /></div>
   );

@@ -1,43 +1,75 @@
-'use client'
-import { SelectCandidates } from '@/db/schema/schema'
-import React from 'react'
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue } from "@nextui-org/react";
+'use client';
+import { SelectAssessments, SelectCandidates, SelectVersions } from '@/db/schema/schema';
+import React from 'react';
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/react";
+import Link from 'next/link';
+import { Tooltip } from '@nextui-org/react';
 
-const CandidatesList = ({candidates}:{candidates: SelectCandidates[]}) => {
-  return (
-    <div>
-    <Table aria-label="Candidates table without pagination">
-      <TableHeader>
-        <TableColumn key="id">ID</TableColumn>
-        <TableColumn key="fullName">Full Name</TableColumn>
-        <TableColumn key="email">Email</TableColumn>
-        <TableColumn key="currentStep">Current Step</TableColumn>
-        <TableColumn key="isSigned">Signed</TableColumn>
-        <TableColumn key="status">Status</TableColumn>
-        <TableColumn key="createdAt">Created At</TableColumn>
-        <TableColumn key="generatedUrl">Generated URL</TableColumn>
-        <TableColumn key="score">Score</TableColumn>
-        <TableColumn key="updatedAt">Updated At</TableColumn>
-      </TableHeader>
-      <TableBody items={candidates}>
-        {(item) => (
-          <TableRow key={item.id}>
-            <TableCell>{item.id}</TableCell>
-            <TableCell>{item.fullName}</TableCell>
-            <TableCell>{item.email}</TableCell>
-            <TableCell>{item.currentStep}</TableCell>
-            <TableCell>{item.isSigned ? "Yes" : "No"}</TableCell>
-            <TableCell>{item.status}</TableCell>
-            <TableCell>{item.createdAt ? new Date(item.createdAt).toLocaleString() : "N/A"}</TableCell>
-            <TableCell>{item.generatedUrl || "N/A"}</TableCell>
-            <TableCell>{item.score !== null ? item.score : "N/A"}</TableCell>
-            <TableCell>{item.updatedAt ? new Date(item.updatedAt).toLocaleString() : "N/A"}</TableCell>
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
-  </div>
-  )
+interface Data {
+  Candidates: SelectCandidates;
+  versions: SelectVersions;
+  Assessments: SelectAssessments;
 }
 
-export default CandidatesList
+interface CandidatesListProps {
+  data: Data[];
+}
+
+const CandidatesList: React.FC<CandidatesListProps> = ({ data }) => {
+  return (
+    <div className="overflow-x-auto w-full">
+      <Table aria-label="Candidates table with versions and assessments" className="rounded-lg shadow-md">
+        <TableHeader>
+          <TableColumn>ID</TableColumn>
+          <TableColumn>Full Name</TableColumn>
+          <TableColumn>Email</TableColumn>
+          <TableColumn>Current Step</TableColumn>
+          <TableColumn>Signed</TableColumn>
+          <TableColumn>Status</TableColumn>
+          <TableColumn>Created At</TableColumn>
+          <TableColumn>Generated URL</TableColumn>
+          <TableColumn>Score</TableColumn>
+          <TableColumn>Updated At</TableColumn>
+          <TableColumn>Version Name</TableColumn>
+          <TableColumn>Published</TableColumn>
+          <TableColumn>Assessment Name</TableColumn>
+          <TableColumn>Job Role</TableColumn>
+        </TableHeader>
+        <TableBody items={data}>
+          {(item) => (
+            <TableRow key={item.Candidates.id} className="hover:bg-gray-100 transition duration-150 ease-in-out">
+              <TableCell>{item.Candidates.id}</TableCell>
+              <TableCell>{item.Candidates.fullName}</TableCell>
+              <TableCell>{item.Candidates.email}</TableCell>
+              <TableCell>{item.Candidates.currentStep}</TableCell>
+              <TableCell className={item.Candidates.isSigned ? "text-green-600" : "text-red-600"}>
+                {item.Candidates.isSigned ? "Yes" : "No"}
+              </TableCell>
+              <TableCell className={item.Candidates.status === 'Active' ? "text-blue-600" : "text-gray-500"}>
+                {item.Candidates.status}
+              </TableCell>
+              <TableCell>{item.Candidates.createdAt ? new Date(item.Candidates.createdAt).toLocaleDateString() : "N/A"}</TableCell>
+              <TableCell>
+                {item.Candidates.generatedUrl ? (
+                  <Tooltip content={item.Candidates.generatedUrl}>
+                    <Link href={item.Candidates.generatedUrl} className="text-blue-600 truncate">
+                      {item.Candidates.generatedUrl.length > 20 ? `${item.Candidates.generatedUrl.slice(0, 20)}...` : item.Candidates.generatedUrl}
+                    </Link>
+                  </Tooltip>
+                ) : "N/A"}
+              </TableCell>
+              <TableCell>{item.Candidates.score ?? "N/A"}</TableCell>
+              <TableCell>{item.Candidates.updatedAt ? new Date(item.Candidates.updatedAt).toLocaleDateString() : "N/A"}</TableCell>
+              <TableCell>{item.versions?.name}</TableCell>
+              <TableCell>{item.versions?.isPublished ? "Yes" : "No"}</TableCell>
+              <TableCell>{item.Assessments?.name}</TableCell>
+              <TableCell>{item.Assessments?.jobRole}</TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};
+
+export default CandidatesList;

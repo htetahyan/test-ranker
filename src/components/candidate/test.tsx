@@ -1,10 +1,10 @@
-// components/test.tsx
 'use client';
 
 import React, { useEffect, useState } from 'react';
 import QuizPage from '../assessments/QuizPage';
+import { SelectTests } from '@/db/schema/schema';
 
-const Test = ({ response, candidate_uniqueId, uniqueId, order }: { order: number, response: any, candidate_uniqueId: string, uniqueId: string }) => {
+const Test = ({ response, test, candidate_uniqueId, uniqueId, order }: { test: SelectTests, order: number, response: any, candidate_uniqueId: string, uniqueId: string }) => {
   const [countdown, setCountdown] = useState(10);
   const [showTest, setShowTest] = useState(false);
 
@@ -21,21 +21,44 @@ const Test = ({ response, candidate_uniqueId, uniqueId, order }: { order: number
   }, [countdown]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-800 to-gray-900 text-white">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-200">
       {showTest ? (
         <QuizPage questions={response} order={order} uniqueId={uniqueId} candidate_uniqueId={candidate_uniqueId} />
       ) : (
-        <div className="flex flex-col items-center bg-gray-100 text-gray-900 p-10 rounded-lg shadow-lg max-w-lg">
-          <h1 className="text-xl font-medium text-gray-600">Test Number {order}</h1>
-          <h1 className="text-4xl font-bold mb-4 text-gray-800">Prepare Yourself</h1>
-          <p className="text-lg mb-2 text-gray-700">The test will begin in:</p>
-          <div className="text-6xl font-bold text-red-600 mb-4">{countdown}</div>
-          <p className="text-base text-gray-600">Focus and be prepared to begin.</p>
-          <div className="mt-6">
-            <span className="inline-block px-5 py-2 bg-gray-800 text-white font-semibold rounded-md shadow transition duration-200 transform hover:bg-gray-700">
-              Countdown
-            </span>
+        <div className="flex flex-col items-center p-8 rounded-xl shadow-lg bg-white w-full max-w-md mx-auto text-center transform transition-all duration-500 ease-out animate-fade-in scale-105">
+          <h1 className="text-2xl font-semibold text-gray-900 mb-2 truncate">{test?.title}</h1>
+          <h1 className="text-lg text-gray-700">{test.questionsCount} Questions</h1>
+          <p className="text-sm text-gray-600 mb-6 line-clamp-3">{test?.description}</p>
+          
+          <h2 className="text-lg font-medium text-gray-800 mb-3">Test #{order}</h2>
+          <p className="text-gray-500 mb-2">Starting in:</p>
+          
+          <div className="relative flex items-center justify-center w-24 h-24 mb-6">
+            <svg className="absolute w-full h-full text-gray-300">
+              <circle
+                cx="50%"
+                cy="50%"
+                r="36"
+                stroke="currentColor"
+                strokeWidth="5"
+                fill="none"
+              />
+            </svg>
+            <svg className="absolute w-full h-full text-blue-500 transition-all duration-1000 ease-linear" style={{ strokeDasharray: 226, strokeDashoffset: (countdown / 10) * 226 }}>
+              <circle
+                cx="50%"
+                cy="50%"
+                r="36"
+                stroke="currentColor"
+                strokeWidth="5"
+                fill="none"
+                strokeLinecap="round"
+              />
+            </svg>
+            <span className="text-3xl font-semibold text-blue-500">{countdown}</span>
           </div>
+          
+          <p className="text-sm text-gray-600">Get ready to begin!</p>
         </div>
       )}
     </div>

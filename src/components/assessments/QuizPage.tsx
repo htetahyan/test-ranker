@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import "chart.js/auto";
 
 import { Bar, Line, Pie, PolarArea } from 'react-chartjs-2'
+import { Button } from '@nextui-org/react';
 
 
 
@@ -90,34 +91,34 @@ const router=useRouter()
         
             {/* Right Column - Options */}
             <div className="space-y-4">
-              {Object?.entries(currentQuestion?.options).map(([key, value]) => (
-                <button
+              {  Object?.entries(currentQuestion?.options).map(([key, value]) => (
+                <Button
                   key={key}
                   onClick={() => handleOptionClick(Number(key))}
                   className={`py-3 px-4 border rounded-lg w-full text-left text-base font-semibold transition-all duration-200 ${
                     selectedOptions[currentQuestionIndex] === Number(key)
-                      ? 'bg-blue-500 text-white shadow-lg'
+                      ? 'bg-black text-white shadow-lg'
                       : 'bg-gray-100 text-gray-700 hover:bg-blue-50 hover:border-blue-300'
                   }`}
                 >
                   {value}
-                </button>
+                </Button>
               ))}
             </div>
 
             {/* Next Button (spanning both columns) */}
             <div className="col-span-2 text-center">
-              <button
+              <Button
                 onClick={handleNextQuestion}
                 className={`mt-8 py-3 px-8 rounded-full text-lg font-bold transition-all duration-200 ${
                   selectedOptions[currentQuestionIndex] !== null
-                    ? 'bg-green-500 text-white hover:bg-green-600'
+                    ? 'bg-black text-white'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
                 disabled={selectedOptions[currentQuestionIndex] === null}
               >
                 {currentQuestionIndex < questions.length - 1 ? 'Next' : 'Submit'}
-              </button>
+              </Button>
             </div>
           </div>
         ) : (

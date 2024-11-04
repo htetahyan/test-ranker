@@ -16,10 +16,7 @@ const pathname=usePathname()
   return (
     <Navbar>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
-      <NavbarItem isActive={pathname==="/dashboard"}>
-          <Link color={pathname==="/dashboard" ? "primary" : "foreground"} href="/dashboard"  >
-Dashboard          </Link>
-        </NavbarItem>
+  
         <NavbarItem isActive={pathname==="/dashboard/assessments"}>
           <Link color={pathname==="/dashboard/assessments" ? "primary" : "foreground"} href="/dashboard/assessments"  >
             My assessments

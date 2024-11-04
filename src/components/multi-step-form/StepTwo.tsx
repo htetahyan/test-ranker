@@ -48,10 +48,10 @@ const StepTwo = ({ nextStep, prevStep }: { nextStep: () => void, prevStep: () =>
         <p className='text-gray-500'>Provide a URL or manually enter the job description.</p>
 
         <div className="flex gap-4">
-          <Button type="button" onClick={() => setUseUrl(true)} className={`${stepTwoData.useUrl ? 'bg-blue-600' : 'bg-gray-400'} text-white px-4 py-2 rounded-md`}>
+          <Button type="button" onClick={() => setUseUrl(true)} className={`${stepTwoData.useUrl ? 'bg-black' : 'bg-gray-400'} text-white px-4 py-2 rounded-md`}>
             Use URL
           </Button>
-          <Button type="button" onClick={() => setUseUrl(false)} className={`${!stepTwoData.useUrl ? 'bg-blue-600' : 'bg-gray-400'} text-white px-4 py-2 rounded-md`}>
+          <Button type="button" onClick={() => setUseUrl(false)} className={`${!stepTwoData.useUrl ? 'bg-black' : 'bg-gray-400'} text-white px-4 py-2 rounded-md`}>
             Enter Description
           </Button>
         </div>
@@ -77,8 +77,8 @@ const StepTwo = ({ nextStep, prevStep }: { nextStep: () => void, prevStep: () =>
         )}
 
         <div className='flex gap-4 w-full justify-between'>
-          <Button onClick={prevStep} className='bg-blue-600 text-white px-4 py-2 rounded-md'>Previous</Button>
-          <Button type='submit' className='bg-blue-600 text-white px-4 py-2 rounded-md'>Next</Button>
+          <Button onClick={prevStep} className='bg-black text-white px-4 py-2 rounded-md'>Previous</Button>
+          <Button type='submit' className='bg-black text-white px-4 py-2 rounded-md'>Next</Button>
         </div>
       </div>
     </form>

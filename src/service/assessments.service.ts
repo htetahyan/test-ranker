@@ -381,9 +381,7 @@ return isIdentical
 }
 export const generateMultipleChoiceQuestions = async ({assessment,content,questionsCount,versionId,duration,type,url}:{url:string,type:string,duration:number,versionId:number,assessment:SelectAssessments,content:string,questionsCount:number}) => {
   const assessmentId=assessment?.id
-  const versionCount= await db.select({ count: count() }).from(versions).where(eq(versions.assessmentId,assessmentId));
-  const version=await db.insert(versions).values({assessmentId,name:`Version ${versionCount[0].count+1}`,isPublished:false,
-  }).returning({id:versions.id})
+
   let desc;
   if(type==='URL'){
     const response=await fetch(url)
@@ -393,8 +391,7 @@ export const generateMultipleChoiceQuestions = async ({assessment,content,questi
   }else{
     desc=content}
   const prompt=generatePrompt(desc,questionsCount)
-   await generate({prompt,assessmentId,duration,questionsCount:questionsCount,versionId:version[0].id,title:`Generated`})
- redirect(`/assessment/${assessmentId}/${version[0].id}`)
+   await generate({prompt,assessmentId,duration,questionsCount:questionsCount,versionId,title:`Generated`})
   
 }
 const generatePrompt = (content: string, questionsCount: number) => ` Please create exactly ${questionsCount}  multiple-choice questions for the following Job description:

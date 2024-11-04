@@ -6,6 +6,7 @@ import { useFormik } from 'formik'
 import { label } from 'framer-motion/client'
 import React from 'react'
 import { useDispatch } from 'react-redux'
+import { toast } from 'sonner'
 import * as Yup from 'yup'
 
 const StepThree = ({ nextStep, prevStep }: { nextStep: () => void, prevStep: () => void }) => {
@@ -29,6 +30,7 @@ const StepThree = ({ nextStep, prevStep }: { nextStep: () => void, prevStep: () 
     },
     validationSchema,
     onSubmit: () => {
+      toast.loading("redirecting",{duration:2000})
    
       dispatch(setStepThreeData(formik.values))
       nextStep()
@@ -45,6 +47,7 @@ const StepThree = ({ nextStep, prevStep }: { nextStep: () => void, prevStep: () 
                                     label="Questions Count" 
                                     name='questionCount'
                                     showSteps={true}
+                                    
                                     color='secondary'
                                     step={1} 
                                     onChangeEnd={(value) => formik.setFieldValue('questionCount', value)} 
@@ -75,8 +78,8 @@ onChange={(e) => formik.setFieldValue('duration', parseInt(e.target.value))}>
 
 
         <div className='flex gap-4 w-full justify-between'>
-          <Button onClick={prevStep} className='bg-blue-600 text-white px-4 py-2 rounded-md'>Previous</Button>
-          <Button type='submit' className='bg-blue-600 text-white px-4 py-2 rounded-md'>Next</Button>
+          <Button onClick={prevStep} className='bg-black text-white px-4 py-2 rounded-md'>Previous</Button>
+          <Button type='submit' className='bg-black text-white px-4 py-2 rounded-md'>Next</Button>
         </div>
       </div>
     </form>
