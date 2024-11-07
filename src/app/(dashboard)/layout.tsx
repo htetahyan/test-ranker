@@ -1,14 +1,14 @@
-import Header from "@/components/dashboard/Header"
+import SideBar from "@/components/dashboard/Sidebar"
 import { currentUser } from "@/service/auth.service"
 
 const layout =async ({ children }: { children: React.ReactNode }) => {
     const user = await currentUser() as any
     return (
-        <>
-        <Header user={user} />
-
-            {children}
-        </>
+        <div className="flex h-screen w-screen relative overflow-hidden">
+        <SideBar user={user} />
+<div className="flex-1 overflow-y-auto max-w-[95vw] overflow-hidden relative">
+            {children}</div>
+        </div>
     )
 }
 

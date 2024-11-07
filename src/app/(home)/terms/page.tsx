@@ -1,7 +1,9 @@
-import React from 'react';
+import SkeletonLoading from '@/components/home/SkeletonLoading';
+import React, { Suspense } from 'react';
 
-export const TermsOfService = () => {
+ const TermsOfService = () => {
   return (
+    <Suspense fallback={<SkeletonLoading />}>
     <div className="w-full min-h-screen bg-gray-50 flex items-center justify-center p-4 md:p-8">
       <div className="max-w-3xl bg-white shadow-xl rounded-lg p-6 md:p-10 text-gray-800">
         <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6 text-center">
@@ -64,13 +66,14 @@ export const TermsOfService = () => {
             <p className="text-base text-gray-700">
               If you have any questions about these Terms, please contact us at{' '}
               <a href="mailto:terms@tryskilltest.com" className="text-blue-600 underline hover:text-blue-500 transition duration-200">
-                terms@tryskilltest.com
+                tryskilltest.vercel.com
               </a>.
             </p>
           </section>
         </div>
       </div>
     </div>
+    </Suspense>
   );
 };
 

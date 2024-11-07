@@ -11,7 +11,6 @@ const Page = async (props:{searchParams:Promise<{page:string,limit:string}>}) =>
   // Fetch all candidates without pagination
   const data = await db.select().from(Candidates).leftJoin(versions, eq(versions.id, Candidates.versionId)).leftJoin(Assessments,eq(Assessments.id,versions.assessmentId)).orderBy(
     asc(Candidates.createdAt)).limit(Number(limit)).offset(Number(page)*Number(limit));
-console.log(data);
 
   return (
  <CandidatesList data={data as any} />

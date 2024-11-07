@@ -5,8 +5,8 @@ import Logo from '@/assets/logo.png';
 const Footer = () => {
   const footerLinks = {
     Product: [
-      { label: 'Privacy Policy', href: '/privacy-policy' },
-      { label: 'Terms of Service', href: '/terms-of-service' },
+      { label: 'Privacy Policy', href: '/privacy' },
+      { label: 'Terms of Service', href: '/termss' },
       { label: 'Pricing', href: '/pricing' },
     ],
     Learn: [

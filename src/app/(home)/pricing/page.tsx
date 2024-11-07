@@ -42,10 +42,10 @@ const pricingPlans = [
   }
 ];
 
-export default function PricingPage() {
+const  PricingPage=()=> {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center p-8">
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">Pricing Plans</h1>
+      <h1 className="text-3xl mt-20 font-bold text-gray-800 mb-8">Pricing Plans</h1>
       <div className="grid gap-8 md:grid-cols-3 sm:grid-cols-1">
         {pricingPlans.map((plan, index) => (
           <Card key={index} className={`max-w-[400px] ${index === 2 ? "bg-gray-900 text-white" : "bg-white text-black"} shadow-lg rounded-lg`}>
@@ -85,3 +85,4 @@ export default function PricingPage() {
     </div>
   );
 }
+export default PricingPage

@@ -1,8 +1,9 @@
 // SectionsLayout.js
-import { motion } from 'framer-motion';
+import { motion, useScroll } from 'framer-motion';
 import { FaQuestionCircle, FaShareSquare, FaChartLine, FaRegEye } from 'react-icons/fa';
 
 const SectionsLayout = () => {
+  
     const sections = [
         {
           title: 'AI Quiz Generator',
@@ -52,8 +53,9 @@ const SectionsLayout = () => {
 
 export default SectionsLayout;
 
-const SectionCard = ({ title, heading, description, icon }:any) => (
-    
+const SectionCard = ({ title, heading, description, icon }:any) =>{
+  const { scrollYProgress } = useScroll();
+  return(
   <motion.div
     initial={{ opacity: 0, scale:0.7 }}
     whileInView={{ opacity: 1, scale:1 }}
@@ -72,11 +74,11 @@ const SectionCard = ({ title, heading, description, icon }:any) => (
     </div>
     {/* Progress Bar */}
     <motion.div
-      className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
-      initial={{ width: 0 }}
-      whileInView={{ width: '100%' }}
-      viewport={{ once: false }}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
+      className="absolute bottom-0 left-0 right-0 h-1 transform-[0%] bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
+     
+     
+      style={{ scaleX: scrollYProgress }}
+
     />
   </motion.div>
-);
+)};

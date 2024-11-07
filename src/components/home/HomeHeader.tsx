@@ -1,23 +1,61 @@
 'use client';
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, DropdownItem, DropdownTrigger, Dropdown, DropdownMenu } from "@nextui-org/react";
+import React, { ReactNode, useState } from 'react';
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Button, DropdownItem, DropdownTrigger, Dropdown, DropdownMenu } from "@nextui-org/react";
 import Image from "next/image";
 import { FaChevronDown, FaLock, FaChartLine, FaBolt, FaHome } from 'react-icons/fa'; // React icons
 import { GoLaw } from "react-icons/go";
 import Logo from '@/assets/logo.png';
-import { usePathname } from "next/navigation";
-import { MdAccountCircle } from "react-icons/md";
+import { usePathname, useRouter } from "next/navigation";
+import { MdStart, MdSubscriptions } from "react-icons/md";
+import Link from 'next/link';
+import { IoPricetagsOutline } from "react-icons/io5";
+
+interface Feature {
+  key: string;
+  description: string;
+  icon: ReactNode;
+  path: string;
+}
+
+interface MenuItem {
+  href: string;
+  text: string;
+  icon: ReactNode;
+}
 
 export default function HomeHeader() {
   const pathname = usePathname();
-  const features = [
-    { key: 'privacy_policy', description: 'Privacy Policy', icon: <FaLock className="text-blue-400" size={16} /> },
-    { key: 'terms_conditions', description: 'Terms & Conditions', icon: <GoLaw className="text-teal-400" size={16} /> },
-    { key: 'blogs', description: 'Blogs', icon: <FaChartLine size={16} className="text-red-400" /> },
-    { key: 'faqs', description: 'FAQs', icon: <FaBolt size={16} className="text-yellow-400" /> },
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+/*************  ✨ Codeium Command ⭐  *************/
+/**
+ * Renders a link component with a button.
+ *
+ * @param {string} href - The URL for the link.
+ * @param {string} text - The text to display on the button.
+ * @param {JSX.Element} startIcon - The icon to display at the start of the button.
+ * @returns {JSX.Element} A Link component wrapping a Button.
+ */
+/******  88154d24-c0f6-4c86-aa05-febd306da9be  *******/  
+  const features: Feature[] = [
+    { key: 'privacy_policy', description: 'Privacy Policy', icon: <FaLock className="text-blue-400" size={16} />, path: '/privacy' },
+    { key: 'terms_conditions', description: 'Terms & Conditions', icon: <GoLaw className="text-teal-400" size={16} />, path: '/terms' },
+    { key: 'blogs', description: 'Blogs', icon: <FaChartLine size={16} className="text-red-400" />, path: '/blogs' },
+    { key: 'faqs', description: 'FAQs', icon: <FaBolt size={16} className="text-yellow-400" />, path: '/faqs' },
   ];
 
-  const renderLink = (href: string, text: string, startIcon: React.ReactNode) => (
-    <Link href={href}>
+  const menuItems: MenuItem[] = [
+    { href: '/', text: 'Home', icon: <FaHome /> },
+    { href: '/pricing', text: 'Pricing', icon: <IoPricetagsOutline />
+    },
+  ];
+  const router=useRouter()
+ 
+  const pushToPath=(path:string)=>{
+    router.push(path)
+  }
+
+  const renderLink = (href: string, text: string, startIcon: ReactNode) => (
+    <Link href={href} key={href}>
       <Button
         disableAnimation
         startContent={startIcon}
@@ -30,20 +68,23 @@ export default function HomeHeader() {
   );
 
   return (
-    <Navbar>
-      <NavbarBrand className="bg-opacity-0">
-        <Image className="h-28 w-32" src={Logo} alt="Logo" />
-      </NavbarBrand>
+    <Navbar onMenuOpenChange={setIsMenuOpen} className='fixed -top-2'>
+      <NavbarContent>
+        <NavbarMenuToggle
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          className="sm:hidden"
+        />
+        <NavbarBrand className="bg-opacity-0">
+          <Image className="h-16 w-20" src={Logo} alt="Logo" />
+        </NavbarBrand>
+      </NavbarContent>
+
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
-        <NavbarItem>
-          {renderLink('/', 'Home', <FaHome />)}
-        </NavbarItem>
-        <NavbarItem>
-          {renderLink('/pricing', 'Pricing', <FaChartLine />)}
-        </NavbarItem>
-        <NavbarItem>
-          {renderLink('/about', 'About', <FaBolt />)}
-        </NavbarItem>
+        {menuItems.map((item) => (
+          <NavbarItem key={item.href}>
+            {renderLink(item.href, item.text, item.icon)}
+          </NavbarItem>
+        ))}
         <Dropdown>
           <NavbarItem>
             <DropdownTrigger>
@@ -66,24 +107,41 @@ export default function HomeHeader() {
             }}
           >
             {features.map(feature => (
-              <DropdownItem
+             <DropdownItem
                 key={feature.key}
                 description={feature.description}
                 startContent={feature.icon}
+                onClick={()=>pushToPath(feature.path)}
               >
-                {feature.key.split('_').map(word => word[0].toUpperCase() + word.slice(1)).join(' ')}
+                
+                  {feature.key.split('_').map(word => word[0].toUpperCase() + word.slice(1)).join(' ')}
+             
               </DropdownItem>
+          
             ))}
           </DropdownMenu>
         </Dropdown>
       </NavbarContent>
       <NavbarContent justify="end">
         <NavbarItem>
-          <Button endIcon={<MdAccountCircle />} as={Link} className="text-white bg-black" href="/login" variant="flat">
-            Login
+          <Button endContent={<MdStart size={16}/>} as={Link} className="text-white bg-black/70" href="/account" variant="flat">
+            Get Started
           </Button>
         </NavbarItem>
       </NavbarContent>
+      <NavbarMenu>
+        {menuItems.concat(features as any).map((item:any, index) => (
+          <NavbarMenuItem key={`${item.href || item.key}-${index}`}>
+            <Link
+              color={pathname === item.href ? "primary" : "foreground"}
+              className="w-full"
+              href={item.path || item.href}
+            >
+              {item.text || item.key.split('_').map((word:any) => word[0].toUpperCase() + word.slice(1)).join(' ')}
+            </Link>
+          </NavbarMenuItem>
+        ))}
+      </NavbarMenu>
     </Navbar>
   );
 }

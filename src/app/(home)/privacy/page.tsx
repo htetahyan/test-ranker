@@ -1,7 +1,11 @@
+'use client'
+import SkeletonLoading from '@/components/home/SkeletonLoading';
 import React from 'react';
+import {Suspense} from "react";
 
 const PrivacyPolicy = () => {
   return (
+    <Suspense fallback={<SkeletonLoading/>}>
     <div className="w-full min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6 md:p-10 text-gray-800">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
@@ -81,11 +85,12 @@ const PrivacyPolicy = () => {
         <p className="text-base text-gray-700 mb-4">
           For questions about this Privacy Policy, please contact us at{' '}
           <a href="mailto:privacy@tryskilltest.com" className="text-blue-600 underline hover:text-blue-500 transition duration-200">
-            privacy@tryskilltest.com
+            tryskilltest.vercel.com
           </a>.
         </p>
       </div>
     </div>
+    </Suspense>
   );
 };
 

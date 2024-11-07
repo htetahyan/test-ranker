@@ -1,19 +1,19 @@
 'use client';
-import Head from 'next/head';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Button, Divider } from '@nextui-org/react';
-import StatsSection from '@/components/home/StatsSection';
-import SectionsLayout from '@/components/home/HomeSections';
-import CustomerFeedBacks from '@/components/home/CustomerFeedBacks';
 
-export default function Home() {
+import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
+import SkeletonLoading from '@/components/home/SkeletonLoading';
+const StatsSection=dynamic(()=>import('@/components/home/StatsSection'),{ssr:false})
+const SectionsLayout=dynamic(()=>import('@/components/home/HomeSections'),{ssr:false})
+const CustomerFeedBacks=dynamic(()=>import('@/components/home/CustomerFeedBacks'),{ssr:false})
+const Page=()=> {
   return (
+    <Suspense fallback={<SkeletonLoading />}>
     <div className="bg-white text-black min-h-screen relative">
-      <Head>
-        <title>AI Quiz Generator</title>
-        <meta name="description" content="Generate AI-powered questions for job descriptions." />
-      </Head>
+ 
 
       {/* Hero Section */}
       <main className="flex min-h-screen h-fit backdrop:blur-2xl flex-col bg-gradient-to-r from-slate-50 to-blue-100 items-center justify-center text-center z-10 relative py-20">
@@ -69,5 +69,7 @@ export default function Home() {
       <CustomerFeedBacks />
       {/* How It Works Section */}
     </div>
+    </Suspense>
   );
 }
+export default Page
