@@ -1,8 +1,8 @@
 import Question from '@/components/candidate/question'
 import db from '@/db'
-import { Candidates, Questions } from '@/db/schema/schema'
+import { Candidates, Questions, versions } from '@/db/schema/schema'
 import { getCandidateFromCandidateUniqueIdAndUniqueId, redirectByCandidateStep } from '@/service/candidate.service'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { redirect } from 'next/navigation'
 import React from 'react'
 
@@ -11,8 +11,8 @@ const page = async (
 ) => {
   const params = await props.params;
   const questionId=Number(params.questionId)
-
-  const question=await db.select().from(Questions).where(eq(Questions.order, questionId)).then((data) => data[0])
+const version=await db.select().from(versions).where(eq(versions.uniqueId,params.uniqueId)).then((data) => data[0])
+  const question=await db.select().from(Questions).where(and(eq(Questions.versionId,version?.id),eq(Questions.order, questionId))).then((data) => data[0])
   if(!question) redirect(`/candidate/${params.uniqueId}/${params.candidate_uniqueId}/info`)
   if(!question || !params.candidate_uniqueId) redirect(`/candidate/${params.uniqueId}/${params.candidate_uniqueId}/info`)
 

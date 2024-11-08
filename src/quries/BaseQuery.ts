@@ -78,8 +78,8 @@ export const baseApi = createApi({
             
         }),            invalidatesTags:['TEST']
     }), generateMoreTest: builder.mutation({
-        query:({id,questionsCount,prompt}:{id:number,questionsCount:number,prompt:string})=>({
-            url:`/api/test/${id}/generate`,
+        query:({id,questionsCount,prompt,versionId}:{id:number,questionsCount:number,prompt:string,versionId:number})=>({
+            url:`/api/test/${id}/${versionId}/generate`,
             method:'POST',
             body:JSON.stringify({questionsCount,prompt})
         }),invalidatesTags:['TEST']

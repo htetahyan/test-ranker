@@ -5,12 +5,12 @@ import React, { useEffect, useState } from 'react';
 import MyQuillEditor from '../textEditor/Editor';
 import { useFormik } from 'formik';
 import Timer from './timer';
-import { Input } from '@nextui-org/react';
+import { Button, Input } from '@nextui-org/react';
 import { useAnswerQuestionMutation } from '@/quries/CandidateQuery';
 import { useRouter } from 'next/navigation';
 
 const Question = ({ questions, candidateUniqueId,uniqueId }: { questions: SelectQuestions; candidateUniqueId: string,uniqueId:string }) => {
-  const [mutate] = useAnswerQuestionMutation();
+  const [mutate,{isLoading}] = useAnswerQuestionMutation();
 
   const [isTimeUp, setTimeUp] = useState(false);
 const router=useRouter()
@@ -49,7 +49,7 @@ const fileChange = (e: any) => {
 }
   return (
     <div className='w-full flex flex-col justify-center items-center'>
-      <Timer duration={10} setIsTimeUp={setTimeUp} />
+      <Timer duration={questions.duration} setIsTimeUp={setTimeUp} />
       <form onSubmit={formik.handleSubmit}>
         <div className="flex items-center justify-center w-full h-fit bg-gray-100">
           <div className="grid w-full  grid-cols-1 gap-8 p-8 bg-white shadow-2xl sm:grid-cols-2 rounded-xl">
@@ -69,12 +69,13 @@ const fileChange = (e: any) => {
               ) : questions.type === 'fileAttachment' ? (
                 <Input placeholder="Upload file" accept="*" type="file" name="answer" onChange={fileChange} />
               ) : null}
-              <button
+              <Button
                 type="submit"
+                isDisabled={formik.isSubmitting || isLoading}
                 className="w-full px-6 py-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300"
               >
                 Submit Answer
-              </button>
+              </Button>
             </div>
           </div>
         </div>

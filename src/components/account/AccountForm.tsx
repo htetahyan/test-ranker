@@ -44,8 +44,7 @@ const [mutate,{isLoading}]=useAccountMutation()
     onSubmit: async(values) => {
       const res=await mutate(values).unwrap()
       if(res.redirect){
-        toast.loading("loading",{duration:2000})
-       callbackUrl?router.push(callbackUrl):router.push('/account/success')
+       callbackUrl?router.push(callbackUrl):router.push('/dashboard')
       }
     },
   });

@@ -1,9 +1,9 @@
   import db from "@/db"
-import { MultipleChoiceAnswers, MultipleChoicesQuestions, Options, Tests } from "@/db/schema/schema"
+import { MultipleChoiceAnswers, MultipleChoicesQuestions, Options, SelectTests, Tests, VersionAndTest, versions } from "@/db/schema/schema"
 import { createNewTest, createQuestionAndOptions, getGenerateTypeTestFromVersionAndTest } from "@/service/assessments.service"
 import { extractTextsFromHtml, generate } from "@/service/generate.service"
 import { main } from "@/service/openai.service"
-import { count, eq } from "drizzle-orm"
+import { and, count, eq } from "drizzle-orm"
 import { NextRequest, NextResponse } from "next/server"
 
 export const POST=async(req:NextRequest)=>{
@@ -15,12 +15,16 @@ try {
     if(!title  || !duration || !questionsCount   || !versionId ||!generateBy){
         throw new Error("Please provide all fields")
     }
+    const isVersionExist=await db.select().from(versions).where(eq(versions.id,versionId))
+    if(isVersionExist.length===0){
+      return NextResponse.json({message:"Version not found"},{status:404})
+    }
     const testId=await getGenerateTypeTestFromVersionAndTest({versionId,assessmentId})
     if(testId!==null && testId!==undefined){
       const isTestAlreadyExist=await db.select().from(Tests).where(eq(Tests.id,testId))
 
     if(isTestAlreadyExist[0]?.id){
-      await deleteAll(isTestAlreadyExist)    
+      await deleteAll(isTestAlreadyExist,assessmentId,versionId)    
     }
     }
     
@@ -41,10 +45,7 @@ case"link":
  const response=await fetch(link)
  const data=await response.text()
  console.log(data);
- const text= extractTextsFromHtml(data)
-console.log(text);
-
- 
+ const text= extractTextsFromHtml(data) 
  const linkPrompt = generatePrompt(text,questionsCount)
 return generate({prompt:linkPrompt,title,versionId,duration,questionsCount,assessmentId})
   }
@@ -60,7 +61,7 @@ return generate({prompt:linkPrompt,title,versionId,duration,questionsCount,asses
     }
 
 }
-const deleteAll=async(isTestAlreadyExist:any)=>{
+const deleteAll=async(isTestAlreadyExist:SelectTests[],assessmentId:number,versionId:number)=>{
  
     const multipleChoicesQuestions = await db
       .select()
@@ -68,6 +69,7 @@ const deleteAll=async(isTestAlreadyExist:any)=>{
       .where(eq(MultipleChoicesQuestions.testId, isTestAlreadyExist[0].id));
   
     await db.transaction(async (tx) => {
+      tx.delete(VersionAndTest).where(and(eq(VersionAndTest.versionId, versionId), eq(VersionAndTest.assessmentId, assessmentId), eq(VersionAndTest.testId, isTestAlreadyExist[0].id)));
       // Delete related MultipleChoiceAnswers first
       for (const m of multipleChoicesQuestions) {
         await tx.delete(MultipleChoiceAnswers)

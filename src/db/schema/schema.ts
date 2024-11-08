@@ -1,4 +1,5 @@
 // schema.ts 
+import { combineReducers } from "@reduxjs/toolkit";
 import { is, relations } from "drizzle-orm";
 import {
     pgTable,
@@ -43,9 +44,34 @@ export const Users = pgTable("Users", {
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
    
 });
+export const Pricing= pgTable("Pricing", {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id").references(() => Users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    priceId: text("price_id").notNull(),
+    customerId: text("customer_id"),
+    subscriptionId: text("subscription_id"),
+    email: text("email"),
+    status: text("status").notNull().default("active"),
+    startDate: timestamp("start_date").notNull(),
+    totalAssessments: integer("total_assessment").notNull().default(1),
+    totalCandidates: integer("total_candidates").notNull().default(1),
+    endDate: timestamp("end_date").notNull(),
+    nextBillDate: timestamp("next_bill_date").notNull(),
+    amount: text("amount"),
+    paymentMethod: text("payment_method").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+
+})
+export const pricingRelations = relations(Pricing, ({ one }) => ({
+    Users: one(Users, {
+        fields: [Pricing.userId],
+        references: [Users.id],
+    }),
+}));
 
 export const usersRelations = relations(Users, ({ many }) => ({
     Assessments: many(Assessments),
+    Pricing: many(Pricing),
   }));
 export const Assessments = pgTable("Assessments", {
     id: serial("id").primaryKey(),
@@ -133,12 +159,16 @@ export const CandidateInfo= pgTable("CandidateInfo", {
     countryOfResidence: text("country_of_residence").notNull(),
     countryOfOrigin: text("country_of_origin").notNull(),
     versionId: integer("version_id").default(1).notNull(),
+    ip: text("ip"),
+    browser: text("browser"),
+    device: text("device"),
+    os: text("os"),
+    cpu: text("cpu"),
     firstLanguage: text("first_language").notNull(),
     candidateId: integer("candidate_id").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     
-
 })
 
 
@@ -149,6 +179,7 @@ export const Candidates= pgTable("Candidates", {
     currentStep: text("current_step").notNull().default("intro"),
     isSigned: boolean("is_signed").notNull().default(false).notNull(),
     status: text("status").notNull().default("pending"),
+    companyId: integer("company_id"),
 
    
 versionId: integer("version_id").default(1).notNull(),
@@ -207,7 +238,7 @@ export const CandidatesRelations = relations(Candidates, ({ one }) => ({
   version: one(versions, {
     fields: [Candidates.versionId],
     references: [versions.id],
-  })  
+  })  ,company:one(Users,{fields:[Candidates.companyId],references:[Users.id]})
 }));
 
 export const Options= pgTable("Options", {
@@ -287,3 +318,4 @@ export type SelectUsers=typeof Users.$inferSelect
 export type SelectVersions=typeof versions.$inferSelect
 export type SelectMultipleChoiceAnswers=typeof MultipleChoiceAnswers.$inferSelect
 export type SelectSessionData=typeof SessionData.$inferSelect
+export type SelectPricing=typeof Pricing.$inferSelect

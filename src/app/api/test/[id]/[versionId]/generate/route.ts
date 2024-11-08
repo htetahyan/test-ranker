@@ -5,16 +5,18 @@ import { main } from "@/service/openai.service"
 import { count, eq } from "drizzle-orm"
 import { NextRequest, NextResponse } from "next/server"
 
-export const POST=async (req:NextRequest, props:{params: Promise<{id:string}>}) => {
+export const POST=async (req:NextRequest, props:{params: Promise<{id:string,versionId:string}>}) => {
   const params = await props.params;
   {
       try{
           const body=await req.json()
           const id=parseInt(params.id)
-          const {prompt,questionsCount,versionId}=body
+          const versionId=parseInt(params.versionId)
+
+          const {prompt,questionsCount}=body
           console.log(prompt,questionsCount,id);
           
-          if(!id){
+          if(!id || !versionId){
               throw new Error("Please provide id")
           }
           const testId=await getGenerateTypeTestFromVersionAndTest({versionId,assessmentId:id})

@@ -53,6 +53,11 @@ CREATE TABLE IF NOT EXISTS "CandidateInfo" (
 	"country_of_residence" text NOT NULL,
 	"country_of_origin" text NOT NULL,
 	"version_id" integer DEFAULT 1 NOT NULL,
+	"ip" text,
+	"browser" text,
+	"device" text,
+	"os" text,
+	"cpu" text,
 	"first_language" text NOT NULL,
 	"candidate_id" integer NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
@@ -66,6 +71,7 @@ CREATE TABLE IF NOT EXISTS "Candidates" (
 	"current_step" text DEFAULT 'intro' NOT NULL,
 	"is_signed" boolean DEFAULT false NOT NULL,
 	"status" text DEFAULT 'pending' NOT NULL,
+	"company_id" integer,
 	"version_id" integer DEFAULT 1 NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"generated_url" text,
@@ -117,6 +123,24 @@ CREATE TABLE IF NOT EXISTS "Options" (
 	"question_id" bigint NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "Pricing" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"user_id" integer,
+	"price_id" text NOT NULL,
+	"customer_id" text,
+	"subscription_id" text,
+	"email" text,
+	"status" text DEFAULT 'active' NOT NULL,
+	"start_date" timestamp NOT NULL,
+	"total_assessment" integer DEFAULT 1 NOT NULL,
+	"total_candidates" integer DEFAULT 1 NOT NULL,
+	"end_date" timestamp NOT NULL,
+	"next_bill_date" timestamp NOT NULL,
+	"amount" text,
+	"payment_method" text NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Questions" (
@@ -184,6 +208,7 @@ CREATE TABLE IF NOT EXISTS "VersionAndTest" (
 	"type" text DEFAULT 'GENERATED' NOT NULL,
 	"assessment_id" integer NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
+	"order" integer DEFAULT 1 NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
@@ -236,6 +261,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "Options" ADD CONSTRAINT "Options_question_id_MultipleChoicesQuestions_id_fk" FOREIGN KEY ("question_id") REFERENCES "public"."MultipleChoicesQuestions"("id") ON DELETE cascade ON UPDATE cascade;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "Pricing" ADD CONSTRAINT "Pricing_user_id_Users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."Users"("id") ON DELETE cascade ON UPDATE cascade;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

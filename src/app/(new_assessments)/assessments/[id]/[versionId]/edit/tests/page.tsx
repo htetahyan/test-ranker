@@ -18,7 +18,7 @@ import db from '@/db';
 const page = async (props: { params: Promise< { id: string,versionId: string }> }) => {
   const { id,versionId } = await props.params;
 
-  if (!id) {
+  if (!id || !versionId) {
     throw new Error("Please provide an id");
   }
 

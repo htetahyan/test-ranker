@@ -2,11 +2,12 @@ import db from "@/db"
 import { CandidateInfo, Candidates, Resume } from "@/db/schema/schema"
 import { uploadArrayBuffer } from "@/service/storage.service"
 import { and, eq } from "drizzle-orm"
-import { NextRequest, NextResponse } from "next/server"
+import { NextRequest, NextResponse, userAgent } from "next/server"
 
 export const POST=async(req:NextRequest)=>{ 
     try{
-
+const {browser,cpu,device,engine,os,isBot,ua}=userAgent(req)
+const ip=await req
         const formData = await req.formData();
         const highestEducation = JSON.parse(formData.get('highestEducation') as string || '{}'); // Use string or empty object as fallback
         const studyField = JSON.parse(formData.get('studyField') as string || '{}');
@@ -34,13 +35,14 @@ export const POST=async(req:NextRequest)=>{
             //@ts-nocheck
             name:"resume!.name! as string",
 size:resume!.size! ??   2048 as number,
+
             candidateId:candidateId!,
 
             type:resume?.type! as string,
             url:response!.requestId as string,
         })}
         await db.insert(CandidateInfo).values({
-           
+           browser:browser.name,cpu:cpu.architecture,device:device.model,engine:engine.name,os:os.name,ip:
             versionId:versionId! as number,
             highestEducation:highestEducation,
             studyField:studyField,

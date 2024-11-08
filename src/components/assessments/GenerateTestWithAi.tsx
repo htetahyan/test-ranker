@@ -85,10 +85,9 @@ const GenerateTestWithAi = ({  versionId,text,assessmentId }: { assessmentId: nu
         onSubmit: async (values) => {
          
             
-            const payload = { ...values };
-            console.log(payload);
+           
              // Add the extracted PDF text to the payload
-            const res = await mutate(payload).unwrap()
+            const res = await mutate(values).unwrap()
             onClose()
             
             if (res.message === "success") {

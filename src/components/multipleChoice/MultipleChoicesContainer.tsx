@@ -30,7 +30,7 @@ const MultipleChoicesContainer = ({ id,versionId }: { id: number,versionId:numbe
 const formik=useFormik({
   initialValues:{prompt:'',questionsCount:2},
   onSubmit:async(values)=>{
-      mutate({id,questionsCount:values.questionsCount,prompt:values.prompt}).unwrap().finally(()=>onClose())
+      mutate({id,questionsCount:values.questionsCount,prompt:values.prompt,versionId}).unwrap().finally(()=>onClose())
   },
   validationSchema
 })
@@ -50,7 +50,7 @@ const formik=useFormik({
                     <MultipleChoice key={i} MultipleChoice={m} />
                 ))
             ) : (
-                <GenerateTestWithAi versionId={id} assessmentId={id} text={"generate test with ai"} />
+                <GenerateTestWithAi versionId={versionId} assessmentId={id} text={"generate test with ai"} />
             )}</div>
             {isLoading &&  <Skeleton className="rounded-lg">
         <div className="h-24 rounded-lg bg-default-300"></div>

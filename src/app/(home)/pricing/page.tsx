@@ -1,4 +1,5 @@
 import { Card, CardHeader, CardBody, CardFooter, Divider, Button, Badge, Chip } from "@nextui-org/react";
+import Link from "next/link";
 import { MdCheckCircleOutline } from "react-icons/md";
 
 
@@ -71,13 +72,13 @@ const  PricingPage=()=> {
             <Divider className={index === 2 ? "bg-gray-700" : "bg-gray-300"} />
             <CardFooter className="flex justify-between items-center p-6">
               <p className="text-lg font-bold">{plan.price}</p>
-              <Button
+           <Link href="/account" >   <Button
                 
                
                 className={`${index===2?'bg-white text-black':'bg-black text-white'}`}
               >
                 Start now
-              </Button>
+              </Button></Link>
             </CardFooter>
           </Card>
         ))}
