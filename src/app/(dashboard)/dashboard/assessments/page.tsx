@@ -18,6 +18,8 @@ const page = async () => {
     .leftJoin(versions, and(eq(versions.assessmentId, Assessments.id), eq(versions.name, 'default')))
     .where(eq(Assessments.companyId, user?.id!))
     .orderBy(asc(Assessments.createdAt)) ?? []; 
+    console.log(assessments);
+    
   return (
     <div className='w-full '> <DashboardTable
       assessments={assessments as any}/></div>

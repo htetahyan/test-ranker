@@ -66,7 +66,7 @@ import React, { Suspense } from 'react';
             <p className="text-base text-gray-700">
               If you have any questions about these Terms, please contact us at{' '}
               <a href="mailto:terms@tryskilltest.com" className="text-blue-600 underline hover:text-blue-500 transition duration-200">
-                tryskilltest.vercel.com
+                tryskilltest.com
               </a>.
             </p>
           </section>

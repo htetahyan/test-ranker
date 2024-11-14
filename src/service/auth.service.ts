@@ -40,7 +40,7 @@ export const currentUser=async()=>{
     console.log(payload);
     
     if(!payload) return
-    const user=await db.select().from(Users).where(eq(Users.id,parseInt(payload.sub?.id!)!))
+    const user=await db.select().from(Users).where(eq(Users.id,parseInt(payload.sub!)!))
     return user[0]
 
 }

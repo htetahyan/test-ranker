@@ -4,6 +4,7 @@ import React from 'react'
 import MyQuestions from '@/components/questions/MyQuestions'
 import EditQuestions from '@/components/questions/EditQuestions'
 import Link from 'next/link'
+import PublishBtn from './PublishBtn'
 
 const page = async (props:{params: Promise<{id:string,versionId:string}>}) => {
   const params = await props.params;
@@ -13,8 +14,7 @@ const page = async (props:{params: Promise<{id:string,versionId:string}>}) => {
 <CircularSteps currentStep={3}/>
    <EditQuestions  versionId={parseInt(params.versionId)} assessmentId={Number(params.id)}/>
   <div className='flex justify-end w-full '>
-    <Link href={`/assessments/${params.id}/${params.versionId}`}><Button className='w-fit mx-4 bg-black text-white '>next</Button>
-    </Link>
+  <PublishBtn versionId={Number(params.versionId)} assessmentId={Number(params.id)} />
     </div>
     </div>
   )

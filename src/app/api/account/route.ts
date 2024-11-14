@@ -2,6 +2,7 @@ import db from "@/db"
 import { Pricing, Users } from "@/db/schema/schema"
 import { comparePassword, hashPassword } from "@/service/auth.service"
 import { cookieOptions, generateAccessToken } from "@/service/jwt.service"
+import { createNewUserWithPricing } from "@/service/oauth.service"
 import { eq } from "drizzle-orm"
 import { redirect } from "next/dist/server/api-utils"
 import { cookies } from "next/headers"
@@ -22,10 +23,9 @@ if(type==='signup'){
     if(oldUser.length>0){
         return NextResponse.json({message:"User with this email already exists"},{status:400})
     }
- user= await db.transaction(async (tx) => {
-  const u=  await tx.insert(Users).values({name,email,password:hashPassword(password),role:'Company'}).returning({id:Users.id}).then((data)=>data[0])
-await tx.insert(Pricing).values({userId:u.id,endDate:new Date(),startDate:new Date(),priceId:'free',nextBillDate:new Date(),status:'active',paymentMethod:'free'}).returning({id:Pricing.id}).then((data)=>data[0])
-return u
+ user= await createNewUserWithPricing({
+    email,
+    password: hashPassword(password),name,picture:'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',provider:'email',emailVerified:false
 })
 }else{
     if(oldUser.length===0){
@@ -38,7 +38,7 @@ return u
 }
 
 
- const token=await generateAccessToken(user);
+ const token=await generateAccessToken(user.id);
  
         (await cookies()).set('ac',token,cookieOptions(60*60*24))
 

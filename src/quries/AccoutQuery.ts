@@ -17,7 +17,35 @@ export const AccountQuery=baseApi.injectEndpoints({
                 body:JSON.stringify({sessionId})
             })
         }),
+        logout: builder.mutation({
+            query: () => ({
+                url: '/api/account/logout',
+                method: 'DELETE',
+            })
+        }),
+        verifyEmail: builder.mutation({
+            query: () => ({
+                url: '/api/account/verify',
+                method: 'POST',
+            })
+        }),
+        getSubscriptionBySubscriptionId: builder.query({
+            query: ({subscriptionId}) => ({
+                url: `/api/account/subscription/${subscriptionId}`,
+            })
+        }),
+        manageSubscription: builder.mutation({
+            query: ({subscriptionId}:{subscriptionId:string}) => ({
+                url: `/api/account/subscription/${subscriptionId}/manage`,
+                method: 'POST',
+            })
+        }),cancelSubscription: builder.mutation({
+            query: ({subscriptionId}:{subscriptionId:string}) => ({
+                url: `/api/account/subscription/${subscriptionId}/cancel`,
+                method: 'POST',
+            })
+        }),
 })
 
 })
-export const {useAccountMutation,usePostSessionMutation} = AccountQuery
+export const {useCancelSubscriptionMutation,useManageSubscriptionMutation,useGetSubscriptionBySubscriptionIdQuery,useAccountMutation,usePostSessionMutation,useLogoutMutation,useVerifyEmailMutation} = AccountQuery

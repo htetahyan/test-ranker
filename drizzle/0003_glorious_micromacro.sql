@@ -1,0 +1,1 @@
+ALTER TABLE "Pricing" ADD COLUMN "is_canceled" boolean DEFAULT false NOT NULL;

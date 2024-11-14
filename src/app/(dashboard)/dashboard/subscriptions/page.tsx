@@ -11,7 +11,7 @@ const page = async() => {
   const assessmentCounts=await db.select({count:count()}).from(Assessments).where(eq(Assessments.companyId,user?.id!))
   return (
     <div>
-      <UserPricing pricing={pricing[0]} />
+      <UserPricing user={user!} pricing={pricing[0]} />
     </div>
   )
 }

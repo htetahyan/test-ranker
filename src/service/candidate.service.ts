@@ -49,7 +49,7 @@ export const redirectByCandidateStep =  ({
        else if (candidate.currentStep === 'test') {
         return { redirect: true, url: candidateUrl + '/tests' };
       } else if (candidate.currentStep === 'finished') {
-        return { redirect: true, url: candidateUrl + '/success' };
+        return { redirect: true, url:  '/candidate/success' };
       }
     }
   

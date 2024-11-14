@@ -3,7 +3,8 @@ import usePaddle from "@/service/usePaddle";
 import { Button, Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from "@nextui-org/react";
 import PricingCards from "../dashboard/PricingCards";
 import { useState } from "react";
-export default function CheckoutButton({currentPricingId}:{currentPricingId:string}){
+import { SelectPricing } from "@/db/schema/schema";
+export default function CheckoutButton({currentPricingId,user,pricing}:{currentPricingId:string,user:any,pricing:SelectPricing}) {
   
 const {isOpen,onOpen,onOpenChange}=useDisclosure()
   return (<>
@@ -17,7 +18,7 @@ const {isOpen,onOpen,onOpenChange}=useDisclosure()
         {(onClose)=>(
           <><ModalHeader>Upgrade Your Plan</ModalHeader>
           <ModalBody>
-            <PricingCards currentId={currentPricingId} />
+            <PricingCards pricing={pricing}  user={user} currentId={currentPricingId} />
           </ModalBody>
           </>
         )}

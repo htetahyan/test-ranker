@@ -1,5 +1,5 @@
 {
-  "id": "9cead4fb-ba25-43aa-b44f-bc31829019bd",
+  "id": "6a515dde-0b54-4bcd-bff9-7b1e2d89b4b0",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -226,6 +226,12 @@
         },
         "browser": {
           "name": "browser",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location": {
+          "name": "location",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -1093,6 +1099,32 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "provider": {
+          "name": "provider",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'email'"
+        },
+        "email_verif_token": {
+          "name": "email_verif_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email_verified": {
+          "name": "email_verified",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "email_token_sent_at": {
+          "name": "email_token_sent_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
         },
         "password": {
           "name": "password",

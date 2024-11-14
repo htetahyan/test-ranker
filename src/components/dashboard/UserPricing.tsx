@@ -1,18 +1,43 @@
 'use client';
-import { SelectPricing } from '@/db/schema/schema';
-import { Button, Progress } from '@nextui-org/react';
+import { SelectPricing, SelectUsers } from '@/db/schema/schema';
+import { Button, Progress, Chip } from '@nextui-org/react';
 import React from 'react';
 import CheckoutButton from '../payment/CheckOutButton';
+import { useCancelSubscriptionMutation, useManageSubscriptionMutation } from '@/quries/AccoutQuery';
+import { useRouter } from 'next/navigation';
 
-const UserPricing = ({ pricing }: { pricing: SelectPricing }) => {
+const UserPricing = ({ pricing, user }: { pricing: SelectPricing, user: SelectUsers }) => {
+  console.log(pricing);
+
+  const OneTimeUsage = (used: number, candidateUsed: number, pricingId: string | null) => {
+    const limits = pricingLimits.find(pl => pl.pricingId === pricingId) || { assessmentsLimit: 100000000, candidatesLimit: 100000000 };
+    return {
+      assessments: { used, total: limits.assessmentsLimit || 100000000 },
+      candidates: { used: candidateUsed, total: limits.candidatesLimit || 100000000 },
+    };
+  };
+
   const subscriptionData = {
-    plan: pricing.priceId === 'free' ? 'Free' : pricing.priceId,
-    status: pricing.status,
-    startDate: pricing.priceId === 'free' ? null : pricing.startDate ? new Date(pricing.startDate).toLocaleDateString() : null,
-    endDate: pricing.priceId === 'free' ? null : pricing.endDate ? new Date(pricing.endDate).toLocaleDateString() : null,
-    cost: pricing.priceId === 'free' ? 'Free' : `$${pricing.amount}/month`,
-    renewalDate: pricing.priceId === 'free' ? null : pricing.nextBillDate ? new Date(pricing.nextBillDate).toLocaleDateString() : null,
-    usage: OneTimeUsage(1,1),
+    plan: pricing?.priceId === 'free' ? 'Free' : '',
+    status: pricing?.status,
+    startDate: pricing?.priceId === 'free' ? null : pricing?.startDate ? new Date(pricing?.startDate).toLocaleDateString() : null,
+    endDate: pricing?.priceId === 'free' ? null : pricing?.endDate ? new Date(pricing?.endDate).toLocaleDateString() : null,
+    cost: pricing?.priceId === 'free' ? 'Free' : `$${pricing?.amount}/month`,
+    renewalDate: pricing?.priceId === 'free' ? null : pricing?.nextBillDate ? new Date(pricing?.nextBillDate).toLocaleDateString() : null,
+    usage: OneTimeUsage(0, 0, pricing?.priceId || null),
+  };
+
+  const [mutate] = useManageSubscriptionMutation();
+  const [cancelMutate] = useCancelSubscriptionMutation();
+  const router = useRouter();
+
+  const cancelSubscription = async () => {
+    const res = await cancelMutate({ subscriptionId: pricing.subscriptionId ?? '' }).unwrap();
+  };
+
+  const manageSubscription = async () => {
+    const res = await mutate({ subscriptionId: pricing.subscriptionId ?? '' }).unwrap();
+    if (res?.url) router.push(res.url);
   };
 
   return (
@@ -25,7 +50,6 @@ const UserPricing = ({ pricing }: { pricing: SelectPricing }) => {
           <h3 className="text-lg font-semibold mb-2">Current plan</h3>
           <div className="flex items-center justify-between">
             <div>
-          
               <p className="text-xl font-bold">{subscriptionData.cost}</p>
             </div>
             <div className="flex items-center space-x-2">
@@ -35,6 +59,11 @@ const UserPricing = ({ pricing }: { pricing: SelectPricing }) => {
               <span className="bg-green-100 text-green-800 text-sm font-semibold px-2.5 py-0.5 rounded">
                 {subscriptionData.status}
               </span>
+              {pricing.isCanceled && (
+                <Chip color="primary" isDisabled>
+                  Canceled
+                </Chip>
+              )}
             </div>
           </div>
           <p className="text-sm text-gray-600 mt-2">
@@ -51,7 +80,6 @@ const UserPricing = ({ pricing }: { pricing: SelectPricing }) => {
         {/* Usage Section */}
         <div className="mb-6">
           <h3 className="text-lg font-semibold mb-2">Usage</h3>
-          <p className="text-sm text-gray-600 mb-4">Your usage is renewed every month.</p>
           <div className="grid grid-cols-2 gap-4">
             {/* Assessments */}
             <div className="bg-gray-100 p-4 rounded-lg text-center flex-col flex items-center">
@@ -99,9 +127,10 @@ const UserPricing = ({ pricing }: { pricing: SelectPricing }) => {
 
         {/* Action Buttons */}
         <div className="flex justify-between">
-          <Button color="danger" className="text-white">Cancel subscription</Button>
-          <Button color="primary" className="text-white">Manage payments</Button>
-          <CheckoutButton currentPricingId={pricing.priceId}/>
+          <Button onClick={manageSubscription} color="danger" className="text-white">Manage Subscription</Button>
+          <Button onClick={cancelSubscription} color="danger" className="text-white">Cancel Subscription</Button>
+
+          <CheckoutButton user={user} pricing={pricing} currentPricingId={pricing?.priceId}/>
         </div>
       </div>
     </div>
@@ -110,9 +139,12 @@ const UserPricing = ({ pricing }: { pricing: SelectPricing }) => {
 
 export default UserPricing;
 
-const OneTimeUsage = (used: number,candidateUsed: number) => {
-  return {
-    assessments: { used, total: 1 },
-    candidates: { used:candidateUsed, total: 1 },
-  };
-};
+const pricingLimits = [{
+  pricingId: 'free', assessmentsLimit: 1, candidatesLimit: 1
+}, {
+  pricingId: 'pri_01jc3hccwern15ex41rw5h7bz7', assessmentsLimit: 1, candidatesLimit: null,
+}, {
+  pricingId: 'pri_01jc3hehprwp718k0f247dpwqd', assessmentsLimit: 10, candidatesLimit: null
+}, {
+  pricingId: 'pri_01jc3hgpynvy9ac71829kq23t9', assessmentsLimit: 30, candidatesLimit: null
+}];

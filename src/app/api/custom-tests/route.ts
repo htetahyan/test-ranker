@@ -7,8 +7,12 @@ export const PUT=async(req:NextRequest)=>{
     try{
         const {versionId,customTestId,assessmentId}=await req.json()
 
+        if(!versionId || !customTestId || !assessmentId){
+            return NextResponse.json({message:"Please provide all fields"},{status:400})
+        }
+
        const test=await db.select().from(Tests).where(eq(Tests.id,customTestId))
-       console.log(test,'test',versionId,customTestId,assessmentId);
+       if(!test[0]) return NextResponse.json({message:"Test not found"},{status:404})
        
        const isExist = await db.select().from(VersionAndTest).where(and(eq(VersionAndTest.versionId,versionId),eq(VersionAndTest.testId,test[0].id),eq(VersionAndTest.assessmentId,assessmentId)))
        const versionAndTestCount=await db.select({count:count()}).from(VersionAndTest).where(and(eq(VersionAndTest.versionId,versionId),eq(VersionAndTest.assessmentId,assessmentId)))

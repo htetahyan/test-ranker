@@ -1,35 +1,39 @@
 "use client";
 import React, { Key } from "react";
-import { Tabs, Tab, Input, Button, Card, CardBody } from "@nextui-org/react";
+import { Tabs, Tab, Input, Button, Card, CardBody, CardHeader } from "@nextui-org/react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useAccountMutation } from "@/quries/AccoutQuery";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { FcGoogle } from 'react-icons/fc';  // Import Google Icon
+import { getGoogleOAuthURL } from "@/utils/authActions";
+import Logo from '@/assets/logo.png'
+import Background from '@/assets/background.jpg'
+import Image from "next/image";
+
 const validationSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
   password: Yup.string().required("Password is required"),
   type: Yup.string(),
   name: Yup.string().when("type", {
     is: (val: string) => val === "signup",
-    then:()=> Yup.string().required("Name is required"),
-   
+    then: () => Yup.string().required("Name is required"),
   }),
   confirmPassword: Yup.string().when("type", {
     is: (val: string) => val === "signup",
-    then:()=> Yup.string()
+    then: () => Yup.string()
       .oneOf([Yup.ref("password")], "Passwords must match")
       .required("Confirm Password is required"),
-    otherwise:()=> Yup.string().nullable(),
+    otherwise: () => Yup.string().nullable(),
   }),
 });
 
-
-const AccountForm=({callbackUrl}:{callbackUrl:string})=> {
+const AccountForm = ({ callbackUrl }: { callbackUrl: string }) => {
   const [selected, setSelected] = React.useState<any>("login");
-  const router=useRouter()
+  const router = useRouter();
   
-const [mutate,{isLoading}]=useAccountMutation()
+  const [mutate, { isLoading }] = useAccountMutation();
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -39,25 +43,29 @@ const [mutate,{isLoading}]=useAccountMutation()
       confirmPassword: "",
     },
     validationSchema: validationSchema,
-    validateOnChange: true, // This ensures that validation runs on field changes
+    validateOnChange: true,
     validateOnBlur: true,
-    onSubmit: async(values) => {
-      const res=await mutate(values).unwrap()
-      if(res.redirect){
-       callbackUrl?router.push(callbackUrl):router.push('/dashboard')
+    onSubmit: async (values) => {
+      const res = await mutate(values).unwrap();
+      if (res.redirect) {
+        callbackUrl ? router.push(callbackUrl) : router.push('/dashboard');
       }
     },
   });
 
-  // Update formik's type field when the tab changes
   const handleTabChange = (key: Key) => {
     setSelected(key);
     formik.setFieldValue("type", key);
   };
 
   return (
-    <div className="flex flex-col w-full h-screen items-center bg-white justify-center">
-      <Card className="max-w-full w-[500px] h-fit">
+    <div className="flex flex-col w-full min-h-screen items-center bg-gray-50 justify-center relative">
+      <Image src={Background} alt="Background" className="absolute inset-0 w-full h-full object-cover" />
+      <div className="absolute inset-0 bg-black opacity-30"></div>  {/* Background overlay for contrast */}
+      <Card className="w-full max-w-lg mx-4 sm:mx-auto p-6 sm:p-8 bg-white shadow-xl relative m-2 z-10">
+        <CardHeader className="flex justify-center mb-4">
+          <Image src={Logo} alt="Logo" width={200} height={100} />
+        </CardHeader>
         <CardBody className="overflow-hidden">
           <Tabs
             fullWidth
@@ -75,13 +83,10 @@ const [mutate,{isLoading}]=useAccountMutation()
                   type="email"
                   name="email"
                   onChange={formik.handleChange}
-                  onBlur={formik.handleBlur} // Handles validation on blur
+                  onBlur={formik.handleBlur}
                   value={formik.values.email}
                   errorMessage={formik.errors.email && formik.touched.email ? formik.errors.email : ""}
                 />
-                {formik.errors.email && formik.touched.email && (
-                  <div className="text-red-500">{formik.errors.email}</div>
-                )}
                 <Input
                   isRequired
                   label="Password"
@@ -89,18 +94,18 @@ const [mutate,{isLoading}]=useAccountMutation()
                   type="password"
                   name="password"
                   onChange={formik.handleChange}
-                  onBlur={formik.handleBlur} // Handles validation on blur
+                  onBlur={formik.handleBlur}
                   value={formik.values.password}
                   errorMessage={formik.errors.password && formik.touched.password ? formik.errors.password : ""}
                 />
-                {formik.errors.password && formik.touched.password && (
-                  <div className="text-red-500">{formik.errors.password}</div>
-                )}
                 <div className="flex gap-2 justify-end">
-                  <Button fullWidth  type="submit">
+                  <Button fullWidth type="submit">
                     Login
                   </Button>
                 </div>
+                <Button onClick={getGoogleOAuthURL} startContent={<FcGoogle />} fullWidth color="secondary" className="flex items-center justify-center gap-2">
+                  Sign in with Google
+                </Button>
               </form>
             </Tab>
 
@@ -113,8 +118,7 @@ const [mutate,{isLoading}]=useAccountMutation()
                   type="text"
                   name="name"
                   onChange={formik.handleChange}
-                  onBlur={formik.handleBlur} // Handles validation on blur
-                  isInvalid={!!(formik.errors.name && formik.touched.name)}
+                  onBlur={formik.handleBlur}
                   value={formik.values.name}
                   errorMessage={formik.errors.name && formik.touched.name ? formik.errors.name : ""}
                 />
@@ -125,8 +129,7 @@ const [mutate,{isLoading}]=useAccountMutation()
                   type="email"
                   name="email"
                   onChange={formik.handleChange}
-                  onBlur={formik.handleBlur} // Handles validation on blur
-                  isInvalid={!!(formik.errors.email && formik.touched.email)}
+                  onBlur={formik.handleBlur}
                   value={formik.values.email}
                   errorMessage={formik.errors.email && formik.touched.email ? formik.errors.email : ""}
                 />
@@ -137,8 +140,7 @@ const [mutate,{isLoading}]=useAccountMutation()
                   type="password"
                   name="password"
                   onChange={formik.handleChange}
-                  onBlur={formik.handleBlur} // Handles validation on blur
-                  isInvalid={!!(formik.errors.password && formik.touched.password)}
+                  onBlur={formik.handleBlur}
                   value={formik.values.password}
                   errorMessage={formik.errors.password && formik.touched.password ? formik.errors.password : ""}
                 />
@@ -149,8 +151,7 @@ const [mutate,{isLoading}]=useAccountMutation()
                   type="password"
                   name="confirmPassword"
                   onChange={formik.handleChange}
-                  onBlur={formik.handleBlur} // Handles validation on blur
-                  isInvalid={!!(formik.errors.confirmPassword && formik.touched.confirmPassword)}
+                  onBlur={formik.handleBlur}
                   value={formik.values.confirmPassword}
                   errorMessage={formik.errors.confirmPassword && formik.touched.confirmPassword ? formik.errors.confirmPassword : ""}
                 />
@@ -159,6 +160,10 @@ const [mutate,{isLoading}]=useAccountMutation()
                     Sign up
                   </Button>
                 </div>
+                <Button onClick={getGoogleOAuthURL} fullWidth color="secondary" className="flex items-center justify-center gap-2">
+                  <FcGoogle />
+                  Sign up with Google
+                </Button>
               </form>
             </Tab>
           </Tabs>
@@ -167,4 +172,5 @@ const [mutate,{isLoading}]=useAccountMutation()
     </div>
   );
 }
-export default AccountForm
+
+export default AccountForm;

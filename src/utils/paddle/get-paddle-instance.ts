@@ -4,6 +4,7 @@ export function getPaddleInstance() {
   const paddleOptions: PaddleOptions = {
     environment: Environment.sandbox,
     logLevel: LogLevel.error,
+  
   };
 
   if (!process.env.PADDLE_API_KEY) {

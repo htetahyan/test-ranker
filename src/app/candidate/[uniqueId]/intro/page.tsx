@@ -10,8 +10,8 @@ const page = async (props:{params: Promise<{uniqueId:string}>}) => {
 const version=await db.select().from(versions).where(eq(versions.uniqueId,uniqueId)).then((data) => data[0]) 
 
   const assessment=await db.select().from(Assessments).where(eq(Assessments.id,version?.assessmentId)).then((data) => data[0])
-  if(!assessment) <div>Assessment not found</div>
-
+  if(!assessment) return<div>Assessment not found</div>
+if(!version.isPublished) return <div>This Assessment is not published or no longer accept new candidates</div>
 
   return (
     <div>

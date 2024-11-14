@@ -8,7 +8,7 @@ const CandidateInfoHead = ({ candidateId }: { candidateId: number }) => {
   const { data, isLoading } = useGetCandidateInfoQuery(candidateId)
   
   const { candidateInfo, candidate } = data?.data ?? {}
-  const { currentStep,email, fullName, isSigned } = candidate as SelectCandidates || {}
+  const { currentStep, email, fullName, isSigned } = candidate as SelectCandidates || {}
   const {
     countryOfOrigin,
     countryOfResidence,
@@ -19,6 +19,13 @@ const CandidateInfoHead = ({ candidateId }: { candidateId: number }) => {
     birthDate,
     highestEducation,
     mostRelevantExperience,
+    browser,
+    cpu,
+    device,
+    location,
+    os,
+    versionId,
+    ip
   } = candidateInfo as SelectCandidatesInfo || {}
 
   return (
@@ -37,19 +44,18 @@ const CandidateInfoHead = ({ candidateId }: { candidateId: number }) => {
         </div>
       ) : (
         <div className="border border-gray-200 shadow-lg p-6 space-y-4 rounded-lg">
-        <div className='flex items-center justify-between'>  <h2 className="text-3xl font-bold">{fullName}</h2>
-        <Chip size='lg' color={currentStep === 'finished' ? 'success' : 'warning'}  >
-          {currentStep}
-          </Chip>
-        </div>
+          <div className='flex items-center justify-between'>
+            <h2 className="text-3xl font-bold">{fullName}</h2>
+            <Chip size='lg' color={currentStep === 'finished' ? 'success' : 'warning'}>
+              {currentStep}
+            </Chip>
+          </div>
           <Divider/>
-
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2 flex items-center">
               <FaEnvelope className="mr-2 text-gray-600" />
               <span className="font-semibold">Email:</span> {email}
             </div>
-
             <div className="flex items-center">
               <FaFlag className="mr-2 text-gray-600" />
               <span className="font-semibold">Country of Origin:</span> {countryOfOrigin}
@@ -58,7 +64,6 @@ const CandidateInfoHead = ({ candidateId }: { candidateId: number }) => {
               <FaFlag className="mr-2 text-gray-600" />
               <span className="font-semibold">Country of Residence:</span> {countryOfResidence}
             </div>
-
             <div className="flex items-center">
               <FaLanguage className="mr-2 text-gray-600" />
               <span className="font-semibold">First Language:</span> {firstLanguage}
@@ -67,12 +72,10 @@ const CandidateInfoHead = ({ candidateId }: { candidateId: number }) => {
               <FaVenusMars className="mr-2 text-gray-600" />
               <span className="font-semibold">Gender:</span> {gender}
             </div>
-
             <div className="col-span-2 flex items-center">
               <FaUserTie className="mr-2 text-gray-600" />
               <span className="font-semibold">Field of Study:</span> {studyField}
             </div>
-
             <div className="flex items-center">
               <FaBriefcase className="mr-2 text-gray-600" />
               <span className="font-semibold">Years of Experience:</span> {yearOfExperience} years
@@ -81,7 +84,6 @@ const CandidateInfoHead = ({ candidateId }: { candidateId: number }) => {
               <FaCalendarAlt className="mr-2 text-gray-600" />
               <span className="font-semibold">Birth Date:</span> {birthDate}
             </div>
-
             <div className="flex items-center">
               <FaGraduationCap className="mr-2 text-gray-600" />
               <span className="font-semibold">Highest Education:</span> {highestEducation}
@@ -89,6 +91,28 @@ const CandidateInfoHead = ({ candidateId }: { candidateId: number }) => {
             <div className="flex items-center">
               <FaBriefcase className="mr-2 text-gray-600" />
               <span className="font-semibold">Most Relevant Experience:</span> {mostRelevantExperience}
+            </div>
+            {/* Additional data fields */}
+            <div className="flex items-center">
+              <span className="font-semibold">Browser:</span> {browser}
+            </div>
+            <div className="flex items-center">
+              <span className="font-semibold">CPU:</span> {cpu}
+            </div>
+            <div className="flex items-center">
+              <span className="font-semibold">Device:</span> {device}
+            </div>
+            <div className="flex items-center">
+              <span className="font-semibold">Location:</span> {location}
+            </div>
+            <div className="flex items-center">
+              <span className="font-semibold">OS:</span> {os}
+            </div>
+            <div className="flex items-center">
+              <span className="font-semibold">Version ID:</span> {versionId}
+            </div>
+            <div className="flex items-center">
+              <span className="font-semibold">IP Address:</span> {ip}
             </div>
           </div>
 

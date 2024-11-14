@@ -1,7 +1,7 @@
 import SideBar from "@/components/dashboard/Sidebar"
 import { currentUser } from "@/service/auth.service"
 
-const layout =async ({ children }: { children: React.ReactNode }) => {
+const Layout =async ({ children }: { children: React.ReactNode }) => {
     const user = await currentUser() as any
     return (
         <div className="flex h-screen w-screen relative overflow-hidden">
@@ -12,4 +12,4 @@ const layout =async ({ children }: { children: React.ReactNode }) => {
     )
 }
 
-export default layout
+export default Layout

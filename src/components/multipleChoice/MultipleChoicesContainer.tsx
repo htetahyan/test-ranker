@@ -7,7 +7,7 @@ import { Button, Modal, ModalBody, ModalContent, Skeleton, useDisclosure,Input, 
 import GenerateTestWithAi from '../assessments/GenerateTestWithAi'
 
 import AddATest from '../tests/AddATest'
-import { FaPlusCircle } from 'react-icons/fa'
+import { FaArrowRight, FaPlusCircle } from 'react-icons/fa'
 import {  Bar, Pie } from "react-chartjs-2";
 import { CategoryScale,registerables } from "chart.js";
 import Chart from "chart.js/auto";
@@ -34,7 +34,6 @@ const formik=useFormik({
   },
   validationSchema
 })
-  console.log(isOpen,'isOpen');
   
     if (isLoading) {
         return <Skeleton />
@@ -43,6 +42,8 @@ const formik=useFormik({
     return (
        
         <div className="w-screen relative overflow-x-hidden mt-4 grid justify-center gap-10">
+      {//draft
+      }
       
 {/*           <div className="w-full mt-4 grid justify-end gap-10">  <AddATest id={id} /></div>
  */}           <div className='w-full mb-10 '> {sortMultipleChoiceByOrderNumberDesc?.length > 0 ? (
@@ -62,7 +63,7 @@ const formik=useFormik({
       {isSuccess && sortMultipleChoiceByOrderNumberDesc.length>0 && <Button onClick={onOpen} color='secondary' variant='solid' className='bg-gradient-to-r from-purple-600 to-pink-600 text-white' >Custom prompt</Button>}
       <Link href={`/assessments/${id}/${versionId}/edit/custom-tests`}> 
 
-       <Button  color='secondary' variant='solid' className='bg-purple-600 text-white' >Next</Button>    </Link>
+       <Button  endContent={<FaArrowRight/>}  variant='solid' className='bg-black text-white' >Next</Button>    </Link>
        <Modal size='md' isDismissable={false} isOpen={isOpen} onClose={onClose} onOpenChange={onOpenChange}>
         <ModalContent>{(onClose) => (
             <ModalBody>

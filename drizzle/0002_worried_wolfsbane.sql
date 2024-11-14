@@ -1,0 +1,1 @@
+ALTER TABLE "Users" ADD COLUMN "verification_status" text DEFAULT 'unverified' NOT NULL;

@@ -62,7 +62,7 @@ await mutate(extractChangedItems).unwrap().finally(() => {
 
   return (
     <div className="w-fit">
-      <Button color="secondary" className="text-white" endContent={<GoListOrdered />} onClick={onOpen}>
+      <Button  className="text-white bg-black" startContent={<GoListOrdered />} onClick={onOpen}>
         Order
       </Button>
       <Modal

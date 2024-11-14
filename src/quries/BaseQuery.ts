@@ -105,9 +105,14 @@ export const baseApi = createApi({
             params:{customTestId,versionId}
 
         }),providesTags:(result,error,args)=> error?['CUSTOM_TEST']:[{type:'CUSTOM_TEST',id:args.customTestId}]
+    }),
+TogglePublish:builder.mutation({
+    query:({assessmentId,versionId,type}:{assessmentId:number,versionId:number,type:string})=>({
+        url:`/api/assessments/${assessmentId}/${versionId}`,
+        method:'POST'
+        ,body:JSON.stringify({type})
     })
-
-    })
+})   })
 })
-export const {useIsCustomTestAddedQuery,useAddCustomTestToAssessmentMutation,useEditAssessmentMutation,useGenerateMoreTestMutation,useDeleteMutipleChoiceQuestionMutation,useGetMultipleChoiceAndOptionsQuery,useDeleteQuestionByIdMutation,useOrderTestsMutation,  useCreateNewAssessmentMutation ,useGenerateTestMutation, useEditMultipleChoiceQuestionMutation,useCreateNewQuestionMutation,useGetQuestionsFromVersionIdQuery } = baseApi
+export const {useTogglePublishMutation,useIsCustomTestAddedQuery,useAddCustomTestToAssessmentMutation,useEditAssessmentMutation,useGenerateMoreTestMutation,useDeleteMutipleChoiceQuestionMutation,useGetMultipleChoiceAndOptionsQuery,useDeleteQuestionByIdMutation,useOrderTestsMutation,  useCreateNewAssessmentMutation ,useGenerateTestMutation, useEditMultipleChoiceQuestionMutation,useCreateNewQuestionMutation,useGetQuestionsFromVersionIdQuery } = baseApi
 export default baseApi

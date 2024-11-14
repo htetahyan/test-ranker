@@ -3,11 +3,16 @@ import { CandidateInfo, Candidates, Resume } from "@/db/schema/schema"
 import { uploadArrayBuffer } from "@/service/storage.service"
 import { and, eq } from "drizzle-orm"
 import { NextRequest, NextResponse, userAgent } from "next/server"
+import { geolocation, ipAddress } from '@vercel/functions'
 
 export const POST=async(req:NextRequest)=>{ 
     try{
-const {browser,cpu,device,engine,os,isBot,ua}=userAgent(req)
-const ip=await req
+const {browser,cpu,device,os}=userAgent(req)
+const geo = geolocation(req)
+const ip = ipAddress(req)
+console.log(geo,ip);
+
+
         const formData = await req.formData();
         const highestEducation = JSON.parse(formData.get('highestEducation') as string || '{}'); // Use string or empty object as fallback
         const studyField = JSON.parse(formData.get('studyField') as string || '{}');
@@ -42,7 +47,8 @@ size:resume!.size! ??   2048 as number,
             url:response!.requestId as string,
         })}
         await db.insert(CandidateInfo).values({
-           browser:browser.name,cpu:cpu.architecture,device:device.model,engine:engine.name,os:os.name,ip:
+           browser:browser!.name!,cpu:cpu!.architecture!,device:device!.model!,os:os!.name!,ip:ip!,
+           location: `${geo?.city}, ${geo?.country}`,
             versionId:versionId! as number,
             highestEducation:highestEducation,
             studyField:studyField,
@@ -53,7 +59,7 @@ size:resume!.size! ??   2048 as number,
             
             countryOfResidence:countryOfResidence,
             countryOfOrigin:countryOfOrigin,
-            firstLanguage:firstLanguage,
+            firstLanguage:firstLanguage??'',
             
             candidateId
 

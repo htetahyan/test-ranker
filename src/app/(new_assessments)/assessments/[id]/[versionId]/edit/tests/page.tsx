@@ -13,6 +13,7 @@ import BackButton from '@/components/assessments/BackButton';
 import TestDragNDrop from '@/components/assessments/TestDragNDrop';
 import { asc, eq } from 'drizzle-orm';
 import db from '@/db';
+import SaveAsDraftBtn from './SaveAsDraftBtn';
 
 
 const page = async (props: { params: Promise< { id: string,versionId: string }> }) => {
@@ -42,9 +43,10 @@ console.log(multipleChoiceQuestions,'multipleChoiceQuestions');
           <h1 className='text-5xl font-bold'>{data?.assessment?.[0]?.name}</h1>
           <p className='text-gray-500'>{data?.assessment?.[0]?.jobRole}</p>
         </div>
+      <div className='flex items-center gap-4 '> <SaveAsDraftBtn versionId={parseInt(versionId)} assessmentId={parseInt(id)} />
 
-        <TestDragNDrop data={multipleChoiceQuestions} />
-
+        <TestDragNDrop  data={multipleChoiceQuestions} />
+        </div> 
       </div>
       <CircularSteps currentStep={2} />
     

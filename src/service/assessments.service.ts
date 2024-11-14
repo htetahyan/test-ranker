@@ -372,14 +372,11 @@ export const getAssesssmentRelatedInfo = async ({versionId,assessmentId,userId}:
   
   const assessment = await db.select().from(Assessments).where(and(eq(Assessments.id,assessmentId),eq(Assessments.companyId,userId)))
 const versionAndTest=await db.select().from(VersionAndTest).where(and(eq(VersionAndTest.versionId,versionId),eq(VersionAndTest.assessmentId,assessmentId)))
-if(versionAndTest.length===0) return null;
- /* const tests = await versionAndTest.map(async (item) => {
+const versionArray=await db.select().from(versions).where(eq(versions.assessmentId,assessmentId))
 
-    const test = await db.select().from(Tests).where(eq(Tests.id, item.testId))
-    return test[0]
-  })*/
+if(versionAndTest.length===0) return {assessment:assessment[0],candidates:[],versionId,version:versionArray};
+
   const candidates = await db.select().from(Candidates).where(eq(Candidates.versionId,versionAndTest[0].versionId))
- const versionArray=await db.select().from(versions).where(eq(versions.assessmentId,assessmentId))
   return {assessment:assessment[0],candidates,versionId,version:versionArray}
 }
 export const isVersionAndAssessmentExist = async ({versionId,assessmentId}:{versionId:number,assessmentId:number}) => {

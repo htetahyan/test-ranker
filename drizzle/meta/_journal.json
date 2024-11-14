@@ -5,8 +5,29 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1731043570652,
-      "tag": "0000_wide_azazel",
+      "when": 1731082492243,
+      "tag": "0000_perpetual_bug",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1731083066974,
+      "tag": "0001_complete_butterfly",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1731090913772,
+      "tag": "0002_worried_wolfsbane",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1731465380662,
+      "tag": "0003_glorious_micromacro",
       "breakpoints": true
     }
   ]

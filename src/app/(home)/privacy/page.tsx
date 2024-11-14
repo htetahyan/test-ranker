@@ -17,8 +17,8 @@ const PrivacyPolicy = () => {
         
         <p className="text-base text-gray-700 mb-6">
           Welcome to TrySkillTest! This Privacy Policy describes how TrySkillTest (referred to as “we,” “our,” or “us”) collects, uses, and protects your information when you use our platform at{' '}
-          <a href="https://tryskilltest.vercel.app" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline hover:text-blue-500 transition duration-200">
-            tryskilltest.vercel.app
+          <a href="https://tryskilltest.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline hover:text-blue-500 transition duration-200">
+            tryskilltests.com
           </a>.
           This policy applies to all users who engage with our services.
         </p>
@@ -85,7 +85,7 @@ const PrivacyPolicy = () => {
         <p className="text-base text-gray-700 mb-4">
           For questions about this Privacy Policy, please contact us at{' '}
           <a href="mailto:privacy@tryskilltest.com" className="text-blue-600 underline hover:text-blue-500 transition duration-200">
-            tryskilltest.vercel.com
+            tryskillstest.com
           </a>.
         </p>
       </div>

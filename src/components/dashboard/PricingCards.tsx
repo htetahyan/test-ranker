@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Card, CardHeader, CardBody, CardFooter, Divider, Button, Badge, Chip } from "@nextui-org/react";
+import { Card, CardHeader, CardBody, CardFooter, Divider, Button, Badge, Chip, SelectProps } from "@nextui-org/react";
 import { MdCheckCircleOutline } from "react-icons/md";
 import usePaddle from '@/service/usePaddle';
+import { SelectPricing } from '@/db/schema/schema';
 
 const pricingPlans = [
   {
     type: "One-Time Fee",
-    pricingId: 'pri_01jc3hgpynvy9ac71829kq23t9',
+    pricingId: 'pri_01jc3hccwern15ex41rw5h7bz7',
     price: "$5 per Test",
     features: [
       "1 Custom Test Creation",
@@ -33,7 +34,7 @@ const pricingPlans = [
   {
     type: "Pro Monthly Plan",
     price: "$28/month",
-    pricingId: "pri_01jc3hccwern15ex41rw5h7bz7",
+    pricingId: "pri_01jc3hgpynvy9ac71829kq23t9",
     features: [
       "30 Custom Test Creation",
       "Unlimited Candidates (Send test to as many candidates as needed)",
@@ -46,17 +47,27 @@ const pricingPlans = [
   }
 ];
 
-const PricingCards = ({ currentId }: any) => {
+const PricingCards = ({ currentId,user,pricing }: { currentId: string,user:any,pricing: SelectPricing}) => {
   const paddle = usePaddle();
  
   const openCheckout = (priceId: string) => {
     paddle?.Checkout.open({
+
+      
       items: [
         {
           priceId: priceId, // you can find it in the product catalog
           quantity: 1,
+          
         },
+
       ],
+    
+      customer:costomerData(pricing),
+      
+      customData: {
+        userId: user?.id,
+      }
     });
   };
 
@@ -103,3 +114,6 @@ const PricingCards = ({ currentId }: any) => {
 };
 
 export default PricingCards;
+const costomerData=( pricing:SelectPricing)=>{
+ return  pricing.customerId ?  {id:pricing.customerId,email:pricing.email}:{} as any
+}
