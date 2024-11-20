@@ -59,7 +59,7 @@ const UserPricing = ({ pricing, user }: { pricing: SelectPricing, user: SelectUs
               <span className="bg-green-100 text-green-800 text-sm font-semibold px-2.5 py-0.5 rounded">
                 {subscriptionData.status}
               </span>
-              {pricing.isCanceled && (
+              {pricing.isCancled && (
                 <Chip color="primary" isDisabled>
                   Canceled
                 </Chip>
