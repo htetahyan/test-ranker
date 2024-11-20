@@ -79,7 +79,7 @@ export async function sendEmailWithRetry(user: any, emailToken: string): Promise
     <div style="font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; background-color: #f4f4f4; border-radius: 8px;">
       <h2 style="color: #333;">Hello <strong>${user.name}</strong>,</h2>
       <p style="color: #555;">Please verify your email by clicking the link below:</p>
-      <a href='https://contentally.ai/api/oauth/email?token=${emailToken}' 
+      <a href='https://tryskillstest.com/api/oauth/email?token=${emailToken}' 
          style="display: inline-block; padding: 10px 15px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px;">
         Click here
       </a>
@@ -159,7 +159,8 @@ export const sentPasswordResetLink = async (email: string) => {
 
    const sender= await transporter.sendMail(mail);
 
-   if(sender.rejected) throw new Error("having load traffic try again later")
+   if(sender.rejected) throw new Error("having load traffic try again later"+sender.response)
+
   } catch (error:any) {
     console.error("Error sending email:", error);
     throw new Error(error.message);

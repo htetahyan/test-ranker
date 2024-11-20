@@ -5,6 +5,7 @@ import React from 'react'
 
 const page = async() => {
     const customTests = await getCustomTests()
+    console.log(customTests)
   return (
     <div>
       <h1>custom tests</h1>

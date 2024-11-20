@@ -21,9 +21,8 @@ const page = async (props:{params: Promise<{id:string,versionId:string}>}) => {
   const user=await currentUser()
   if(!user)  redirect('/account')
   const data=await getAssesssmentRelatedInfo({versionId:parseInt(params.versionId),assessmentId:parseInt(params.id),userId:user?.id!})
-console.log(data,user);
 
-  if(!data) return <div>404</div>
+  if(!data)  return <div>404</div>
 
 
   return (

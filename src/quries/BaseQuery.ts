@@ -112,7 +112,13 @@ TogglePublish:builder.mutation({
         method:'POST'
         ,body:JSON.stringify({type})
     })
+}),CloneVersion:builder.mutation({
+    query:({assessmentId,versionId}:{assessmentId:number,versionId:number})=>({
+        url:`/api/assessments/${assessmentId}/${versionId}/clone`,
+        method:'POST'
+        
+    })
 })   })
 })
-export const {useTogglePublishMutation,useIsCustomTestAddedQuery,useAddCustomTestToAssessmentMutation,useEditAssessmentMutation,useGenerateMoreTestMutation,useDeleteMutipleChoiceQuestionMutation,useGetMultipleChoiceAndOptionsQuery,useDeleteQuestionByIdMutation,useOrderTestsMutation,  useCreateNewAssessmentMutation ,useGenerateTestMutation, useEditMultipleChoiceQuestionMutation,useCreateNewQuestionMutation,useGetQuestionsFromVersionIdQuery } = baseApi
+export const {useCloneVersionMutation,useTogglePublishMutation,useIsCustomTestAddedQuery,useAddCustomTestToAssessmentMutation,useEditAssessmentMutation,useGenerateMoreTestMutation,useDeleteMutipleChoiceQuestionMutation,useGetMultipleChoiceAndOptionsQuery,useDeleteQuestionByIdMutation,useOrderTestsMutation,  useCreateNewAssessmentMutation ,useGenerateTestMutation, useEditMultipleChoiceQuestionMutation,useCreateNewQuestionMutation,useGetQuestionsFromVersionIdQuery } = baseApi
 export default baseApi

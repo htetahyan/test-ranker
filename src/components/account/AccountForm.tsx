@@ -1,15 +1,15 @@
 "use client";
 import React, { Key } from "react";
-import { Tabs, Tab, Input, Button, Card, CardBody, CardHeader } from "@nextui-org/react";
+import { Tabs, Tab, Input, Button, Card, CardBody, CardHeader, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useAccountMutation } from "@/quries/AccoutQuery";
+import { useAccountMutation, usePasswordResetMutation } from "@/quries/AccoutQuery";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { FcGoogle } from 'react-icons/fc';  // Import Google Icon
+import { FcGoogle } from 'react-icons/fc';
 import { getGoogleOAuthURL } from "@/utils/authActions";
-import Logo from '@/assets/logo.png'
-import Background from '@/assets/background.jpg'
+import Logo from '@/assets/logo.png';
+import Background from '@/assets/background.jpg';
 import Image from "next/image";
 
 const validationSchema = Yup.object().shape({
@@ -32,8 +32,10 @@ const validationSchema = Yup.object().shape({
 const AccountForm = ({ callbackUrl }: { callbackUrl: string }) => {
   const [selected, setSelected] = React.useState<any>("login");
   const router = useRouter();
-  
+  const [passwordResetEmail, setPasswordResetEmail] = React.useState("");
   const [mutate, { isLoading }] = useAccountMutation();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [sendPasswordReset, {isLoading:isPasswordResetLoading}]=usePasswordResetMutation();
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -57,11 +59,13 @@ const AccountForm = ({ callbackUrl }: { callbackUrl: string }) => {
     setSelected(key);
     formik.setFieldValue("type", key);
   };
-
+const sendPasswordResetEmail=async()=>{
+  const res=await sendPasswordReset({email:passwordResetEmail}).unwrap()
+}
   return (
     <div className="flex flex-col w-full min-h-screen items-center bg-gray-50 justify-center relative">
       <Image src={Background} alt="Background" className="absolute inset-0 w-full h-full object-cover" />
-      <div className="absolute inset-0 bg-black opacity-30"></div>  {/* Background overlay for contrast */}
+      <div className="absolute inset-0 bg-black opacity-30"></div>
       <Card className="w-full max-w-lg mx-4 sm:mx-auto p-6 sm:p-8 bg-white shadow-xl relative m-2 z-10">
         <CardHeader className="flex justify-center mb-4">
           <Image src={Logo} alt="Logo" width={200} height={100} />
@@ -98,11 +102,13 @@ const AccountForm = ({ callbackUrl }: { callbackUrl: string }) => {
                   value={formik.values.password}
                   errorMessage={formik.errors.password && formik.touched.password ? formik.errors.password : ""}
                 />
-                <div className="flex gap-2 justify-end">
+                  <p className="text-red-500" onClick={onOpen}>
+                    Forgot Password?
+                  </p>
                   <Button fullWidth type="submit">
                     Login
                   </Button>
-                </div>
+            
                 <Button onClick={getGoogleOAuthURL} startContent={<FcGoogle />} fullWidth color="secondary" className="flex items-center justify-center gap-2">
                   Sign in with Google
                 </Button>
@@ -169,8 +175,37 @@ const AccountForm = ({ callbackUrl }: { callbackUrl: string }) => {
           </Tabs>
         </CardBody>
       </Card>
+
+      {/* Forgot Password Modal */}
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">Forgot Password</ModalHeader>
+              <ModalBody>
+                <Input
+                  label="Email"
+                  placeholder="Enter your email"
+                  type="email"
+                  onChange={(e) => setPasswordResetEmail(e.target.value)}
+                  value={passwordResetEmail}
+                  name="forgotEmail"
+                />
+              </ModalBody>
+              <ModalFooter>
+                <Button color="primary"  isLoading={isPasswordResetLoading} onPress={sendPasswordResetEmail}>
+                  Submit
+                </Button>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
-}
+};
 
 export default AccountForm;

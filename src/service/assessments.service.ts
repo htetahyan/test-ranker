@@ -374,7 +374,7 @@ export const getAssesssmentRelatedInfo = async ({versionId,assessmentId,userId}:
 const versionAndTest=await db.select().from(VersionAndTest).where(and(eq(VersionAndTest.versionId,versionId),eq(VersionAndTest.assessmentId,assessmentId)))
 const versionArray=await db.select().from(versions).where(eq(versions.assessmentId,assessmentId))
 
-if(versionAndTest.length===0) return {assessment:assessment[0],candidates:[],versionId,version:versionArray};
+if(versionAndTest.length===0) return null;
 
   const candidates = await db.select().from(Candidates).where(eq(Candidates.versionId,versionAndTest[0].versionId))
   return {assessment:assessment[0],candidates,versionId,version:versionArray}

@@ -25,11 +25,10 @@ const Test = ({ response, test, candidate_uniqueId, uniqueId, order }: { test: S
       {showTest ? (
         <QuizPage questions={response} order={order} uniqueId={uniqueId} candidate_uniqueId={candidate_uniqueId} />
       ) : (
-        <div className="flex flex-col items-center p-8 rounded-xl shadow-lg bg-white w-full max-w-md mx-auto text-center transform transition-all duration-500 ease-out animate-fade-in scale-105">
+        <div className="flex flex-col items-center p-8 rounded-xl shadow-lg bg-white w-full  mx-auto text-center transform transition-all duration-500 ease-out animate-fade-in scale-105">
           <h1 className="text-2xl font-semibold text-gray-900 mb-2 truncate">{test?.title}</h1>
           <h1 className="text-lg text-gray-700">{test.questionsCount} Questions</h1>
-          <p className="text-sm text-gray-600 mb-6 line-clamp-3">{test?.description}</p>
-          
+{test.generator!=='ai' && <h1 className="text-lg text-gray-700">{test.duration} seconds</h1>}          
           <h2 className="text-lg font-medium text-gray-800 mb-3">Test #{order}</h2>
           <p className="text-gray-500 mb-2">Starting in:</p>
           

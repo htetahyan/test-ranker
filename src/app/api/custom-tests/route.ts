@@ -15,6 +15,7 @@ export const PUT=async(req:NextRequest)=>{
        if(!test[0]) return NextResponse.json({message:"Test not found"},{status:404})
        
        const isExist = await db.select().from(VersionAndTest).where(and(eq(VersionAndTest.versionId,versionId),eq(VersionAndTest.testId,test[0].id),eq(VersionAndTest.assessmentId,assessmentId)))
+       console.log(isExist,'isExist');
        const versionAndTestCount=await db.select({count:count()}).from(VersionAndTest).where(and(eq(VersionAndTest.versionId,versionId),eq(VersionAndTest.assessmentId,assessmentId)))
         if(isExist.length>0) {
             await db.delete(VersionAndTest).where(and(eq(VersionAndTest.versionId, versionId), eq(VersionAndTest.testId, test[0].id), eq(VersionAndTest.assessmentId, assessmentId))).returning({id: VersionAndTest.id})

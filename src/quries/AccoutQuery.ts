@@ -45,7 +45,14 @@ export const AccountQuery=baseApi.injectEndpoints({
                 method: 'POST',
             })
         }),
+        passwordReset: builder.mutation({
+            query: ({email}:{email:string}) => ({
+                url: `/api/account/password-reset`,
+                method: 'POST',
+                body:JSON.stringify({email})
+            })
+        })
 })
 
 })
-export const {useCancelSubscriptionMutation,useManageSubscriptionMutation,useGetSubscriptionBySubscriptionIdQuery,useAccountMutation,usePostSessionMutation,useLogoutMutation,useVerifyEmailMutation} = AccountQuery
+export const {usePasswordResetMutation,useCancelSubscriptionMutation,useManageSubscriptionMutation,useGetSubscriptionBySubscriptionIdQuery,useAccountMutation,usePostSessionMutation,useLogoutMutation,useVerifyEmailMutation} = AccountQuery

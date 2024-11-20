@@ -16,6 +16,8 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useAddNewMultipleChoiceAndOptionsMutation } from '@/quries/adminQuery'; // Corrected import path
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
+const MyQuillEditor=dynamic(()=>import('../textEditor/Editor'),{ssr:false})
 
 // Define the form fields
 interface FormValues {
@@ -107,13 +109,13 @@ const AddMultipleChoice: React.FC<AddMultipleChoiceProps> = ({ testId }) => {
       <Button className='bg-black text-white' onClick={onOpen}>
         Add Custom Test
       </Button>
-      <Modal size="lg" isOpen={isOpen} onClose={onClose} isDismissable={false}>
+      <Modal size="full" isOpen={isOpen} onClose={onClose} isDismissable={false}>
         <ModalContent>
           <ModalHeader>
             <h2 className="text-2xl font-semibold">Add Custom Test</h2>
           </ModalHeader>
           <ModalBody>
-            <form onSubmit={formik.handleSubmit} className="flex flex-col gap-6">
+            <form onSubmit={formik.handleSubmit} className="grid grid-cols-2 gap-6">
               <div className="flex flex-col gap-4">
                 <Input
                   label="Question"
@@ -125,12 +127,8 @@ const AddMultipleChoice: React.FC<AddMultipleChoiceProps> = ({ testId }) => {
                   <p className="text-red-500">{formik.errors.question}</p>
                 )}
 
-                <Textarea
-                  label="Description"
-                  placeholder="Enter a description for the question"
-                  {...formik.getFieldProps('description')}
-                  isInvalid={formik.touched.description && !!formik.errors.description}
-                />
+                <MyQuillEditor formik={formik} name='description'  />
+               
                 {formik.touched.description && formik.errors.description && (
                   <p className="text-red-500">{formik.errors.description}</p>
                 )}

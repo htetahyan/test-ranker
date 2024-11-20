@@ -11,6 +11,7 @@ const page = async (
 ) => {
   const params = await props.params;
   const questionId=Number(params.questionId)
+  
 const version=await db.select().from(versions).where(eq(versions.uniqueId,params.uniqueId)).then((data) => data[0])
   const question=await db.select().from(Questions).where(and(eq(Questions.versionId,version?.id),eq(Questions.order, questionId))).then((data) => data[0])
   if(!question) redirect(`/candidate/${params.uniqueId}/${params.candidate_uniqueId}/info`)

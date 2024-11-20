@@ -13,11 +13,14 @@ interface TestCardProps {
 }
 
 export const TestCard: React.FC<TestCardProps> = ({ test, isAdmin = false, versionId, assessmentId }) => {
-  const [mutate, { isLoading }] = useAddCustomTestToAssessmentMutation();
-  const { data, isLoading: isQueryLoading } = useIsCustomTestAddedQuery({ customTestId: test.id!, versionId: versionId! });
+  // Only initialize `mutate` and `data` if `isAdmin` is false
+  const [mutate, { isLoading }] = isAdmin ? [null, { isLoading: false }] : useAddCustomTestToAssessmentMutation();
+  const { data, isLoading: isQueryLoading } = isAdmin ? { data: null, isLoading: false } : useIsCustomTestAddedQuery({ customTestId: test?.id!, versionId: versionId! });
 
   const handleToggleTest = async () => {
-    await mutate({ customTestId: test.id!, versionId: versionId!, assessmentId: assessmentId! });
+    if (!isAdmin && mutate) {
+      await mutate({ customTestId: test?.id!, versionId: versionId!, assessmentId: assessmentId! });
+    }
   };
 
   const ActionButton = () => {
@@ -31,7 +34,7 @@ export const TestCard: React.FC<TestCardProps> = ({ test, isAdmin = false, versi
 
     return data?.isExist ? (
       <Button onClick={handleToggleTest} color='danger' className="border rounded-full px-4 py-2 hover:bg-gray-100" disabled={isLoading}>
-        remove
+        Remove
       </Button>
     ) : (
       <Button onClick={handleToggleTest} className="border rounded-full px-4 py-2 hover:bg-gray-100" disabled={isLoading}>
@@ -95,6 +98,7 @@ export const TestCard: React.FC<TestCardProps> = ({ test, isAdmin = false, versi
     </div>
   );
 };
+
 
 interface TestListProps {
   versionId?: number;

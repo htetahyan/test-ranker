@@ -9,6 +9,7 @@ import {
   Pagination,
   Button,
   Skeleton,
+  useDisclosure,
 } from "@nextui-org/react";
 import { FaArrowRight, FaPlus } from 'react-icons/fa';
 import Empty from '../animation/Empty';
@@ -33,10 +34,9 @@ const DashboardTable: React.FC<{ assessments: Data[] }> = ({ assessments }) => {
 
   const paginatedAssessments = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
+    const end = start + rowsPerPage
     return assessments.slice(start, end);
   }, [page, assessments]);
-
   return (
     <div className="min-h-screen py-10 px-4 bg-gray-50">
       <div className="max-w-5xl mx-auto">
@@ -80,10 +80,10 @@ const DashboardTable: React.FC<{ assessments: Data[] }> = ({ assessments }) => {
                 </CardBody>
                 <CardFooter className="flex justify-between items-center pt-2">
                   <span className="text-sm">{item.versions.isPublished ? "Published" : "Draft"}</span>
-                  <Link href={`/assessments/${item.Assessments.id}/${item.versions.id}`}>
-                    <Button isIconOnly endContent={<FaArrowRight  />} className="text-black bg-slate-200 hover:bg-slate-400 rounded-full p-">
+{/*                   <Link href={`/assessments/${item.Assessments.id}/${item.versions.id}`}>
+ */}                    <Button isIconOnly endContent={<FaArrowRight  />} className="text-black bg-slate-200 hover:bg-slate-400 rounded-full p-">
                     </Button>
-                  </Link>
+                
                 </CardFooter>
               </Card>
             ))}

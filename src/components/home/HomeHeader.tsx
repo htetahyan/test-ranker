@@ -26,16 +26,7 @@ interface MenuItem {
 export default function HomeHeader() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-/*************  ✨ Codeium Command ⭐  *************/
-/**
- * Renders a link component with a button.
- *
- * @param {string} href - The URL for the link.
- * @param {string} text - The text to display on the button.
- * @param {JSX.Element} startIcon - The icon to display at the start of the button.
- * @returns {JSX.Element} A Link component wrapping a Button.
- */
-/******  88154d24-c0f6-4c86-aa05-febd306da9be  *******/  
+
   const features: Feature[] = [
     { key: 'privacy_policy', description: 'Privacy Policy', icon: <FaLock className="text-blue-400" size={16} />, path: '/privacy' },
     { key: 'terms_conditions', description: 'Terms & Conditions', icon: <GoLaw className="text-teal-400" size={16} />, path: '/terms' },
@@ -52,6 +43,7 @@ export default function HomeHeader() {
  
   const pushToPath=(path:string)=>{
     router.push(path)
+   
   }
 
   const renderLink = (href: string, text: string, startIcon: ReactNode) => (
@@ -68,7 +60,7 @@ export default function HomeHeader() {
   );
 
   return (
-    <Navbar onMenuOpenChange={setIsMenuOpen} className='fixed -top-2'>
+    <Navbar onMenuOpenChange={setIsMenuOpen} isMenuOpen={isMenuOpen} className='fixed -top-2'>
       <NavbarContent>
         <NavbarMenuToggle
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
@@ -129,12 +121,11 @@ export default function HomeHeader() {
           </Button>
         </NavbarItem>
       </NavbarContent>
-      <NavbarMenu>
+      <NavbarMenu >
         {menuItems.concat(features as any).map((item:any, index) => (
-          <NavbarMenuItem key={`${item.href || item.key}-${index}`}>
-            <Link
-              color={pathname === item.href ? "primary" : "foreground"}
-              className="w-full"
+          <NavbarMenuItem key={`${item.href || item.key}-${index}`} >
+            <Link 
+          onClick={()=>setIsMenuOpen(false)}
               href={item.path || item.href}
             >
               {item.text || item.key.split('_').map((word:any) => word[0].toUpperCase() + word.slice(1)).join(' ')}

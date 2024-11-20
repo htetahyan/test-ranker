@@ -7,7 +7,7 @@ import {Checkbox} from '@nextui-org/react'; // Import your Checkbox component
 const page = async (props: { searchParams: Promise<{ id: string }> }) => {
   const { id } = await props.searchParams;
   const data = await getAllMultipleChoiceAndOptions({ id: parseInt(id) });
-
+console.log(data)
   return (
     <div className="grid gap-4 p-4">
       {/* Map through the data array to display each question */}
