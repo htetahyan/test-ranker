@@ -21,7 +21,7 @@ export default async function middleware(req: NextRequest) {
     if (pathname === '/admin' && user?.role !== 'Admin') {
         return NextResponse.redirect(new URL('/dashboard', req.url))
     }
-    if (pathname === '/dashboard' && !user) {
+    if (pathname.startsWith('/dashboard') && !user) {
         return NextResponse.redirect(new URL('/account', req.url))
     }
     
