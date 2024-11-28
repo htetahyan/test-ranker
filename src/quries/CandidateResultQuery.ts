@@ -22,6 +22,12 @@ const CandidateResultQuery = baseApi.injectEndpoints({
             }),
 
         }),
+        deleteCandidateAndResults: builder.mutation({
+            query: (candidateId) => ({
+                url: `/api/candidate-results/${candidateId}/delete`,
+                method: "DELETE",
+            }),
+        }),
         getCandidateResults: builder.query({
             query: ({candidateId,versionId}) => ({
                 url: `/api/candidate-results/${candidateId}/results`,
@@ -32,4 +38,4 @@ const CandidateResultQuery = baseApi.injectEndpoints({
     }),
 })
 export default CandidateResultQuery
-export const {useGetCandidateInfoQuery,useGetCandidateResultsQuery,useGetCandidateTestsAndAnswersQuery,useGetCandidateQuestionsAndAnswersQuery} = CandidateResultQuery
+export const {useDeleteCandidateAndResultsMutation,useGetCandidateInfoQuery,useGetCandidateResultsQuery,useGetCandidateTestsAndAnswersQuery,useGetCandidateQuestionsAndAnswersQuery} = CandidateResultQuery

@@ -1,11 +1,18 @@
 import db from "@/db"
-import { Assessments, Candidates, SelectCandidates } from "@/db/schema/schema"
-import { and, eq } from "drizzle-orm";
+import { Assessments, Candidates, Pricing, SelectCandidates, Users, usuage, versions } from "@/db/schema/schema"
+import { and, count, eq } from "drizzle-orm";
+import { NextResponse } from "next/server";
 import { v4 as uuidv4, } from 'uuid';
 
 export const createCandidate = async ({fullName,email,versionId}:{fullName:string,email:string,versionId:number}) => {
     try {
-        
+const assessment=await db.select().from(Assessments).where(eq(Assessments.id,versionId)).then((data) => data[0])
+const user=await db.select().from(Users).where(eq(Users.id,assessment.companyId)).then((data) => data[0])
+const pricing=await db.select().from(Pricing).where(and(eq(Pricing.status,'active'),eq(Pricing.userId,user.id))).then((data) => data[0])
+const myUsuage=await db.select().from(usuage).where(eq(usuage.pricingId,pricing.id)).then((data) => data[0])
+if(pricing.priceId=='free' && myUsuage.totalCandidates===1) throw  new Error("This assess")
+const existCandidate = await db.select().from(Candidates).where(and(eq(Candidates.email,email),eq(Candidates.versionId,versionId)))
+        if(existCandidate.length>0) throw new Error("Candidates with this mail already exist")
         const candidate = await db.insert(Candidates).values({
             versionId,
             email,

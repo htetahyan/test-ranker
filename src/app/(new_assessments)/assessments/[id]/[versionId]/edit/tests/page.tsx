@@ -1,7 +1,7 @@
 import { getTestAndQuestions, getTestsFromAssessmentId } from '@/service/assessments.service';
 import React from 'react';
 import TestList from '@/components/tests/TestLists';
-import { MultipleChoicesQuestions, SelectAssessments, SelectTests } from '@/db/schema/schema';
+import { MultipleChoicesQuestions, SelectAssessments, SelectTests, versions } from '@/db/schema/schema';
 import GenerateTestWithAi from '@/components/assessments/GenerateTestWithAi';
 import { Button, Skeleton, Spinner } from '@nextui-org/react';
 import CircularSteps from '@/components/assessments/CircularSteps';
@@ -24,8 +24,8 @@ const page = async (props: { params: Promise< { id: string,versionId: string }> 
   }
 
   const data = await getTestsFromAssessmentId({ assessmentId: parseInt(id),versionId:parseInt(versionId) }) as { tests: any, assessment: SelectAssessments[] };
-  
-  
+  const currentVersion = await db.select().from(versions).where(eq(versions.id, parseInt(versionId))).then((data) => data[0]);
+  if(currentVersion?.isPublished) return <div>Cannot be edited!</div>
   if (!data) return <div>404</div>;
   console.log(data,'[[[');
   

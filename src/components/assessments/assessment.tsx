@@ -9,14 +9,19 @@ import PublishDraftBtn from './PublishDraftBtn';
 import { useRouter } from 'next/navigation';
 import { useCloneVersionMutation } from '@/quries/BaseQuery';
 import { IoMdArrowRoundBack } from 'react-icons/io';
+import { toast } from 'sonner';
 
-const Assessment = ({ data, versionId }:any) => {
+const Assessment = ({ data, versionId, isFree }:any) => {
 const currentVersion=data?.version.find((v:any)=>v.id===versionId)
 const {isOpen,onOpen,onClose}=useDisclosure()
 const [isSelected, setIsSelected] = React.useState(false);
 const [clone]=useCloneVersionMutation()
 const router=useRouter()
 const goToEditAssessment=async()=>{
+  if(isFree){
+    toast.success('Free assessment cannot be edited')
+    return                  
+  }
   if(isSelected){
    await clone({assessmentId:data?.assessment?.id,versionId:currentVersion?.id}).unwrap()
   }
@@ -42,7 +47,7 @@ const goToEditAssessment=async()=>{
 <Modal isOpen={isOpen} onClose={onClose} >
   <ModalContent>
     {(onClose) => (
-      <><ModalHeader>Comfirm edit assessment</ModalHeader>
+      <><ModalHeader>Confirm edit assessment</ModalHeader>
       <ModalBody>
       <Checkbox isSelected={isSelected} onValueChange={setIsSelected}>
         <p className="text-gray-700">Are you sure you want to edit this assessment? This will create a new version and all candidates from this version will not be affected.</p>

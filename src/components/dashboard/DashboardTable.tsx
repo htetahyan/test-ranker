@@ -13,14 +13,16 @@ import {
 } from "@nextui-org/react";
 import { FaArrowRight, FaPlus } from 'react-icons/fa';
 import Empty from '../animation/Empty';
-import { SelectAssessments, SelectVersions } from '@/db/schema/schema';
+import { SelectAssessments, SelectUsers, SelectVersions } from '@/db/schema/schema';
+import { checkAssessmentLimitExceeded } from '@/service/auth.service';
+import { RiLockUnlockFill } from 'react-icons/ri';
 
 type Data = {
   Assessments: SelectAssessments,
   versions: SelectVersions
 };
 
-const DashboardTable: React.FC<{ assessments: Data[] }> = ({ assessments }) => {
+const DashboardTable: React.FC<{ assessments: Data[] ,user: SelectUsers, isAssessmentLimitExceed:boolean}> = ({ assessments, isAssessmentLimitExceed, user }) => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const rowsPerPage = 6;
@@ -37,16 +39,21 @@ const DashboardTable: React.FC<{ assessments: Data[] }> = ({ assessments }) => {
     const end = start + rowsPerPage
     return assessments.slice(start, end);
   }, [page, assessments]);
+  const goToNewAssessment = () => {
+    if(isAssessmentLimitExceed) return;
+    window.location.href = '/assessments/new';
+  }
+  
   return (
     <div className="min-h-screen py-10 px-4 bg-gray-50">
       <div className="max-w-5xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-semibold text-gray-800">Assessments</h1>
-          <Link href="/assessments/new">
-            <Button className="flex items-center bg-black text-white px-5 py-2 rounded-lg shadow-md">
-              <FaPlus className="mr-2" /> New Assessment
+          
+            <Button startContent={isAssessmentLimitExceed || !user.emailVerified ? <RiLockUnlockFill /> : <FaPlus />}   isDisabled={isAssessmentLimitExceed || !user.emailVerified} onClick={goToNewAssessment} className="flex items-center bg-black text-white px-5 py-2 rounded-lg shadow-md">
+            {isAssessmentLimitExceed ? <span className="ml-2 text-red-800">Limit Exceeded (upgrade)</span>: <span className="ml-2">New Assessment</span> } {!user.emailVerified  && <span className="ml-2 text-red-500">Email Not Verified</span>}
             </Button>
-          </Link>
+        
         </div>
 
         {loading ? (
@@ -80,10 +87,10 @@ const DashboardTable: React.FC<{ assessments: Data[] }> = ({ assessments }) => {
                 </CardBody>
                 <CardFooter className="flex justify-between items-center pt-2">
                   <span className="text-sm">{item.versions.isPublished ? "Published" : "Draft"}</span>
-{/*                   <Link href={`/assessments/${item.Assessments.id}/${item.versions.id}`}>
- */}                    <Button isIconOnly endContent={<FaArrowRight  />} className="text-black bg-slate-200 hover:bg-slate-400 rounded-full p-">
+             <Link href={`/assessments/${item.Assessments.id}/${item.versions.id}`}>
+                     <Button isIconOnly endContent={<FaArrowRight  />} className="text-black bg-slate-200 hover:bg-slate-400 rounded-full p-">
                     </Button>
-                
+                </Link>
                 </CardFooter>
               </Card>
             ))}

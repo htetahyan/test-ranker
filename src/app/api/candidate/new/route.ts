@@ -8,7 +8,7 @@ export const POST=async(req:NextRequest)=>{
     
     const body=await req.json()
     const {fullName,email,versionId}=body
-        console.log(versionId)
+    
     if(!fullName || !email||!version){
         return NextResponse.json({message:"Please provide all fields"},{status:400})
     }

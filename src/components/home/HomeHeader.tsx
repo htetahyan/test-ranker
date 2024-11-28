@@ -6,7 +6,7 @@ import { FaChevronDown, FaLock, FaChartLine, FaBolt, FaHome } from 'react-icons/
 import { GoLaw } from "react-icons/go";
 import Logo from '@/assets/logo.png';
 import { usePathname, useRouter } from "next/navigation";
-import { MdStart, MdSubscriptions } from "react-icons/md";
+import { MdDashboard, MdStart, MdSubscriptions } from "react-icons/md";
 import Link from 'next/link';
 import { IoPricetagsOutline } from "react-icons/io5";
 
@@ -23,7 +23,7 @@ interface MenuItem {
   icon: ReactNode;
 }
 
-export default function HomeHeader() {
+export default function HomeHeader({ user }: { user: any }) {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -116,9 +116,13 @@ export default function HomeHeader() {
       </NavbarContent>
       <NavbarContent justify="end">
         <NavbarItem>
-          <Button endContent={<MdStart size={16}/>} as={Link} className="text-white bg-black/70" href="/account" variant="flat">
-            Get Started
+        {user ? (
+          <Button endContent={<MdDashboard size={16}/>} as={Link} className="text-white bg-black/70" href="/dashboard" variant="flat">
+            Account
           </Button>
+        ):  <Button endContent={<MdStart size={16}/>} as={Link} className="text-white bg-black/70" href="/account" variant="flat">
+        Get Started
+      </Button>}
         </NavbarItem>
       </NavbarContent>
       <NavbarMenu >

@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer';
 import { addMinutes, isBefore } from 'date-fns'; // date utility library
 import {randomBytes} from "node:crypto";
 import db from '@/db';
-import { Pricing, Users } from '@/db/schema/schema';
+import { Pricing, Users, usuage } from '@/db/schema/schema';
 import { eq } from 'drizzle-orm';
 import { v7 as uuidv7 } from 'uuid';
 interface GoogleOAuthToken {
@@ -105,11 +105,11 @@ console.log(mail);
     }
 }
 export const transporter=nodemailer.createTransport({
-    host: "smtp-relay.brevo.com",
-    port: Number(587),
+    host: "smtp.resend.com",
+    port: 465,
     auth: {
-        user: "htetahyan@gmail.com",
-        pass: "xsmtpsib-ed37e78482a625aabc4f4d1e6eac72fca3ed0e55653622c8c5dc6b0ee2744cf0-4JsyXPrg5kZ2OxTU",
+        user: "resend",
+        pass: "re_FpAnbSEe_L2END4rSTQTTU3KhGWMMo1bV",
     },
 });
 
@@ -183,7 +183,8 @@ export const findExistORCreateUserGoogle = async (email: string, name: string, p
 export const createNewUserWithPricing=async({email,password,name,picture,provider,emailVerified}:{email:string,password:string,name:string,picture:string,provider:string,emailVerified:boolean})=>{
     return await db.transaction(async (tx) => {
          const u=  await tx.insert(Users).values({name,email,password,role:'Company',picture,provider,emailVerified}).returning({id:Users.id}).then((data)=>data[0])
-       await tx.insert(Pricing).values({userId:u.id,endDate:new Date(),startDate:new Date(),priceId:'free',nextBillDate:new Date(),status:'active',paymentMethod:'free'}).returning({id:Pricing.id}).then((data)=>data[0])
+      const p= await tx.insert(Pricing).values({userId:u.id,endDate:new Date(),startDate:new Date(),priceId:'free',nextBillDate:new Date(),status:'active',paymentMethod:'free'}).returning({id:Pricing.id}).then((data)=>data[0])
+const ua=await tx.insert(usuage).values({totalAssessments:0,pricingId:p.id,userId:u.id,totalCandidates:0}).returning({id:usuage.id}).then((data)=>data[0])
        return u
        })
  }

@@ -2,6 +2,7 @@ import db from "@/db"
 import { Pricing, Users } from "@/db/schema/schema"
 import { comparePassword, hashPassword } from "@/service/auth.service"
 import { cookieOptions, generateAccessToken } from "@/service/jwt.service"
+import { limit } from "@/service/middleware.service"
 import { createNewUserWithPricing } from "@/service/oauth.service"
 import { eq } from "drizzle-orm"
 import { redirect } from "next/dist/server/api-utils"
@@ -11,7 +12,10 @@ import { NextRequest, NextResponse } from "next/server"
 export const POST=async(req:NextRequest)=>{{
 
     try{
+        const ip = req.headers.get('X-Forwarded-For') ?? 'unknown';
 
+        const isRateLimitExceed=limit(ip)
+        if(isRateLimitExceed) return NextResponse.json({message:"Rate limit exceeded, please try again after 1 minute"},{status:429})
         const body=await req.json()
         const {email,password,type,name}=body
     

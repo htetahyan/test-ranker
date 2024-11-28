@@ -68,6 +68,14 @@ export const Pricing= pgTable("Pricing", {
     createdAt: timestamp("created_at").defaultNow().notNull(),
 
 })
+export const usuage= pgTable("usuage", {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id").references(() => Users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    totalAssessments: integer("total_assessment").notNull().default(0),
+    totalCandidates: integer("total_candidates").notNull().default(0),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    pricingId: integer("pricing_id").references(() => Pricing.id, { onDelete: "cascade", onUpdate: "cascade" }),
+})
 export const pricingRelations = relations(Pricing, ({ one }) => ({
     Users: one(Users, {
         fields: [Pricing.userId],

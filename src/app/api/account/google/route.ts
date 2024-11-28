@@ -6,11 +6,15 @@ import {revalidateTag} from "next/cache";
 import db from "@/db";
 import { Users } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
+import { limit } from "@/service/middleware.service";
 
 export const GET = async (request: NextRequest) => {
     const code= request.nextUrl.searchParams.get('code')
     try {
+        const ip = request.headers.get('X-Forwarded-For') ?? 'unknown';
 
+const isRateLimitExceed=limit(ip)
+if(isRateLimitExceed) return NextResponse.json({message:"Rate limit exceeded"},{status:429})
         const {expires_in, access_token,token_type,refresh_token,scope,id_token} = await getGoogleOAuthToken(code as string);
         const google_user=await getGoogleUserInfo(id_token,access_token);
        

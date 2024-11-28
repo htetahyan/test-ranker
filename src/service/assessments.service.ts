@@ -1,29 +1,73 @@
 import db from "@/db"
-import { Assessments, Candidates, MultipleChoicesQuestions, Options, Questions, SelectAssessments, SelectMultipleChoicesQuestions, SelectTests, SessionData, Tests, VersionAndTest, versions } from "@/db/schema/schema"
-import { and, count, eq, or } from "drizzle-orm"
+import { Assessments, Candidates, MultipleChoicesQuestions, Options, Pricing, Questions, SelectAssessments, SelectMultipleChoicesQuestions, SelectTests, SessionData, Tests, usuage, VersionAndTest, versions } from "@/db/schema/schema"
+import { and, AnyColumn, count, eq, or, sql } from "drizzle-orm"
 import { prepareMultipleQuestions } from "./prepare.service"
-import { unstable_cache } from "next/cache"
-import { option } from "framer-motion/client"
 import { v4 as uuidv4, } from 'uuid';
-import { main } from "./openai.service"
 import { extractTextsFromHtml, generate } from "./generate.service"
-import { redirect } from "next/navigation"
-export const createNewAssessment=async({name,companyId,jobRole}:{ name:string,companyId:number,jobRole:string})=>{
+const increment = (column: AnyColumn, value = 1) => {
+  return sql`${column} + ${value}`;
+};
+export const createNewAssessment = async ({ 
+  name, 
+  companyId, 
+  jobRole 
+}: { 
+  name: string; 
+  companyId: number; 
+  jobRole: string; 
+}) => {
+  return await db.transaction(async (tx) => {
+      // Insert into Assessments table
+      const assessment = await tx.insert(Assessments).values({
+          name,
+          companyId,
+          jobRole,
+      }).returning({ id: Assessments.id });
 
-    const id=await db.insert(Assessments).values({
+      const assessmentId = assessment[0].id;
 
-        name,
-        companyId,
-       
+      // Insert into Versions table
+      const version = await tx.insert(versions).values({
+          assessmentId,
+          name: 'default',
+          isPublished: false,
+          uniqueId: uuidv4(),
+      }).returning({ id: versions.id });
 
-        jobRole,
-       
-        
-    
-    }).returning({id:Assessments.id})
-    const version=await db.insert(versions).values({assessmentId:id[0].id,name:'default',isPublished:false,uniqueId:uuidv4()}).returning({id:versions.id})
-    return {id:id[0].id,versionId:version[0].id}
-}
+      const versionId = version[0].id;
+
+      // Retrieve Pricing ID
+      const pricing = await tx.select()
+          .from(Pricing)
+          .where(
+              and(
+                  eq(Pricing.status, 'active'),
+                  eq(Pricing.userId, companyId)
+              )
+          )
+          .then((res) => res[0]);
+
+      if (!pricing) {
+          throw new Error('Active pricing not found for the specified company.');
+      }
+
+      const pricingId = pricing.id;
+
+      // Update Usage table
+      await tx.update(usuage)
+          .set({totalAssessments:increment(usuage.totalAssessments,1) })
+          .where(
+              and(
+                  eq(usuage.pricingId, pricingId),
+                  eq(usuage.userId, companyId)
+              )
+          )
+          .returning({ id: usuage.id });
+
+      return { id: assessmentId, versionId };
+  });
+};
+
 export const getTestsFromAssessmentId=async({assessmentId,versionId}:{assessmentId:number,versionId:number})=>{
 try{
     console.log(assessmentId,'assessmentId');
@@ -371,12 +415,10 @@ export const editQuestionAndOptions = async ({question,id,options}:{
 export const getAssesssmentRelatedInfo = async ({versionId,assessmentId,userId}:{versionId:number,assessmentId:number,userId:number}) => {
   
   const assessment = await db.select().from(Assessments).where(and(eq(Assessments.id,assessmentId),eq(Assessments.companyId,userId)))
-const versionAndTest=await db.select().from(VersionAndTest).where(and(eq(VersionAndTest.versionId,versionId),eq(VersionAndTest.assessmentId,assessmentId)))
 const versionArray=await db.select().from(versions).where(eq(versions.assessmentId,assessmentId))
 
-if(versionAndTest.length===0) return null;
-
-  const candidates = await db.select().from(Candidates).where(eq(Candidates.versionId,versionAndTest[0].versionId))
+ 
+const candidates = await db.select().from(Candidates).where(eq(Candidates.versionId,versionId))
   return {assessment:assessment[0],candidates,versionId,version:versionArray}
 }
 export const isVersionAndAssessmentExist = async ({versionId,assessmentId}:{versionId:number,assessmentId:number}) => {

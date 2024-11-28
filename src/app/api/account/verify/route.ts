@@ -1,12 +1,17 @@
 import db from "@/db";
 import { Users } from "@/db/schema/schema";
 import { currentUser } from "@/service/auth.service";
+import { limit } from "@/service/middleware.service";
 import { generateEmailVerificationToken, sendEmailWithRetry } from "@/service/oauth.service";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
     try {
+        const ip = req.headers.get('X-Forwarded-For') ?? 'unknown';
+
+        const isRateLimitExceed=limit(ip)
+        if(isRateLimitExceed) return NextResponse.json({message:"Rate limit exceeded, please try again after 1 minute"},{status:429})
         const user= await currentUser()
         if(!user) return NextResponse.json({ message: "Please login" }, { status: 401 });
         if(user.emailVerified) return NextResponse.json({ message: "Mail is already verified" }, { status: 401 });

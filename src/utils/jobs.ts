@@ -30,7 +30,6 @@ export const jobsArray=[
     'Backend Developer',
     'Full Stack Developer',
     'DevOps Engineer',
-    'DevOps Engineer',
     'Data Scientist',
     'Data Engineer',
 ]

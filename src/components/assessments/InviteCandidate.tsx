@@ -56,13 +56,13 @@ export function InviteTabs({versionId,version,assessment}:{versionId:number,vers
 <GenerateInviteUrl version={version} versionId={versionId}/>            </CardBody>
           </Card>  
         </Tab>
-        <Tab key="videos" title="batch invite">
+        {/* <Tab key="videos" title="batch invite">
           <Card>
             <CardBody>
               Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
             </CardBody>
           </Card>  
-        </Tab>
+        </Tab> */}
       </Tabs>
     </div>  
   );
