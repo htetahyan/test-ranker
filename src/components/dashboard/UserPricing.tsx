@@ -37,6 +37,7 @@ const UserPricing = ({ pricing, user }: { pricing: SelectPricing, user: SelectUs
 
   const manageSubscription = async () => {
     const res = await mutate({ subscriptionId: pricing.subscriptionId ?? '' }).unwrap();
+
     if (res?.url) router.push(res.url);
   };
 
@@ -127,9 +128,9 @@ const UserPricing = ({ pricing, user }: { pricing: SelectPricing, user: SelectUs
 
         {/* Action Buttons */}
         <div className="flex justify-between">
-          <Button onClick={manageSubscription} color="danger" className="text-white">Manage Subscription</Button>
+      {pricing.priceId!=='free' &&  ( <><Button onClick={manageSubscription} color="danger" className="text-white">Manage Subscription</Button>
           <Button onClick={cancelSubscription} color="danger" className="text-white">Cancel Subscription</Button>
-
+          </> )  }
           <CheckoutButton user={user} pricing={pricing} currentPricingId={pricing?.priceId}/>
         </div>
       </div>

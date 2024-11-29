@@ -21,12 +21,14 @@ const page = async (
       redirect('/candidate/' + uniqueId + '/' + candidate_uniqueId + '/sign')
     case 'tests':
       redirect('/candidate/' + uniqueId + '/' + candidate_uniqueId + '/test')
+      case 'test':
+        redirect('/candidate/' + uniqueId + '/' + candidate_uniqueId + '/tests/1')
     case 'finished':
       return <> test Finished</>
   }
   return (
     <div>
-      
+    {current_step}
     </div>
   )
 }
