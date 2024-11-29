@@ -30,7 +30,7 @@ const StepThree = ({ nextStep, prevStep }: { nextStep: () => void, prevStep: () 
     },
     validationSchema,
     onSubmit: () => {
-      toast.loading("redirecting",{duration:2000})
+      toast.loading("redirecting",{duration:1})
    
       dispatch(setStepThreeData(formik.values))
       nextStep()

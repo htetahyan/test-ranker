@@ -66,7 +66,7 @@ export const baseApi = createApi({
             query:(body)=>({
                 url:`/api/multiple-choice/order`,
                 method:'POST',
-                body:JSON.stringify({list:body})
+                body:JSON.stringify(body)
             }),
             invalidatesTags:(result,error,arg)=> arg.map(({id}:any)=>({type:'TEST',id}))
         })
