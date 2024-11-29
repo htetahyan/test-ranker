@@ -34,18 +34,28 @@ export const comparePassword=(password:string,hashedPassword:string)=>{
 export const hashPassword=(password:string)=>{
     return hashSync(password, genSaltSync(10))
 }
-export const currentUser=async()=>{
-  try{
-    const token=  (await cookies()).get('ac')?.value
-    if(!token) return 
-    const payload = await decodeJWTToken(token) as any
+export const MyUser=async()=>{
+  const token=  (await cookies()).get('ac')?.value
+  if(!token) return null
+  const payload = await decodeJWTToken(token) as any
+  console.log(payload);
   
-    if(!payload) return
-    const user=await db.select().from(Users).where(eq(Users.id,parseInt(payload.sub!)!))
-if(!user) return 
+  if(!payload) null
+  const user=await db.select().from(Users).where(eq(Users.id,parseInt(payload.sub!)!))
+if(user.length===0) return null
+  return user[0]
 
-    return user[0]}
-    catch(err:any){return }
+}
+export const currentUser=async()=>{
+    const token=  (await cookies()).get('ac')?.value
+    if(!token) redirect('/account') 
+    const payload = await decodeJWTToken(token) as any
+    console.log(payload);
+    
+    if(!payload) redirect('/account')
+    const user=await db.select().from(Users).where(eq(Users.id,parseInt(payload.sub!)!))
+  if(user.length===0) redirect('/account')
+    return user[0]
 
 }
 export const getUserUsage = async (pricingId:number) => {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { currentUser } from "./service/auth.service"
+import { currentUser, MyUser } from "./service/auth.service"
 
 export const config = {
     matcher: [
@@ -14,7 +14,9 @@ const rateLimitMap = new Map();
 export default async function middleware(req: NextRequest) {
     const { pathname } = req.nextUrl
 
-    const user= await currentUser()
+    const user= await MyUser()
+    console.log(user,'user');
+    
     if (pathname === '/account' && user) {
         return NextResponse.redirect(new URL('/dashboard', req.url))
     }
