@@ -40,12 +40,12 @@ export const currentUser=async()=>{
     if(!token) return 
     const payload = await decodeJWTToken(token) as any
   
-    if(!payload) return
+    if(!payload) redirect('/account')
     const user=await db.select().from(Users).where(eq(Users.id,parseInt(payload.sub!)!))
 if(!user) return 
 
     return user[0]}
-    catch(err:any){return }
+    catch(err:any){redirect('/account') }
 
 }
 export const getUserUsage = async (pricingId:number) => {

@@ -23,7 +23,7 @@ interface MenuItem {
   icon: ReactNode;
 }
 
-export default function HomeHeader({ user }: { user: any }) {
+export default function HomeHeader() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -116,13 +116,9 @@ export default function HomeHeader({ user }: { user: any }) {
       </NavbarContent>
       <NavbarContent justify="end">
         <NavbarItem>
-        {user ? (
-          <Button endContent={<MdDashboard size={16}/>} as={Link} className="text-white bg-black/70" href="/dashboard" variant="flat">
-            Account
-          </Button>
-        ):  <Button endContent={<MdStart size={16}/>} as={Link} className="text-white bg-black/70" href="/account" variant="flat">
+      <Button endContent={<MdStart size={16}/>} as={Link} className="text-white bg-black/70" href="/account" variant="flat">
         Get Started
-      </Button>}
+      </Button>
         </NavbarItem>
       </NavbarContent>
       <NavbarMenu >
