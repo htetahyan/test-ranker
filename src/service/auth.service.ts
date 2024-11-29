@@ -39,12 +39,13 @@ export const currentUser=async()=>{
     const token=  (await cookies()).get('ac')?.value
     if(!token) return 
     const payload = await decodeJWTToken(token) as any
-    console.log(payload);
-    
-    if(!payload) return
+  
+    if(!payload) redirect('/account')
     const user=await db.select().from(Users).where(eq(Users.id,parseInt(payload.sub!)!))
+if(!user) return 
+
     return user[0]}
-    catch(err:any){return null}
+    catch(err:any){redirect('/account') }
 
 }
 export const getUserUsage = async (pricingId:number) => {

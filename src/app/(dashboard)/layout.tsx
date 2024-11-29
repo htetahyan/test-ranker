@@ -1,6 +1,9 @@
 import SideBar from "@/components/dashboard/Sidebar"
 import { currentUser } from "@/service/auth.service"
-
+export const metadata = {
+    title: "Dashboard",
+    description: "Dashboard",
+}
 const Layout =async ({ children }: { children: React.ReactNode }) => {
     const user = await currentUser() as any
     return (

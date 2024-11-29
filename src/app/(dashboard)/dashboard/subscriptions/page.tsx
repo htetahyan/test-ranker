@@ -1,19 +1,40 @@
-import UserPricing from '@/components/dashboard/UserPricing'
-import db from '@/db'
-import { Assessments, Candidates, Pricing } from '@/db/schema/schema'
-import { currentUser } from '@/service/auth.service'
-import { and, count, eq } from 'drizzle-orm'
-import React from 'react'
+import UserPricing from '@/components/dashboard/UserPricing';
+import db from '@/db';
+import { Pricing } from '@/db/schema/schema';
+import { currentUser } from '@/service/auth.service';
+import { and, eq } from 'drizzle-orm';
+import React from 'react';
 
-const page = async() => {
-  const user=await currentUser()
-  const pricing=await db.select().from(Pricing).where(and(eq(Pricing.status,'active'),eq(Pricing.userId,user?.id!)))
-  const assessmentCounts=await db.select({count:count()}).from(Assessments).where(eq(Assessments.companyId,user?.id!))
-  return (
-    <div>
-      <UserPricing user={user!} pricing={pricing[0]} />
-    </div>
-  )
-}
+const page = async () => {
+  try {
+    // Fetch the current user
+    const user = await currentUser();
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
 
-export default page
+    // Query the Pricing table
+    const pricing = await db
+      .select()
+      .from(Pricing)
+      .where(and(eq(Pricing.status, 'active'), eq(Pricing.userId, user.id)));
+
+    // Handle the case where no active pricing is found
+    const activePricing = pricing.length > 0 ? pricing[0] : null;
+
+    return (
+      <div>
+        {activePricing ? (
+          <UserPricing user={user} pricing={activePricing} />
+        ) : (
+          <div>No active subscription found.</div>
+        )}
+      </div>
+    );
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return <div>Error loading page. Please try again later.</div>;
+  }
+};
+
+export default page;

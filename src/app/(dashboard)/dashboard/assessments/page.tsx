@@ -4,7 +4,8 @@ import { Assessments, Candidates, SelectUsers, versions } from '@/db/schema/sche
 import { checkAssessmentLimitExceeded, checkPlanLimitExceeded, currentUser } from '@/service/auth.service';
 import { and, asc, count, eq } from 'drizzle-orm';
 import dynamic from 'next/dynamic';
-import React from 'react';const page = async () => {
+import React from 'react';
+const page = async () => {
   const user = await currentUser() as SelectUsers;
   
   const assessments = await db
@@ -13,9 +14,9 @@ import React from 'react';const page = async () => {
     .leftJoin(versions, and(eq(versions.assessmentId, Assessments.id), eq(versions.name, 'default')))
     .where(eq(Assessments.companyId, user?.id!))
     .orderBy(asc(Assessments.createdAt)) ?? []; 
-    console.log(assessments);
+    
   const limitExceed=await checkPlanLimitExceeded(user)
-    console.log(limitExceed);
+   
     const isAssessmentLimitExceed=await checkAssessmentLimitExceeded();
 
   return (
