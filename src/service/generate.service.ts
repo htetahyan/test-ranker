@@ -61,6 +61,7 @@ export const extractTextsFromHtml = (html: string) => {
       const baseCount = multipleChoiceQuestionsCount[0]?.count || 0;
   
       // Using Promise.all to ensure all questions are processed concurrently.
+      
       await Promise.all(
         array.map((question: any, index: number) =>
           createQuestionAndOptions({

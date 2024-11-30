@@ -1,4 +1,5 @@
 import SkeletonLoading from '@/components/home/SkeletonLoading';
+import Link from 'next/link';
 import React, { Suspense } from 'react';
 
 const TermsOfService = () => {
@@ -36,15 +37,15 @@ const TermsOfService = () => {
               </p>
               <ul className="list-disc list-inside space-y-2 text-base text-gray-600">
                 <li>
-                  <a href="/privacy-policy" className="text-blue-600 underline hover:text-blue-500 transition duration-200">
+                  <Link href="/privacy" className="text-blue-600 underline hover:text-blue-500 transition duration-200">
                     Privacy Policy
-                  </a>
+                </Link>
                 </li>
                
                 <li>
-                  <a href="/pricing" className="text-blue-600 underline hover:text-blue-500 transition duration-200">
+                  <Link href="/pricing" className="text-blue-600 underline hover:text-blue-500 transition duration-200">
                     Pricing Page
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </section>

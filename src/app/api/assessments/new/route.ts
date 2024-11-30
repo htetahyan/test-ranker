@@ -18,7 +18,7 @@ const {name,jobRole}=body
     }
     const {id,versionId}=await createNewAssessment({name,companyId,jobRole})
 console.log(id,versionId,'id');
-
+if(id ===null && versionId===null){ throw new Error("Assessment Limit Exceeded, please upgrade your current plan") }
     return NextResponse.json({message:"success",assessmentId:id,versionId},{status:201})
 }catch(err:any){
     console.log(err)

@@ -4,6 +4,8 @@ import { and, AnyColumn, count, eq, or, sql } from "drizzle-orm"
 import { prepareMultipleQuestions } from "./prepare.service"
 import { v4 as uuidv4, } from 'uuid';
 import { extractTextsFromHtml, generate } from "./generate.service"
+import { checkAssessmentLimitExceeded, getCurrentPricing } from "./auth.service";
+import { NextResponse } from "next/server";
 const increment = (column: AnyColumn, value = 1) => {
   return sql`${column} + ${value}`;
 };
@@ -16,6 +18,11 @@ export const createNewAssessment = async ({
   companyId: number; 
   jobRole: string; 
 }) => {
+const isAssessmentLimitExceed=await checkAssessmentLimitExceeded()  
+
+if(isAssessmentLimitExceed){
+  return {id:null,versionId:null}
+}
   return await db.transaction(async (tx) => {
       // Insert into Assessments table
       const assessment = await tx.insert(Assessments).values({
