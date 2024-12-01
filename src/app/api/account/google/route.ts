@@ -10,6 +10,7 @@ import { limit } from "@/service/middleware.service";
 
 export const GET = async (request: NextRequest) => {
     const code= request.nextUrl.searchParams.get('code')
+     const callback= request.nextUrl.searchParams.get('callback')
     try {
         const ip = request.headers.get('X-Forwarded-For') ?? 'unknown';
 
@@ -27,7 +28,7 @@ if(isRateLimitExceed) return NextResponse.json({message:"Rate limit exceeded"},{
 
         revalidateTag('profile')
 
-return NextResponse.redirect(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000/dashboard')}
+return NextResponse.redirect(callback || process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000/dashboard/my-settings')}
     catch (error) {
 
         // @ts-ignore

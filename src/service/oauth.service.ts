@@ -1,10 +1,13 @@
 import nodemailer from 'nodemailer';
 import { addMinutes, isBefore } from 'date-fns'; // date utility library
 import {randomBytes} from "node:crypto";
+import { Resend } from "resend";
+
 import db from '@/db';
 import { Pricing, Users, usuage } from '@/db/schema/schema';
 import { eq } from 'drizzle-orm';
 import { v7 as uuidv7 } from 'uuid';
+import { VerifyEmailTemplate } from '@/utils/EmailTemplate';
 interface GoogleOAuthToken {
     access_token: string;
     id_token: string;
@@ -64,33 +67,20 @@ try {
 
 const MAX_RETRIES = 10000;
 const RETRY_DELAY = 3000; // 3 seconds
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendEmailWithRetry(user: any, emailToken: string): Promise<void> {
     let retries = 0;
 
     while (retries < MAX_RETRIES) {
         try {
-            const mail = {
-
-                from: "contentally@gmail.com",
-                to: user?.email,
+    
+       const {data,error}= await resend.emails.send({
+                from: `try skills test <htetahyan@gmail.com>`,
+                to:user?.email,
                 subject: 'Verify your email',
-                html: `
-    <div style="font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; background-color: #f4f4f4; border-radius: 8px;">
-      <h2 style="color: #333;">Hello <strong>${user.name}</strong>,</h2>
-      <p style="color: #555;">Please verify your email by clicking the link below:</p>
-      <a href='https://tryskillstest.com/api/oauth/email?token=${emailToken}' 
-         style="display: inline-block; padding: 10px 15px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px;">
-        Click here
-      </a>
-      <p style="color: #555; margin-top: 20px;">Thank you!</p>
-    </div>
-  `,
-            };
-
-console.log(mail);
-
-            await transporter.sendMail(mail);
+                react: VerifyEmailTemplate({userEmail: user?.email,verifyLink: `https://tryskillstest.com/api/oauth/email?token=${emailToken}`}),
+            })
             break;
         } catch (error) {
             console.error(`Error sending email attempt ${retries + 1}:`, error);
