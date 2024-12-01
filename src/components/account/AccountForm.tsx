@@ -109,7 +109,7 @@ const sendPasswordResetEmail=async()=>{
                     Login
                   </Button>
             
-                <Button onClick={()=>getGoogleOAuthURL({callbackUrl:callbackUrl??null})} startContent={<FcGoogle />} fullWidth color="secondary" className="flex items-center justify-center gap-2">
+                <Button onClick={getGoogleOAuthURL} startContent={<FcGoogle />} fullWidth color="secondary" className="flex items-center justify-center gap-2">
                   Sign in with Google
                 </Button>
               </form>
@@ -166,7 +166,7 @@ const sendPasswordResetEmail=async()=>{
                     Sign up
                   </Button>
                 </div>
-                <Button onClick={()=>getGoogleOAuthURL({callbackUrl:callbackUrl??null})} fullWidth color="secondary" className="flex items-center justify-center gap-2">
+                <Button onClick={getGoogleOAuthURL} fullWidth color="secondary" className="flex items-center justify-center gap-2">
                   <FcGoogle />
                   Sign up with Google
                 </Button>

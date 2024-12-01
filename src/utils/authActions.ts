@@ -3,11 +3,11 @@
 import db from "@/db";
 import { Pricing, Users } from "@/db/schema/schema";
 
-export const getGoogleOAuthURL = ({callbackUrl}:{callbackUrl?:string}) => {
+export const getGoogleOAuthURL = () => {
 
     const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
     const options = {
-        redirect_uri: process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URL!+(callbackUrl?`?callback=${callbackUrl}`:""),
+        redirect_uri: process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URL!,
         client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT!,
         access_type: 'offline',
         response_type: 'code',
@@ -17,6 +17,6 @@ export const getGoogleOAuthURL = ({callbackUrl}:{callbackUrl?:string}) => {
             'https://www.googleapis.com/auth/userinfo.email',
         ].join(' '),
     };
-  window.location.href = `${rootUrl}?${new URLSearchParams(options)}`
+  window.location.href = `${rootUrl}?${new URLSearchParams(options)}`;
 
 }
