@@ -17,7 +17,7 @@ import {
     uuid,
 } from "drizzle-orm/pg-core";
 import { version } from "os";
-import { sizeInBytes } from "pdf-lib";
+import { last, sizeInBytes } from "pdf-lib";
 
 // --------------------
 // 12. Enumerations
@@ -74,6 +74,16 @@ export const usuage= pgTable("usuage", {
     totalAssessments: integer("total_assessment").notNull().default(0),
     totalCandidates: integer("total_candidates").notNull().default(0),
     createdAt: timestamp("created_at").defaultNow().notNull(),
+    pricingId: integer("pricing_id").references(() => Pricing.id, { onDelete: "cascade", onUpdate: "cascade" }),
+})
+export const rateLimit= pgTable("rate_limit", {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id").references(() => Users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    lastCalledAt: timestamp("last_called_at").notNull(),
+    versionId: integer("version_id").notNull().references(() => versions.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+   
     pricingId: integer("pricing_id").references(() => Pricing.id, { onDelete: "cascade", onUpdate: "cascade" }),
 })
 export const pricingRelations = relations(Pricing, ({ one }) => ({

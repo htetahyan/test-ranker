@@ -16,6 +16,7 @@ import Empty from '../animation/Empty';
 import { SelectAssessments, SelectUsers, SelectVersions } from '@/db/schema/schema';
 import { checkAssessmentLimitExceeded } from '@/service/auth.service';
 import { RiLockUnlockFill } from 'react-icons/ri';
+import DeleteAssessmentButton from '../assessments/DeleteAssessmentButton';
 
 type Data = {
   Assessments: SelectAssessments,
@@ -53,6 +54,7 @@ const DashboardTable: React.FC<{ assessments: Data[] ,user: SelectUsers, isAsses
             <Button startContent={isAssessmentLimitExceed || !user.emailVerified ? <RiLockUnlockFill /> : <FaPlus />}   isDisabled={isAssessmentLimitExceed || !user.emailVerified} onClick={goToNewAssessment} className="flex items-center bg-black text-white px-5 py-2 rounded-lg shadow-md">
             {isAssessmentLimitExceed ? <span className="ml-2 text-red-800">Limit Exceeded (upgrade)</span>: <span className="ml-2">New Assessment</span> } {!user.emailVerified  && <span className="ml-2 text-red-500">Email Not Verified</span>}
             </Button>
+
         
         </div>
 
@@ -78,9 +80,10 @@ const DashboardTable: React.FC<{ assessments: Data[] ,user: SelectUsers, isAsses
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {paginatedAssessments.map((item, i) => (
               <Card key={i} className="bg-gradient-to-r from-gray-700 to-gray-900 text-white shadow-lg p-3 rounded-lg">
-                <CardHeader className="pb-2 flex flex-col space-y-1">
+                <CardHeader className="pb-2 flex justify-between space-y-1">
                   <h3 className="text-lg font-semibold">{item.Assessments.name}</h3>
                   <p className="text-sm">{item.Assessments.jobRole || "No job role specified"}</p>
+                  <DeleteAssessmentButton assessmentId={item.Assessments.id} />
                 </CardHeader>
                 <CardBody className="text-gray-400 text-sm">
                   {new Date(item.Assessments.createdAt).toLocaleDateString()}
@@ -91,6 +94,7 @@ const DashboardTable: React.FC<{ assessments: Data[] ,user: SelectUsers, isAsses
                      <Button isIconOnly endContent={<FaArrowRight  />} className="text-black bg-slate-200 hover:bg-slate-400 rounded-full p-">
                     </Button>
                 </Link>
+
                 </CardFooter>
               </Card>
             ))}

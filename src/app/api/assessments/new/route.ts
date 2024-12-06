@@ -12,7 +12,10 @@ const {name,jobRole}=body
     if(!name || !jobRole){
        throw new Error("Please provide all fields")
     }
-    const companyId=await currentUser().then(user=>user?.id) as number
+    const {id:companyId,emailVerified}=await currentUser()
+    if(!emailVerified){
+        throw new Error("Please verify your email first before creating an assessment")
+    }
     if(!companyId){
         throw new Error("Please login")
     }

@@ -40,6 +40,7 @@ export const extractTextsFromHtml = (html: string) => {
     versionId: number;
   }) => {
     try {
+ 
       const array = await main(prompt) as any;
   
       // Create a new test and check for potential errors.
@@ -81,5 +82,31 @@ export const extractTextsFromHtml = (html: string) => {
  throw new Error(error.message);
     }
 
+  };
+  export const rateLimitBasedOnPricingIdAndLastCalledAt = async ({
+    pricingId,
+    lastCalledAt,
+  }: {
+    pricingId: string;
+    lastCalledAt: Date;
+  }): Promise<boolean> => {
+    const now = new Date();
+  
+    if (pricingId === 'pri_01jc3hehprwp718k0f247dpwqd') {
+      // No limit for this specific pricingId
+      return true;
+    }
+  
+    const oneMinuteInMs = 60 * 1000; // 1 minute in milliseconds
+    const oneHourInMs = 60 * 60 * 1000; // 1 hour in milliseconds
+    const timeDifference = now.getTime() - lastCalledAt.getTime();
+  
+    if (pricingId === 'free') {
+      // Apply 1-hour limit for 'free'
+      return timeDifference >= oneHourInMs;
+    }
+  
+    // Apply 1-minute limit for all other plans
+    return timeDifference >= oneMinuteInMs;
   };
   

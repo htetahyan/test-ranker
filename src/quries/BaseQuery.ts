@@ -118,7 +118,14 @@ TogglePublish:builder.mutation({
         method:'POST'
         
     })
-})   })
+}),deleteAssessment:builder.mutation({
+    query:({assessmentId}:{assessmentId:number})=>({
+        url:`/api/assessments/${assessmentId}/delete`,
+        method:'DELETE'
+        
+    })
+})  
+ })
 })
-export const {useCloneVersionMutation,useTogglePublishMutation,useIsCustomTestAddedQuery,useAddCustomTestToAssessmentMutation,useEditAssessmentMutation,useGenerateMoreTestMutation,useDeleteMutipleChoiceQuestionMutation,useGetMultipleChoiceAndOptionsQuery,useDeleteQuestionByIdMutation,useOrderTestsMutation,  useCreateNewAssessmentMutation ,useGenerateTestMutation, useEditMultipleChoiceQuestionMutation,useCreateNewQuestionMutation,useGetQuestionsFromVersionIdQuery } = baseApi
+export const {useDeleteAssessmentMutation,useCloneVersionMutation,useTogglePublishMutation,useIsCustomTestAddedQuery,useAddCustomTestToAssessmentMutation,useEditAssessmentMutation,useGenerateMoreTestMutation,useDeleteMutipleChoiceQuestionMutation,useGetMultipleChoiceAndOptionsQuery,useDeleteQuestionByIdMutation,useOrderTestsMutation,  useCreateNewAssessmentMutation ,useGenerateTestMutation, useEditMultipleChoiceQuestionMutation,useCreateNewQuestionMutation,useGetQuestionsFromVersionIdQuery } = baseApi
 export default baseApi

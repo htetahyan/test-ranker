@@ -65,41 +65,114 @@ try {
     throw error;
 }}
 
-const MAX_RETRIES = 10000;
+const MAX_RETRIES = 5;
 const RETRY_DELAY = 3000; // 3 seconds
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+
 
 export async function sendEmailWithRetry(user: any, emailToken: string): Promise<void> {
     let retries = 0;
 
     while (retries < MAX_RETRIES) {
         try {
-    
-       const {data,error}= await resend.emails.send({
-                from: `try skills test <htetahyan@gmail.com>`,
-                to:user?.email,
-                subject: 'Verify your email',
-                react: VerifyEmailTemplate({userEmail: user?.email,verifyLink: `https://tryskillstest.com/api/oauth/email?token=${emailToken}`}),
-            })
-            break;
+            await transporter.sendMail({
+                to: user.email,
+                subject: "Verify your email address",
+                html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify your email address</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 2rem;
+    }
+    .container {
+      margin: 0 auto;
+      padding: 1.5rem;
+      margin-top: 1.25rem;
+      margin-bottom: 3rem;
+      background: #f9f9f9;
+      border-radius: 8px;
+      max-width: 600px;
+    }
+    .header {
+      font-weight: bold;
+      font-size: 1.25rem;
+    }
+    .hr {
+      margin-top: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 0;
+      height: 1px;
+      background: #ddd;
+    }
+    .text {
+      font-size: 1rem;
+      margin: 0.5rem 0;
+      line-height: 1.5;
+    }
+    .button {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: #0070f3;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      font-size: 1rem;
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <p class="header">Verify Your Email Address</p>
+    <hr class="hr">
+    <p class="text">
+      Hello, we received a request to verify your email address: <strong>${user.email}</strong>.
+    </p>
+    <p class="text">
+      To complete the verification process, please click the button below:
+    </p>
+    <a href="${emailToken}" class="button" target="_blank" rel="noopener noreferrer">
+      Verify Email
+    </a>
+    <hr class="hr">
+    <p class="text">
+      If you did not request this, please ignore this email or contact support.
+    </p>
+    <p class="text">Thank you,</p>
+    <p class="text" style="font-style: italic;">The Eimaam Dev Team</p>
+  </div>
+</body>
+</html>`,
+            });
+            console.log('Email sent successfully');
+            break; // Exit loop if email is sent successfully
         } catch (error) {
-            console.error(`Error sending email attempt ${retries + 1}:`, error);
-
-            if (retries === MAX_RETRIES - 1) {
-                throw new Error(`Failed to send email after ${MAX_RETRIES} attempts`);
-            }
-
+            console.error(`Attempt ${retries + 1} failed: `, error);
             retries++;
-            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+            if (retries < MAX_RETRIES) {
+                console.log(`Retrying... (${retries + 1}/${MAX_RETRIES})`);
+            } else {
+                console.log('Max retries reached, failed to send email');
+                throw new Error('Failed to send email after maximum retries');
+            }
         }
     }
 }
+
 export const transporter=nodemailer.createTransport({
     host: "smtp.resend.com",
     port: 465,
     auth: {
         user: "resend",
-        pass: "re_FpAnbSEe_L2END4rSTQTTU3KhGWMMo1bV",
+        pass: process.env.RESEND_API_KEY,
     },
 });
 

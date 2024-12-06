@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { useCloneVersionMutation } from '@/quries/BaseQuery';
 import { IoMdArrowRoundBack } from 'react-icons/io';
 import { toast } from 'sonner';
+import DeleteAssessmentButton from './DeleteAssessmentButton';
 
 const Assessment = ({ data, versionId, isFree }:any) => {
 const currentVersion=data?.version.find((v:any)=>v.id===versionId)
@@ -40,7 +41,6 @@ const goToEditAssessment=async()=>{
         </div>
         <div className="flex items-center gap-4">
         <PublishDraftBtn currentVersion={currentVersion}  />
-
             <Button onClick={onOpen} isIconOnly className="bg-gray-200 text-gray-700 hover:bg-gray-300" endContent={<FaPen />} />
        </div>
       </div>

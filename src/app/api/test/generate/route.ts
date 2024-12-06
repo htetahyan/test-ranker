@@ -1,7 +1,8 @@
   import db from "@/db"
-import { MultipleChoiceAnswers, MultipleChoicesQuestions, Options, SelectTests, Tests, VersionAndTest, versions } from "@/db/schema/schema"
+import { Assessments, MultipleChoiceAnswers, MultipleChoicesQuestions, Options, rateLimit, SelectTests, Tests, VersionAndTest, versions } from "@/db/schema/schema"
 import { createNewTest, createQuestionAndOptions, getGenerateTypeTestFromVersionAndTest } from "@/service/assessments.service"
-import { extractTextsFromHtml, generate } from "@/service/generate.service"
+import { currentUser, getCurrentPricing } from "@/service/auth.service"
+import { extractTextsFromHtml, generate, rateLimitBasedOnPricingIdAndLastCalledAt } from "@/service/generate.service"
 import { main } from "@/service/openai.service"
 import { and, count, eq } from "drizzle-orm"
 import { NextRequest, NextResponse } from "next/server"
@@ -15,6 +16,19 @@ try {
     if(!title  || !duration || !questionsCount   || !versionId ||!generateBy){
         throw new Error("Please provide all fields")
     }
+    const user=await currentUser()
+    if(!user) return NextResponse.json({message:"Please login"},{status:401})
+    const assessment=await db.select().from(Assessments).where(eq(Assessments.id,assessmentId)).then((res)=>res[0])
+  if(assessment.companyId!==user?.id) return NextResponse.json({message:"Unauthorized"},{status:401})
+    
+    const rl=await db.select().from(rateLimit).where(eq(rateLimit.userId,versionId))
+    const currentPricing=await getCurrentPricing()
+    if(rl.length===0) {
+      await db.insert(rateLimit).values({userId:versionId,versionId,lastCalledAt:new Date(),pricingId:currentPricing.id,})}
+      else{
+       const isRateLimitExceed= await rateLimitBasedOnPricingIdAndLastCalledAt({pricingId:currentPricing.priceId,lastCalledAt:rl[0].lastCalledAt})
+       if(!isRateLimitExceed) return NextResponse.json({message:"Rate limit exceeded "+`try again after ${currentPricing.priceId=== "free" ? "1 hour" : "1 minute"} `},{status:429})
+      }
     const isVersionExist=await db.select().from(versions).where(eq(versions.id,versionId))
     if(isVersionExist.length===0){
       return NextResponse.json({message:"Version not found"},{status:404})

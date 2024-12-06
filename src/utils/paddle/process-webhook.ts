@@ -74,7 +74,7 @@ export class ProcessWebhook {
           endDate: new Date(eventData!.data!.next_billed_at!),
           priceId: eventData.data.items[0]!.price.id,
           totalAssessments:
-            eventData!.data!.items![0]!.price.id === 'pri_01jc3hgpynvy9ac71829kq23t9' ? 30 :
+            eventData!.data!.items![0]!.price.id === 'pri_01jc3hgpynvy9ac71829kq23t9' ? 10 :
             eventData!.data!.items![0]!.price.id === 'pri_01jc3hehprwp718k0f247dpwqd' ? 30 : 1,
           totalCandidates: 0,
         }).where(eq(Pricing.subscriptionId, eventData.data.id));
