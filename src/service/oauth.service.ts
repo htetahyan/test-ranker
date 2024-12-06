@@ -76,8 +76,10 @@ export async function sendEmailWithRetry(user: any, emailToken: string): Promise
 
     while (retries < MAX_RETRIES) {
         try {
+            
             await transporter.sendMail({
-                to: user.email,
+                from: "htetahyan@gmail.com",
+                to: user?.email,
                 subject: "Verify your email address",
                 html: `<!DOCTYPE html>
 <html lang="en">
