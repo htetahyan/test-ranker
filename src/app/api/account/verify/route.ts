@@ -21,7 +21,7 @@ export const POST = async (req: NextRequest) => {
         }
 const mailVerifToken=  generateEmailVerificationToken()
         await db.update(Users).set({emailVerifToken: mailVerifToken,emailTokenSentAt: new Date()}).where(eq(Users.id,user.id))
-        await sendEmailWithRetry(user, process.env.NEXT_PUBLIC_BASE_URL+'/mail/'+mailVerifToken);
+        await sendEmailWithRetry(user, process.env.NEXT_PUBLIC_BASE_URL+'/api/account/verify?token='+mailVerifToken);
 
         return NextResponse.json({message: 'Email sent successfully'}, {status: 200});
     } catch (err: any) {
