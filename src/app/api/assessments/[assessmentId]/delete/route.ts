@@ -12,9 +12,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const DELETE = async (
   req: NextRequest,
-  props: { params: { assessmentId: string } }
+  props: { params: Promise<{ assessmentId: string }> }
 ) => {
-  const { assessmentId } = props.params;
+  const { assessmentId } = await props.params;
 
   try {
     await db.transaction(async (tx) => {
@@ -48,7 +48,7 @@ export const DELETE = async (
         await tx.delete(Assessments).where(eq(Assessments.id, parseInt(assessmentId)));
       } catch (error) {
         // Rollback the transaction on failure
-        await tx.rollback();
+         tx.rollback();
         throw new Error("Transaction failed. Rollback initiated.");
       }
     });
