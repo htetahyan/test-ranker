@@ -78,7 +78,7 @@ export async function sendEmailWithRetry(user: any, emailToken: string): Promise
         try {
             
             await transporter.sendMail({
-                from: "htetahyan@tryskillstest.com",
+                from: "aryanhtet@tryskillstest.com",
                 to: user?.email,
                 subject: "Verify your email address",
                 html: `<!DOCTYPE html>
@@ -172,6 +172,8 @@ export async function sendEmailWithRetry(user: any, emailToken: string): Promise
 export const transporter=nodemailer.createTransport({
     host: "smtp.resend.com",
     port: 465,
+    secure: true,
+
     auth: {
         user: "resend",
         pass: process.env.RESEND_API_KEY,
