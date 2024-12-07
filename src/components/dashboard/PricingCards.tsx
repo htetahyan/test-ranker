@@ -3,6 +3,7 @@ import { Card, CardHeader, CardBody, CardFooter, Divider, Button, Badge, Chip, S
 import { MdCheckCircleOutline } from "react-icons/md";
 import usePaddle from '@/service/usePaddle';
 import { SelectPricing } from '@/db/schema/schema';
+import { toast } from 'sonner';
 
 const pricingPlans = [
   {
@@ -51,6 +52,8 @@ const PricingCards = ({ currentId,user,pricing }: { currentId: string,user:any,p
   const paddle = usePaddle();
  
   const openCheckout = (priceId: string) => {
+    if(!pricing.isCancled) {toast.error("Cancle your current plan to upgrade")
+       return}
     paddle?.Checkout.open({
 
       
@@ -68,7 +71,7 @@ const PricingCards = ({ currentId,user,pricing }: { currentId: string,user:any,p
       customData: {
         userId: user?.id,
       }
-    });
+    })
   };
 
   return (
