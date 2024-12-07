@@ -78,7 +78,7 @@ export async function sendEmailWithRetry(user: any, emailToken: string): Promise
         try {
             
             await transporter.sendMail({
-                from: "aryanhtet@tryskillstest.com",
+                from: "<TrySkillsTest> noreply@tryskillstest.com",
                 to: user?.email,
                 subject: "Verify your email address",
                 html: `<!DOCTYPE html>
