@@ -3,6 +3,7 @@ import React from 'react';
 import { Avatar, Button } from '@nextui-org/react';
 import { SelectUsers } from '@/db/schema/schema';
 
+import EmailVerification from './EmailVerification';
 import Logout from './Logout';
 
 const MySettings = ({ user }: { user: SelectUsers }) => {
@@ -44,6 +45,7 @@ const MySettings = ({ user }: { user: SelectUsers }) => {
 
         {/* Action Components */}
         <div className="w-full flex flex-col gap-4 mt-6">
+          <EmailVerification user={user} />
         
           <Logout />
         </div>
