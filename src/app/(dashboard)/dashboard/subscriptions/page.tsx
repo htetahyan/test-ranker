@@ -1,7 +1,7 @@
 import UserPricing from '@/components/dashboard/UserPricing';
 import db from '@/db';
 import { Pricing } from '@/db/schema/schema';
-import { currentUser } from '@/service/auth.service';
+import { currentUser, getUserUsage } from '@/service/auth.service';
 import { and, eq } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
 import React from 'react';
@@ -10,6 +10,9 @@ const page = async () => {
   try {
     // Fetch the current user
     const user = await currentUser();
+    const plan = await db.select().from(Pricing).where(and(eq(Pricing.status,'active'),eq(Pricing.userId,user!.id!)))
+    const usuage=await getUserUsage(plan[0].id)
+    console.log(plan,usuage,'plan');
   
 
     // Query the Pricing table
@@ -24,7 +27,7 @@ const page = async () => {
     return (
       <div>
         {activePricing ? (
-          <UserPricing user={user!} pricing={activePricing} />
+          <UserPricing user={user!} pricing={activePricing} usage={usuage} />
         ) : (
           <div>No active subscription found.</div>
         )}

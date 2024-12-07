@@ -28,7 +28,7 @@ const router = useRouter()
         onSubmit: async(values) => {
 toast.promise(
     new Promise((resolve, reject) => {
-        fetch(`/api/oauth/verify-password`, {
+        fetch(`/api/account/verify-password`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

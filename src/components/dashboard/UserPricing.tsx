@@ -6,7 +6,7 @@ import CheckoutButton from '../payment/CheckOutButton';
 import { useCancelSubscriptionMutation, useManageSubscriptionMutation } from '@/quries/AccoutQuery';
 import { useRouter } from 'next/navigation';
 
-const UserPricing = ({ pricing, user }: { pricing: SelectPricing, user: SelectUsers }) => {
+const UserPricing = ({ pricing, user, usage }: { pricing: SelectPricing, user: SelectUsers, usage: any }) => {
   console.log(pricing);
 
   const OneTimeUsage = (used: number, candidateUsed: number, pricingId: string | null) => {
@@ -24,7 +24,7 @@ const UserPricing = ({ pricing, user }: { pricing: SelectPricing, user: SelectUs
     endDate: pricing?.priceId === 'free' ? null : pricing?.endDate ? new Date(pricing?.endDate).toLocaleDateString() : null,
     cost: pricing?.priceId === 'free' ? 'Free' : `$${pricing?.amount}/month`,
     renewalDate: pricing?.priceId === 'free' ? null : pricing?.nextBillDate ? new Date(pricing?.nextBillDate).toLocaleDateString() : null,
-    usage: OneTimeUsage(0, 0, pricing?.priceId || null),
+    usage: OneTimeUsage(usage?.assessments || 0, usage?.candidates || 0, pricing?.priceId || null),
   };
 
   const [mutate] = useManageSubscriptionMutation();

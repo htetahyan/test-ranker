@@ -54,6 +54,7 @@ export const currentUser=async()=>{
     
     if(!payload) redirect('/account')
     const user=await db.select().from(Users).where(eq(Users.id,parseInt(payload.sub!)!))
+    
   if(user.length===0) redirect('/account')
     return user[0]
 

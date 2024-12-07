@@ -1,5 +1,5 @@
 import db from '@/db';
-import { Pricing, Users } from '@/db/schema/schema';
+import { Pricing, Users, usuage } from '@/db/schema/schema';
 import {
   CustomerCreatedEvent,
   CustomerUpdatedEvent,
@@ -34,10 +34,9 @@ export class ProcessWebhook {
       try {
         // Set all previous active subscriptions for this customer to inactive
         await tx.update(Pricing).set({ status: 'inactive' }).where(and(
-          eq(Pricing.customerId, eventData.data.customer_id),
+          eq(Pricing.userId, eventData.data.custom_data.userId),
           eq(Pricing.status, 'active')
         ));
-
         // Insert a new record with the subscription details
         const response = await tx.insert(Pricing).values({
           subscriptionId: eventData.data.id,
@@ -56,6 +55,7 @@ export class ProcessWebhook {
           totalCandidates: 0,
           userId: eventData.data.custom_data.userId,
         }).returning({ id: Pricing.id });
+        await tx.insert(usuage).values({totalAssessments:0,pricingId:response[0].id,userId:eventData.data.custom_data.userId,totalCandidates:0,})
 
         console.log(response);
       } catch (e) {
