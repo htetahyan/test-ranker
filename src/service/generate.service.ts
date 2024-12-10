@@ -92,6 +92,7 @@ export const extractTextsFromHtml = (html: string) => {
   }): Promise<boolean> => {
     const now = new Date();
   
+    // Check for specific pricingId (no limit for this ID)
     if (pricingId === 'pri_01jc3hehprwp718k0f247dpwqd') {
       // No limit for this specific pricingId
       return true;

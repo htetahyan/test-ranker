@@ -8,11 +8,11 @@ import { main } from '@/service/openai.service'
 import { and, eq } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
 import React from 'react'
-import { CategoryScale,registerables } from "chart.js";
+import { CategoryScale,registerables,ArcElement } from "chart.js";
 import "chart.js/auto";
 
 import Chart from "chart.js/auto";
-Chart.register(...registerables,CategoryScale );
+Chart.register(...registerables,CategoryScale,ArcElement );
 
 const page = async (props:{params: Promise<{uniqueId:string,candidate_uniqueId:string,order:string}>}) => {
   const params = await props.params;

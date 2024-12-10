@@ -13,7 +13,7 @@ export const POST=async (req:NextRequest, props:{params: Promise<{id:string,vers
           const id=parseInt(params.id)
           const versionId=parseInt(params.versionId)
 
-          const {prompt,questionsCount}=body
+          const {prompt,questionsCount,includeCharts}=body
           console.log(prompt,questionsCount,id);
           
           if(!id || !versionId){
@@ -22,7 +22,8 @@ export const POST=async (req:NextRequest, props:{params: Promise<{id:string,vers
           const testId=await getGenerateTypeTestFromVersionAndTest({versionId,assessmentId:id})
           const test=await db.select().from(Tests).where(eq(Tests.id,testId))
 
-          const newPrompt=generatePrompt(prompt,questionsCount)
+          const newPrompt=generatePrompt(prompt,questionsCount,includeCharts)
+          
           const array= await main(newPrompt)
           const multipleChoiceQuestionsCount=await db.select({ count: count() }).from(MultipleChoicesQuestions).where(eq(MultipleChoicesQuestions.testId,test[0]?.id));
           await array.map((question:any,index:number)=>{return createQuestionAndOptions({testId:test[0]?.id,question:question.question,answer:question.answer,options:question.options,correctOption:question.solution,order:multipleChoiceQuestionsCount[0].count+index})})
@@ -35,7 +36,7 @@ export const POST=async (req:NextRequest, props:{params: Promise<{id:string,vers
       }
   }
 }
-const generatePrompt = (prompt:string, questionsCount: number) => ` Please create exactly ${questionsCount} multiple-choice questions for the following Job description:
+const generatePrompt = (prompt:string, questionsCount: number,includeCharts:boolean) => ` Please create exactly ${questionsCount} multiple-choice questions for the following Job description:
 according to this prompt ${prompt}
       Each question should be structured as follows:  
       [{

@@ -20,7 +20,7 @@ export const baseApi = createApi({
                 url:`/api/test/generate`,
                 method:'POST',
                 body
-            }), invalidatesTags:['TEST']
+            }), invalidatesTags:(result, error, arg, meta)=> error?[{type:'TEST',id:0}]: [{type:'TEST',id:arg.versionId}] 
            
         }),
         editMultipleChoiceQuestion: builder.mutation({
@@ -58,7 +58,7 @@ export const baseApi = createApi({
                 url: `/api/test/${id}/${versionId}`,
                 method: 'GET',
             }),
-            providesTags:(result,error,arg)=>error?['TEST']:[...result?.data?.multipleChoiceQuestions.map(({question,options}:any)=>({type:'TEST',id:question.id})),{type:'TEST',id:'LIST'}],
+            providesTags:(result,error,arg)=>error? ['TEST']:[{type:'TEST',id:arg.versionId}],
             
           
         })   ,
@@ -78,10 +78,10 @@ export const baseApi = createApi({
             
         }),            invalidatesTags:['TEST']
     }), generateMoreTest: builder.mutation({
-        query:({id,questionsCount,prompt,versionId}:{id:number,questionsCount:number,prompt:string,versionId:number})=>({
+        query:({id,questionsCount,prompt,versionId,includeCharts}:{id:number,includeCharts:boolean,questionsCount:number,prompt:string,versionId:number})=>({
             url:`/api/test/${id}/${versionId}/generate`,
             method:'POST',
-            body:JSON.stringify({questionsCount,prompt})
+            body:JSON.stringify({questionsCount,prompt,includeCharts})
         }),invalidatesTags:['TEST']
     }),
     editAssessment:builder.mutation({

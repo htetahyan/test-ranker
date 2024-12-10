@@ -5,9 +5,11 @@ import {
   CandidateInfo,
   Candidates,
   MultipleChoiceAnswers,
+  usuage,
   versions,
 } from "@/db/schema/schema";
-import { eq } from "drizzle-orm";
+import { currentUser, getCurrentPricing } from "@/service/auth.service";
+import { and, AnyColumn, eq, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export const DELETE = async (
@@ -15,8 +17,11 @@ export const DELETE = async (
   props: { params: Promise<{ assessmentId: string }> }
 ) => {
   const { assessmentId } = await props.params;
-
+ 
   try {
+    const user= await currentUser()
+    if(!user){return NextResponse.json({message:"Please login"},{status:401})}
+
     await db.transaction(async (tx) => {
       try {
         // Fetch all versions related to the assessment
@@ -42,10 +47,11 @@ export const DELETE = async (
             );
           }
         }
-
+const pricingId=(await getCurrentPricing()).id
         // Delete the versions
         await tx.delete(versions).where(eq(versions.assessmentId, parseInt(assessmentId)));
         await tx.delete(Assessments).where(eq(Assessments.id, parseInt(assessmentId)));
+        await tx.update(usuage).set({ totalAssessments: sql`${usuage.totalAssessments}-1` }).where(and(eq(usuage.userId, user.id),eq(usuage.pricingId,pricingId)));
       } catch (error) {
         // Rollback the transaction on failure
          tx.rollback();

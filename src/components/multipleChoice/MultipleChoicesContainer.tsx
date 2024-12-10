@@ -1,9 +1,9 @@
 'use client'
 
 import { useGenerateMoreTestMutation, useGetMultipleChoiceAndOptionsQuery } from '@/quries/BaseQuery'
-import React from 'react'
+import React, { useState } from 'react'
 import MultipleChoice from './MultipleChoice'
-import { Button, Modal, ModalBody, ModalContent, Skeleton, useDisclosure,Input, Slider, Textarea } from '@nextui-org/react'
+import { Button, Modal, ModalBody, ModalContent, Skeleton, useDisclosure,Input, Slider, Textarea, Switch } from '@nextui-org/react'
 import GenerateTestWithAi from '../assessments/GenerateTestWithAi'
 
 import AddATest from '../tests/AddATest'
@@ -27,10 +27,11 @@ const MultipleChoicesContainer = ({ id,versionId }: { id: number,versionId:numbe
     const [mutate,{isLoading:isGenerating}]=useGenerateMoreTestMutation()
     const sortMultipleChoiceByOrderNumberDesc =  array?.data?.multipleChoiceQuestions ?? [] 
     const {isOpen,onClose,onOpen,onOpenChange}=useDisclosure()
+const [isIncludeCharts,setIsIncludeCharts]=useState(false)
 const formik=useFormik({
   initialValues:{prompt:'',questionsCount:2},
   onSubmit:async(values)=>{
-      mutate({id,questionsCount:values.questionsCount,prompt:values.prompt,versionId}).unwrap().finally(()=>onClose())
+      mutate({id,questionsCount:values.questionsCount,prompt:values.prompt,versionId,includeCharts:isIncludeCharts}).unwrap().finally(()=>onClose())
   },
   validationSchema
 })
@@ -86,6 +87,9 @@ const formik=useFormik({
                                 />
                                 {formik.errors.questionsCount && formik.touched.questionsCount && <p className='text-red-500'>
                                     {formik.errors.questionsCount}</p>}  
+                                  <div className='w-full'> <Switch isSelected={isIncludeCharts} onValueChange={setIsIncludeCharts}>
+       include charts
+      </Switch></div> 
                                     <Button isLoading={isGenerating} isDisabled={isGenerating} type='submit' color='secondary' variant='solid' className='bg-purple-600 text-white' >Generate</Button>
                                     </form>
                                      </ModalBody>

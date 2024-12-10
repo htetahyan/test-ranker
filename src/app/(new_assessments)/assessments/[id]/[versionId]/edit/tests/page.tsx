@@ -48,6 +48,9 @@ console.log(multipleChoiceQuestions,'multipleChoiceQuestions');
         <TestDragNDrop  data={multipleChoiceQuestions} />
         </div> 
       </div>
+      <p className='text-sm text-red-500'>
+    Sometimes    You might need to refresh for fully loaded all tests after generated!
+      </p>
       <CircularSteps currentStep={2} />
     
       <MultipleChoicesContainer  id={parseInt(id)} versionId={parseInt(versionId)}  />
